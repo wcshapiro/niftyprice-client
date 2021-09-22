@@ -1,0 +1,60 @@
+.footer{
+    
+    margin-top: 20rem;
+position: relative;
+bottom: 0;
+  width: 100%;
+  height: 10rem;
+  background-color: #ffffff;
+  }
+  .left-desc {
+      float: left;
+      text-align: left;
+      width: 20%;
+      margin-left: 10%;
+      height: 5rem;
+
+  }
+  .mid-desc {
+    text-align: left;
+
+    float: left;
+    width: 20%;
+    margin-left: 10%;
+    height: 5rem;
+
+  }
+  .right-desc {
+    text-align: left;
+
+    float: left;
+    width: 20%;
+    margin-left: 10%;
+    height: 5rem;
+
+
+  }
+  .link {
+      float: left;
+      width: 100%;
+  }
+
+.content-title{
+    text-align: left;
+}
+.copy{
+    float: left;
+    margin-left: 45%;
+    margin-top: 3.5rem;
+    text-align: center;
+}
+#twitter {
+    background-image: url("static/images/twitter.png");
+display: block;
+ background-repeat: no-repeat;
+ background-size: contain;
+
+ max-width: 40px;
+  height: 40px;
+  
+}
