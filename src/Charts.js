@@ -117,7 +117,7 @@ function Charts(props) {
             var total_for_sale = Array();
             var floor_pp = Array();
             var dates = Array();
-            const url = "https://niftyprice.herokuapp.com//charts?";
+            const url = "https://niftyprice.herokuapp.com/charts?";
             console.log("THIS IS COLLECTION NAME" + location.state.row_data)
             // console.log("sending" + this.props.location.chartData)
             const response = await fetch(url + new URLSearchParams({
