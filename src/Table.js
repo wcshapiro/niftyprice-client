@@ -260,7 +260,7 @@ function Table() {
         setError(null);
         try {
             var context = this;
-            const url = "/api";
+            const url = "https://niftyprice.herokuapp.com";
             const response = await fetch(url);
             // console.log(response);
             var data = await response.json();
