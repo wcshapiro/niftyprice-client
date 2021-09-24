@@ -16,14 +16,13 @@ function Footer() {
                 <h3 class="content-title">About</h3>
                 <div class="about-content">
                     <a class = "link" href="/about">About Us</a>
-                    <a class = "link" href="/pricing">Pricing</a>
+                    <a class = "link" href="/purchase">Pricing</a>
                 </div>
             </div>
             <div class="mid-desc">
                 <h3 class="content-title">Contact</h3>
                 <div class="contact-content">
                     <p >Email: willcshapiro@gmail.com</p>
-                    <p >Phone: (555)-555-555</p>
                 </div>
             </div>
             <div class="right-desc">

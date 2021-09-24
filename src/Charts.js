@@ -322,8 +322,9 @@ function Charts(props) {
                         options={chart_options}
                     /></Grid>
             </Grid>
-            <div class="spacer"></div>
+            
         </div>
+        <div class="spacer"></div>
         {/* <Footer/> */}
     </>
     )
