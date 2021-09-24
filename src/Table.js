@@ -106,7 +106,9 @@ const columns = [{
     return( <><p>{numberWithCommas(value)}</p></>)
 }} },
 
-{ name: "Float%", options: { hint: "Percent of total supply that is currently available" ,setCellProps: () => ({align: "center"})} },
+{ name: "Float%", options: { hint: "Percent of total supply that is currently available" ,setCellProps: () => ({align: "center"}),customBodyRender: (value) => {
+    return( <><p>{value}%</p></>)
+},} },
 {
     name: "Floor Cap", options: {
         hint: "Floor price multiplied by the total supply", filter: true,

@@ -29,29 +29,27 @@ function App() {
               <Grid
                 justify="flex-start" // Add it here :)
                 container
-                spacing={5}
+                // spacing={5}
               >
                 <Grid item>
                   <a id="niftyprice" href="/"></a>
                 </Grid>
               </Grid>
-
               <Grid
                 container
                 justify="flex-end"
                 spacing={5}>
+                   
+                 <Grid item > 
+                   <Button variant="contained" color="primary" href="/about">
+                     About Us
+                   </Button>
+                 </Grid>
 
-                <Grid item alignItems="center">
-                  <Button variant="contained" color="primary" href="/purchase">
-                    Get NFT Data
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button variant="contained" color="primary" href="/about">
-                    About Us
-                  </Button>
-                </Grid>
+                
+                
               </Grid>
+              
             </Toolbar>
           </AppBar>
           <div class="content-wrap">
