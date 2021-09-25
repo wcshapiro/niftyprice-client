@@ -226,10 +226,12 @@ function Charts(props) {
     if (loading) return (<div class="loading"><CircularProgress /></div>);
     return (<>
         <div class="chart-div">
-
+        <div class="content-div">
+        <Grid container justifyContent="center">
             <div class="card-div">
-                <Grid container justifyContent="space-evenly">
-                    <Grid item lg={4}>
+                
+                <Grid container justifyContent="space-around" spacing={8}>
+                    <Grid item lg={6} xs={12}>
                         <Card id="prices" className={classes.root} elevation={5}>
                             <div className={classes.details}>
                                 <CardContent className={classes.content}>
@@ -256,7 +258,7 @@ function Charts(props) {
                         </Card>
 
                     </Grid>
-                    <Grid item lg={4}>
+                    <Grid item lg={6} xs={12}>
                         <Card id="prices" className={classes.details_card} elevation={5}>
                             <CardContent >
                                 <Grid container justifyContent="space-between">
@@ -322,10 +324,14 @@ function Charts(props) {
                         options={chart_options}
                     /></Grid>
             </Grid>
+            </Grid>
             
         </div>
+        </div>
+        
         <div class="spacer"></div>
-        {/* <Footer/> */}
+        
+
     </>
     )
 
