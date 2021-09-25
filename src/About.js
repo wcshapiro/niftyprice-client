@@ -60,7 +60,7 @@ function About() {
             >
                 <div class="top-section">
                     <Grid container justifyContent="space-evenly">
-                        <Grid item xs={6}>
+                        <Grid item lg={6} xs={12}>
                             <Typography variant="h5" component="h5">
                                 Guys, we’re just getting started.
 
@@ -69,7 +69,7 @@ function About() {
                                 In the meantime, drop us an email on the Feedback page and let us know how we can help solve your major issues as an NFT investor.
                                 -NP</Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item lg={6} xs={12}>
                             <Typography variant="h2" component="h2">
                                 What is Niftyprice?
                             </Typography>
@@ -77,13 +77,13 @@ function About() {
                     </Grid>
                 </div>
                 <div class="mid-section">
-                    <Grid container justifyContent="space-evenly">
-                        <Grid item xs={6}>
+                    <Grid container justifyContent="space-evenly" >
+                        <Grid item lg={6} xs={12}>
                             <Typography variant="h2" component="h2">
                                 What are NFT's?
                             </Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item lg={6} xs={12}>
                             <Typography variant="h5" component="h5">
                                 A non-fungible token is a unit of data stored on a digital ledger, called a blockchain, that certifies a digital asset to be unique and therefore not interchangeable. NFTs can be used to represent items such as photos, videos, audio, and other types of digital files.
                             </Typography>
@@ -91,12 +91,12 @@ function About() {
                     </Grid>
                 </div>
                 <div class="bottom-section">
-                    <Grid item xs={12}>
+                    <Grid item lg={12}>
                         <Typography variant="h2" component="h2">The Team </Typography>
                     </Grid>
                     <div class = "card-content">
-                    <Grid container justifyContent="space-evenly"spacing={4}>
-                        <Grid item xs={3} id="people">
+                    <Grid container justifyContent="space-evenly" spacing={8}>
+                        <Grid item xs={6} lg={3} id="people">
                             <Card className={classes.root}>
                                 <CardMedia
                                     className={classes.media}
@@ -113,7 +113,7 @@ function About() {
                                 </CardContent>
                             </Card>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} lg={6}>
                             <Timeline
                                 dataSource={{
                                     sourceType: 'url',

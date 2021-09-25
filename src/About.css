@@ -1,9 +1,11 @@
-/* .about-wrap{
-    margin-top: 3rem;
-} */
+.about-wrap{
+    padding-bottom: 5rem;
+    height:1600px
+    /* height: 1700px; */
+}
 .mid-section,.top-section,.bottom-section {
     padding-top: 3rem;
-    height: 20rem;
+    height: 25rem;
     padding-left: 2rem;
     padding-right: 2rem;
 }
