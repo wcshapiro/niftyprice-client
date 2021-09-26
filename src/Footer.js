@@ -10,20 +10,21 @@ function useForceUpdate() {
 }
 function Footer() {
   const forceUpdate = useForceUpdate();
-  return (
+  return (<>
+    <hr></hr>
     <div class="footer">
-      <hr></hr>
+     
       <Grid container justifyContent="space-evenly">
         <Grid item lg={4} sm={6} xs={12}>
-          <Typography variant="h4" component="h4" align="center">
+          <Typography variant="h5" component="h5" align="left">
             About
           </Typography>
-          <Typography variant="h7" component="h7" align="center">
+          <Typography variant="h7" component="h7" align="left">
             <a class="link" href="/about">
               About Us
             </a>
           </Typography>
-          <Typography variant="h7" component="h7" align="center">
+          <Typography variant="h7" component="h7" align="left">
             <a class="link" href="/purchase">
               Pricing
             </a>
@@ -31,26 +32,27 @@ function Footer() {
           <div class="about-content"></div>
         </Grid>
         <Grid item lg={4} sm={6} xs={12}>
-          <Typography variant="h4" component="h4" align="center">
+          <Typography variant="h5" component="h5" align="left">
             Contact
           </Typography>
-          <Typography variant="h7" component="h7" align="center">
+          <Typography variant="h7" component="h7" align="left">
             <p>Email: willcshapiro@gmail.com</p>
             <p>© 2021 | niftyprice.io</p>
           </Typography>
           <div class="contact-content"></div>
         </Grid>
         <Grid item lg={4} sm={6} xs={12}>
-          <Typography variant="h4" component="h4" align="center">
+          <Typography variant="h5" component="h5" align="left">
             Links
           </Typography>
-          <Typography variant="h7" component="h7" align="center">
+          <Typography variant="h7" component="h7" align="left">
             <a href="https://twitter.com/niftyprice_io" id="twitter"></a>
           </Typography>
         </Grid>
         
       </Grid>
     </div>
+    </>
   );
 }
 export default Footer;

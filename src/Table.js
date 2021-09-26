@@ -327,6 +327,7 @@ function Table() {
         },
         download: false,
         selectableRowsHideCheckboxes: true,
+        responsive:'standard',
         onRowClick: rowData => {
             // console.log(cap_rank)
 
