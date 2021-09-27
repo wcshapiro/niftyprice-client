@@ -4,7 +4,7 @@ display: flex;
   margin-left: 10%;
 }
 .content-div{
-    justify-content: center;
+justify-content: center;
    width: 100%;
    display: flex;
    flex-direction: row;
@@ -17,12 +17,9 @@ display: flex;
   border-radius: 0.5rem;
   margin-bottom: 3rem;
 }
-/* .spacer {
-  height: 65rem;
-} */
+
 .card-div {
-    /* width: 80%;
-    padding-left: 5%; */
+    width: 100%;
   padding-bottom: 2rem;
 }
 .opensea-link2 {

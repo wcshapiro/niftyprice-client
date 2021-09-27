@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MUIDataTable from "mui-datatables";
-import Charts from "./Charts.js"
 import "./Table.css"
-import Footer from "./Footer.js"
 import "./App.css"
 import Grid from '@material-ui/core/Grid';
 import { Button } from '@material-ui/core';
@@ -14,18 +12,10 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import CardMedia from '@material-ui/core/CardMedia';
 import { makeStyles } from '@material-ui/core/styles';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-
-import Paper from '@material-ui/core/Paper';
-
-
-
-
 import {
     BrowserRouter as Router,
     Switch,
