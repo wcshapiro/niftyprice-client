@@ -41,7 +41,7 @@ function Purchase() {
     return (<>
         <div class="purchase-wrap">
            
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfB-EkCa0CRXyMXjap7aV7Fvk39vBc3LUQhjkMrcn3EjBS9iA/viewform?embedded=true" width="640" height="1095" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfB-EkCa0CRXyMXjap7aV7Fvk39vBc3LUQhjkMrcn3EjBS9iA/viewform?embedded=true" width="100%" height="1095" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
                 {/* <Grid item xs={12}>
                     <Typography variant="h3" component="h2">
 

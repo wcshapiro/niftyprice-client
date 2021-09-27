@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     root: {
         flexgrow: 1,
         minHeight: 250,
-        maxHeight: 250,
+        maxHeight: 360,
     },
     paper: {
         padding: 2,
