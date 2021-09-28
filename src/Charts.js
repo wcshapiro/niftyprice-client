@@ -217,19 +217,19 @@ function Charts(props) {
         },
         series: [
           {
-            name:alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0] +" Supply",
+            name:" Supply",
             data: series_tfs,
           },
         ],
       });
       setChartOptionsFpp({
         title: {
-          text: " Floor  Price History",
+          text: "Floor  Price History",
         },
         series: [
         
           {
-              name:alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0] +" Floor Price (ETH)",
+              name:"Floor Price (ETH)",
             data: series_fpp,
           },
         ],

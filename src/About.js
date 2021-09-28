@@ -41,6 +41,11 @@ function About() {
         <Grid container justifyContent="center">
           <div class="top-section">
             <Grid container justifyContent="space-evenly">
+            <Grid item lg={6} xs={12}>
+                <Typography variant="h2" component="h2">
+                  What is Niftyprice?
+                </Typography>
+              </Grid>
               <Grid item lg={6} xs={12}>
                 <Typography variant="h5" component="h5">
                   Guys, we’re just getting started. We’re a small team, but
@@ -52,11 +57,7 @@ function About() {
                   investor. -NP
                 </Typography>
               </Grid>
-              <Grid item lg={6} xs={12}>
-                <Typography variant="h2" component="h2">
-                  What is Niftyprice?
-                </Typography>
-              </Grid>
+              
             </Grid>
           </div>
           <div class="mid-section">
