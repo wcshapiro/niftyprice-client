@@ -11,6 +11,26 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLocation } from "react-router-dom";
 
 import "./Charts.css";
+const alias = {
+    'boredapeyachtclub': "Bored Ape Yacht Club",
+    'veefriends': "VeeFriends",
+    'meebits': "Meebits",
+    'punks-comic': "Punks-Comic",
+    'pudgypenguins': "Pudgy Penguins",
+    'bored-ape-kennel-club': "Bored Ape Kennel Club",
+    'hashmasks': "Hashmasks",
+    'cool-cats-nft': "Cool Cats NFT",
+    'galaxyeggs9999': "Galaxy Eggs",
+    'cryptoadz-by-gremplin': "Crypto Toadz",
+    'mutant-ape-yacht-club': "Mutant Ape Kennel Club",
+    '0n1-force': "On1 Force",
+    'curiocardswrapper': "My Curio Cards",
+    'bored-ape-chemistry-club': "Bored Ape Chemistry Club",
+    'creature-world-collection': "Creature World",
+    'parallelalpha': "Parellel Alpha",
+    'koala-intelligence-agency': "Koala Intelligence Agency",
+    'adam-bomb-squad': "Adam Bomb Squad"
+}
 const useStyles = makeStyles({
   root: {
     // display: "flex",
@@ -197,6 +217,7 @@ function Charts(props) {
         },
         series: [
           {
+            name:alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0] +" Supply",
             data: series_tfs,
           },
         ],
@@ -206,7 +227,9 @@ function Charts(props) {
           text: " Floor  Price History",
         },
         series: [
+        
           {
+              name:alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0] +" Floor Price (ETH)",
             data: series_fpp,
           },
         ],
@@ -249,8 +272,7 @@ function Charts(props) {
                                     component="h5"
                                     align="left"
                                   >
-                                    {location.state.row_data[0][0].toUpperCase() +
-                                      location.state.row_data[0].substring(1)}
+                                    {alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0]}
                                   </Typography>
                                   <Typography
                                     variant="h5"
