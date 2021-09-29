@@ -377,7 +377,7 @@ function Table() {
                                 <Typography variant="h5" component="h5">
                                     Live NFT Floor Prices and Performance
                                 </Typography>
-                                <Typography lassName={classes.pos} color="textSecondary">
+                                <Typography className={classes.pos} color="textSecondary">
                                     Currently Tracking and providing historical data for over 140 NFT collections. Join to get exclusive access to all historical data
                                 </Typography>
 
@@ -399,26 +399,26 @@ function Table() {
                                 </Typography>
                                 <div class="stat-spacer">
                                     <Grid container justifyContent="space-between">
-                                        <Typography inline variant="h5" component="h5" align="left">Total floor Price (ETH):</Typography>
-                                        <Typography inline variant="h5" component="h5" color="inherit" align="right">{numberWithCommas(parseFloat(total_fpp).toFixed(2))}</Typography>
+                                        <Typography inline variant="h6" component="h6"  align="left">Total floor Price (ETH):</Typography>
+                                        <Typography inline variant="h6" component="h6"  color="inherit" align="right">{numberWithCommas(parseFloat(total_fpp).toFixed(2))}</Typography>
                                     </Grid>
                                 </div>
                                 <div class="stat-spacer">
                                     <Grid container justifyContent="space-between">
-                                        <Typography inline variant="h5" component="h5" align="left">Total NFT's Available:</Typography>
-                                        <Typography inline variant="h5" component="h5" color="inherit" align="right">{numberWithCommas(parseFloat(total_avail))}</Typography>
+                                        <Typography inline variant="h6" component="h6"  align="left">Total NFT's Available:</Typography>
+                                        <Typography inline variant="h6" component="h6"  color="inherit" align="right">{numberWithCommas(parseFloat(total_avail))}</Typography>
                                     </Grid>
                                 </div>
                                 <div class="stat-spacer">
                                     <Grid container justifyContent="space-between">
-                                        <Typography inline variant="h5" component="h5" align="left">Ethereum price (USD):</Typography>
-                                        <Typography inline variant="h5" component="h5" color="inherit" align="right">${numberWithCommas(parseFloat(eth_price))}</Typography>
+                                        <Typography inline variant="h6" component="h6"  align="left">Ethereum price (USD):</Typography>
+                                        <Typography inline variant="h6" component="h6"  color="inherit" align="right">${numberWithCommas(parseFloat(eth_price))}</Typography>
                                     </Grid>
                                 </div>
                                 <div class="stat-spacer">
                                     <Grid container justifyContent="space-between">
-                                        <Typography inline variant="h5" component="h5" align="left">Total floor cap (USD):</Typography>
-                                        <Typography inline variant="h5" component="h5" color="inherit" align="right">${numberWithCommas((eth_price*total_fc / 1000000000).toFixed(2))}B</Typography>
+                                        <Typography inline variant="h6" component="h6"  align="left">Total floor cap (USD):</Typography>
+                                        <Typography inline variant="h6" component="h6"  color="inherit" align="right">${numberWithCommas((eth_price*total_fc / 1000000000).toFixed(2))}B</Typography>
                                     </Grid>
                                 </div>
 

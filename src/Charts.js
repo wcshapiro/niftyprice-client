@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 
 import "./Charts.css";
 const alias = {
+    'cryptopunks':'Cryptopunks',
     'boredapeyachtclub': "Bored Ape Yacht Club",
     'veefriends': "VeeFriends",
     'meebits': "Meebits",
@@ -34,14 +35,12 @@ const alias = {
 const useStyles = makeStyles({
   root: {
     // display: "flex",
-    minHeight: 250,
+    minHeight: 270,
     // minWidth: 450,
-    // maxHeight: 250,
   },
   details_card: {
     // display: "flex-right",
-    minHeight: 250,
-    // maxHeight: 250,
+    minHeight: 270,
   },
   //   paper: {
   //     padding: 2,
@@ -67,6 +66,7 @@ const useStyles = makeStyles({
     minWidth: 200,
     borderRadius: "50%",
     display: "inline",
+    marginBottom: 20
   },
   //   details: {
   //     // maxWidth: 200,
@@ -259,7 +259,7 @@ function Charts(props) {
             <Grid item xs={12}>
               <div class="card-div">
                 <Grid container  spacing={4}>
-                  <Grid item xs={12} lg={6}>
+                  <Grid item xs={12} md={6} lg={6}>
                     <Card id="prices" className={classes.root} elevation={5}>
                       <Grid container>
                         <Grid item xs={12} lg={6}>
@@ -305,7 +305,7 @@ function Charts(props) {
                       </Grid>
                     </Card>
                   </Grid>
-                  <Grid item lg={6} xs={12}>
+                  <Grid item lg={6} md={6} xs={12}>
                     <Card
                       id="prices"
                       className={classes.details_card}
@@ -313,18 +313,28 @@ function Charts(props) {
                     >
                       <CardContent>
                         <Grid container justifyContent="space-between">
-                          <Typography
-                            inline
+                            <Grid xs={12}>
+                            <Typography
                             variant="h5"
                             component="h5"
+                            
+                          >
+                            Quick Stats
+                          </Typography>
+                            </Grid>
+                        
+                          <Typography
+                            inline
+                            variant="h6"
+                            component="h6"
                             align="left"
                           >
                             Current floor price (ETH):{" "}
                           </Typography>
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="right"
                           >
                             {collection_info.floor_price}
@@ -333,16 +343,16 @@ function Charts(props) {
                         <Grid container justifyContent="space-between">
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="left"
                           >
                             24H %:{" "}
                           </Typography>
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="right"
                             style={
                               parseFloat(collection_info.day_change) > 0
@@ -356,16 +366,16 @@ function Charts(props) {
                         <Grid container justifyContent="space-between">
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="left"
                           >
                             Current floor cap (ETH):
                           </Typography>
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="right"
                           >
                             {numberWithCommas(
@@ -379,16 +389,16 @@ function Charts(props) {
                         <Grid container justifyContent="space-between">
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="left"
                           >
                             Total Minted:{" "}
                           </Typography>
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="right"
                           >
                             {numberWithCommas(
@@ -399,15 +409,15 @@ function Charts(props) {
                         <Grid container justifyContent="space-between">
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="left"
                           >
                             24H supply %:{" "}
                           </Typography>
                           <Typography
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="right"
                             style={
                               parseFloat(collection_info.week_change) > 0
@@ -421,13 +431,13 @@ function Charts(props) {
                         <Grid container justifyContent="space-between">
                           <Typography
                             inline
-                            variant="h5"
-                            component="h5"
+                            variant="h6"
+                            component="h6"
                             align="left"
                           >
                             Current Float %:{" "}
                           </Typography>
-                          <Typography variant="h5" component="h5" align="left">
+                          <Typography variant="h6" component="h6" align="left" >
                             {collection_info.float}%
                           </Typography>
                         </Grid>
