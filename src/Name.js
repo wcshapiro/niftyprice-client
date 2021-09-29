@@ -13,6 +13,7 @@ class Name extends Component {
 
     render() {
         const alias = {
+            'cryptopunks':'Cryptopunks',
             'boredapeyachtclub': "Bored Ape Yacht Club",
             'veefriends': "VeeFriends",
             'meebits': "Meebits",
@@ -22,8 +23,8 @@ class Name extends Component {
             'hashmasks': "Hashmasks",
             'cool-cats-nft': "Cool Cats NFT",
             'galaxyeggs9999': "Galaxy Eggs",
-            'cryptoadz-by-gremplin': "Crypto Toadz",
-            'mutant-ape-yacht-club': "Mutant Ape Kennel Club",
+            'cryptoadz-by-gremplin': "CrypToadz",
+            'mutant-ape-yacht-club': "Mutant Ape Yacht Club",
             '0n1-force': "On1 Force",
             'curiocardswrapper': "My Curio Cards",
             'bored-ape-chemistry-club': "Bored Ape Chemistry Club",
@@ -34,17 +35,18 @@ class Name extends Component {
         }
 
         const { rowData, index, change } = this.props;
-        console.log("TEST" + rowData)
+        console.log("DATA IN NAME: ")
+        console.log(rowData)
+        
+        
         var img = null;
-        if (rowData.length == 8) {
-            img = rowData[7]
+        if (rowData.length == 9) {
+            img = rowData[8]
         }
         else {
-            img = rowData[8]
+            img = rowData[9]
 
         }
-
-        console.log("ROW DATA" + rowData)
         return (<>
             <img src={img} class="image-snippet" alt="no img"></img>
             <a>{alias[rowData[0]]?alias[rowData[0]]:rowData[0]}</a>

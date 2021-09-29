@@ -36,7 +36,7 @@ function Footer() {
             Contact
           </Typography>
           <Typography variant="h7" component="h7" align="left">
-            <p>Email: willcshapiro@gmail.com</p>
+            <p>Email: cpkelley5@gmail.com</p>
             <p>© 2021 | niftyprice.io</p>
           </Typography>
           <div class="contact-content"></div>

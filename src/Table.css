@@ -48,6 +48,12 @@
     margin-right: 10px;
  
 }
+.eth-snippet {
+    float: left;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
 .graph-link {
     float: left;
     background-image: url('static/images/graph.png');

@@ -22,8 +22,8 @@ const alias = {
     'hashmasks': "Hashmasks",
     'cool-cats-nft': "Cool Cats NFT",
     'galaxyeggs9999': "Galaxy Eggs",
-    'cryptoadz-by-gremplin': "Crypto Toadz",
-    'mutant-ape-yacht-club': "Mutant Ape Kennel Club",
+    'cryptoadz-by-gremplin': "CrypToadz",
+    'mutant-ape-yacht-club': "Mutant Ape Yacht Club",
     '0n1-force': "On1 Force",
     'curiocardswrapper': "My Curio Cards",
     'bored-ape-chemistry-club': "Bored Ape Chemistry Club",
@@ -131,7 +131,6 @@ function Charts(props) {
       var dates = Array();
       const url = "https://niftyprice.herokuapp.com/charts?";
       console.log("THIS IS COLLECTION NAME" + location.state.row_data);
-      // console.log("sending" + this.props.location.chartData)
       const response = await fetch(
         url +
           new URLSearchParams({
@@ -145,7 +144,7 @@ function Charts(props) {
       setEth(data.eth);
       setImage(data.image);
 
-      if (location.state.row_data.length == 9) {
+      if (location.state.row_data.length == 10) {
         if (location.state.row_data[1] == "Curated") {
           var type = "art-blocks";
         } else if (location.state.row_data[1] == "Playground") {
@@ -420,12 +419,12 @@ function Charts(props) {
                             component="h6"
                             align="right"
                             style={
-                              parseFloat(collection_info.week_change) > 0
+                              parseFloat(location.state.supply_change) > 0
                                 ? { color: "#26ad3f" }
                                 : { color: "#e04343" }
                             }
                           >
-                            {collection_info.week_change}%
+                            {location.state.supply_change}%
                           </Typography>
                         </Grid>
                         <Grid container justifyContent="space-between">

@@ -7,7 +7,7 @@ import { Button } from '@material-ui/core';
 import QualityCell from './Cellcolor.js'
 import CellLink from './CellLink.js'
 import Name from './Name.js'
-
+import eth from "./static/images/eth300.png";
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -43,21 +43,22 @@ const useStyles = makeStyles({
         marginBottom: 12,
     },
 });
-const columns = [{
-    name: "Collection Name", 
-    options : {customBodyRender: (value, tableMeta, updateValue,alias) => {
-        return (
-            <Name   alias = {alias}
-                    rowData={tableMeta.rowData}
-                    index={tableMeta.columnIndex}
-                    change={event => updateValue(event)}
-                />
-        )
-
-    }}
-    
-},
-{ name: "Floor Price", options: { hint: "Lowest Price an NFT in this collection is trading for" ,setCellProps: () => ({align: "center"})} },
+const columns = [
+    {
+        name: "Collection Name", 
+        options : {customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+                <Name   
+                        rowData={tableMeta.rowData}
+                        index={tableMeta.columnIndex}
+                        change={event => updateValue(event)}
+                    />
+            )
+        
+        }}
+        
+    },
+{ name: "Floor Price (ETH)", options: { hint: "Lowest Price an NFT in this collection is trading for" ,setCellProps: () => ({align: "center"})} },
 
 {
     name: "24h%", options: {
@@ -100,13 +101,13 @@ const columns = [{
     return( <><p>{value}%</p></>)
 },} },
 {
-    name: "Floor Cap", options: {
+    name: "Floor Cap (ETH)", options: {
         hint: "Floor price multiplied by the total supply", filter: true,
         sort: true,
         sortDirection: 'desc',
         setCellProps: () => ({align: "center"}),
         customBodyRender: (value) => {
-            return( <><p>{numberWithCommas(value)}</p></>)
+            return( <><p>{numberWithCommas(value)} </p> </>)
         },
         sortCompare: (order) => {
             return (obj1, obj2) => {
@@ -133,11 +134,12 @@ const columns = [{
 
         }
     }
-}];
+},
+{options: {display: false, viewColumns: false, filter: false}}];
 
-const art_columns = [{ name: "Collection Name" ,options : {customBodyRender: (value, tableMeta, updateValue,alias) => {
+const art_columns = [{ name: "Collection Name" ,options : {customBodyRender: (value, tableMeta, updateValue) => {
     return (
-        <Name   alias = {alias}
+        <Name   
                 rowData={tableMeta.rowData}
                 index={tableMeta.columnIndex}
                 change={event => updateValue(event)}
@@ -207,6 +209,7 @@ const art_columns = [{ name: "Collection Name" ,options : {customBodyRender: (va
         customBodyRender: (value, tableMeta, updateValue) => {
             return (
                 <CellLink
+                    
                     rowData={tableMeta.rowData}
                     index={tableMeta.columnIndex}
                     change={event => updateValue(event)}
@@ -215,9 +218,9 @@ const art_columns = [{ name: "Collection Name" ,options : {customBodyRender: (va
 
         }
     }
-}];
+},
+{options: {display: false, viewColumns: false, filter: false}}];
 
-var table_data = null;
 
 function numberWithCommas(x) {
     return x? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","):"---";
@@ -252,13 +255,13 @@ function Table() {
         setError(null);
         try {
             var context = this;
-            const url = "https://niftyprice.herokuapp.com";
+            const url = "https://niftyprice.herokuapp.com?";
             const response = await fetch(url);
             // console.log(response);
             var data = await response.json();
             // console.log(data)
-            var data_arr = Array()
-            var art_data_arr = Array()
+            var data_arr = new Array()
+            var art_data_arr = new Array()
             setEth(data.eth_price);
             setFPP(data.total_fpp);
             setAvail(data.total_avail);
@@ -268,42 +271,37 @@ function Table() {
             setAlias(JSON.stringify(data.alias));
             console.log("ALIAS DDD "+JSON.stringify(data.alias))
 
-            // console.log("TOTAL Avail" + total_avail)
-            // console.log("TOTAL FLOOR CAP" + data.total_floor_cap)
-
             for (let i in data.message) {
                 let line = data.message[i];
                 let map = new Map(Object.entries(line));
                 var data_temp = Array.from(map.values())
-                // console.log("TEMP" + data_temp)
-                for (let i = 1; i < data_temp.length - 2; i++) {
-                    if (data_temp[i] != "---") {
-                        data_temp[i] = toFixedNumber(parseFloat(data_temp[i]),2,10);
-                    }
-
-                }
+                console.log("TEMP" + data_temp)
+                data_temp[1] = toFixedNumber(parseFloat(data_temp[1]),2,10);
+                data_temp[2] = toFixedNumber(parseFloat(data_temp[2]),2,10);
+                data_temp[3] = toFixedNumber(parseFloat(data_temp[3]),2,10);
+                data_temp[5] = toFixedNumber(parseFloat(data_temp[5]),2,10); 
+                data_temp[7] = toFixedNumber(parseFloat(data_temp[7]),2,10);
+                // t = data_temp[8]
+                // data_temp[8] = data_temp[7];
+                // data_temp[7] = t;
                 data_arr.push(data_temp);
+                console.log("Altered TEMP")
+                console.log(data_temp)
             }
+            
             for (let i in data.art_message) {
-                
                 let line = data.art_message[i];
                 let map = new Map(Object.entries(line));
                 var data_temp = Array.from(map.values())
-                // console.log("ART"+data_temp.length)
                 data_temp[2] = toFixedNumber(parseFloat(data_temp[2]),2,10);
                 data_temp[5] = toFixedNumber(parseFloat(data_temp[5]),2,10);
-                
-                // for (let i = 2; i < data_temp.length-1; i++) {
-                //     data_temp[i] = toFixedNumber(parseFloat(data_temp[i]),2,10);
-                //     console.log(typeof data_temp[i])
-                // }
                 art_data_arr.push(data_temp);
             }
-            // console.log("!DATA ARR" + data_arr);
+            console.log(art_data_arr);
+            console.log(data_arr)
             setTableData(data_arr);
             setArtBlocks(art_data_arr);
             setLoading(false);
-            // console.log("!2" + context.state.table_data);
         } catch (e) {
             setError(e);
             setLoading(false);
@@ -320,18 +318,13 @@ function Table() {
         responsive:'standard',
         onRowClick: rowData => {
             // console.log(cap_rank)
-
-            // console.log("ROWDATA"+rowData[0].props.rowData);
-            
+            console.log("ROW-DATA"+rowData[0].props.rowData);  
             var row_data = rowData[0].props.rowData
             var rank = null;
             var i = 0
             for (const arr of cap_rank){
-                // console.log(JSON.stringify(arr))
-                // console.log("comparing "+arr[1]+ " With "+ row_data[0])
                 if (arr[1] == row_data[0]){
                     rank = i+1
-
                 }
                 i+=1;
             }
@@ -340,20 +333,26 @@ function Table() {
                 // console.log("comparing "+arr[1]+ " With "+ row_data[0])
                 if (arr[1] == row_data[0]){
                     rank = j+1
-
                 }
                 j+=1;
             }
             // console.log("RANK IS "+rank)
-            // console.log("LENGTH OF ROWDATA" + rowData.length)
-            // console.log("THIS IS ROWDATA"+rowData[6].props.rowData)
-            // console.log(rowData)
-            setChartData(rowData[0])
+            console.log("LENGTH OF ROWDATA" + rowData.length)
+            if (row_data.length == 10){
+                var supply_change = row_data[8]
+            }
+            else{
+
+                var supply_change = row_data[7]
+            }
+            console.log("THIS IS ROWDATA")
+            console.log(row_data[0])
             history.push({
                 pathname: '/chart',
                 search: '?query=' + row_data[0],
                 state: { row_data: row_data,
-                row_rank:rank }
+                row_rank:rank,
+            supply_change:supply_change }
             })
             // console.log(chartData);
         },
@@ -365,8 +364,6 @@ function Table() {
     }, []);
 
     if (loading) return (<div class="loading"><CircularProgress /></div>);
-    // if (chartData) return (<Charts collectionname={chartData} />)
-
     return (<>
         <div class="content-wrap">
             <div class="welcome-container">
