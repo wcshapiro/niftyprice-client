@@ -329,7 +329,7 @@ function Charts(props) {
                             component="h6"
                             align="left"
                           >
-                            Current floor price (ETH):{" "}
+                            floor price (ETH):{" "}
                           </Typography>
                           <Typography
                             inline
@@ -370,7 +370,7 @@ function Charts(props) {
                             component="h6"
                             align="left"
                           >
-                            Current floor cap (ETH):
+                            floor cap (ETH):
                           </Typography>
                           <Typography
                             inline
@@ -435,7 +435,7 @@ function Charts(props) {
                             component="h6"
                             align="left"
                           >
-                            Current Float %:{" "}
+                            Float %:{" "}
                           </Typography>
                           <Typography variant="h6" component="h6" align="left" >
                             {collection_info.float}%
