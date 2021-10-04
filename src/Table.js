@@ -126,7 +126,7 @@ const columns = [
       hint: "Floor price multiplied by the total supply",
       filter: true,
       sort: true,
-      sortDirection: "desc",
+      
       setCellProps: () => ({ align: "center" }),
       customBodyRender: (value) => {
         return (
@@ -241,12 +241,12 @@ const art_columns = [
     },
   },
   {
-    name: "Floor Cap",
+    name: "Floor Cap (ETH)",
     options: {
       hint: "Floor price multiplied by the total supply",
       filter: true,
       sort: true,
-      sortDirection: "desc",
+      
       customBodyRender: (value) => {
         return (
           <>
@@ -346,6 +346,10 @@ function Table() {
     }
   };
   const options = {
+    sortOrder: {
+        name:'Floor Cap (ETH)',
+        direction:'desc'
+    },
     setTableProps: () => {
       return {
         size: "small",
