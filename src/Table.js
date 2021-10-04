@@ -137,7 +137,7 @@ const columns = [
       },
       sortCompare: (order) => {
         return (obj1, obj2) => {
-          console.log(order);
+          
           let val1 = parseInt(obj1.data, 10);
           let val2 = parseInt(obj2.data, 10);
           return (val1 - val2) * (order === "asc" ? 1 : -1);
@@ -256,7 +256,6 @@ const art_columns = [
       },
       sortCompare: (order) => {
         return (obj1, obj2) => {
-          console.log(order);
           let val1 = parseInt(obj1.data, 10);
           let val2 = parseInt(obj2.data, 10);
           return (val1 - val2) * (order === "asc" ? 1 : -1);
@@ -309,9 +308,7 @@ function Table() {
     try {
       const url = "https://niftyprice.herokuapp.com?";
       const response = await fetch(url);
-      // console.log(response);
       var data = await response.json();
-      // console.log(data)
       var data_arr = [];
       var art_data_arr = [];
       setEth(data.eth_price);
@@ -320,21 +317,17 @@ function Table() {
       setTFC(data.total_floor_cap);
       setRank(data.floor_cap_rankings);
       setRankArt(data.floor_cap_rankings_art);
-      console.log("ALIAS DDD " + JSON.stringify(data.alias));
 
       for (let i in data.message) {
         let line = data.message[i];
         let map = new Map(Object.entries(line));
         var data_temp = Array.from(map.values());
-        console.log("TEMP" + data_temp);
         data_temp[1] = toFixedNumber(parseFloat(data_temp[1]), 2, 10);
         data_temp[2] = toFixedNumber(parseFloat(data_temp[2]), 2, 10);
         data_temp[3] = toFixedNumber(parseFloat(data_temp[3]), 2, 10);
         data_temp[5] = toFixedNumber(parseFloat(data_temp[5]), 2, 10);
         data_temp[7] = toFixedNumber(parseFloat(data_temp[7]), 2, 10);
         data_arr.push(data_temp);
-        console.log("Altered TEMP");
-        console.log(data_temp);
       }
 
       for (let i in data.art_message) {
@@ -345,8 +338,6 @@ function Table() {
         art_data_temp[5] = toFixedNumber(parseFloat(art_data_temp[5]), 2, 10);
         art_data_arr.push(art_data_temp);
       }
-      console.log(art_data_arr);
-      console.log(data_arr);
       setTableData(data_arr);
       setArtBlocks(art_data_arr);
       setLoading(false);
@@ -364,8 +355,6 @@ function Table() {
     selectableRowsHideCheckboxes: true,
     responsive: "standard",
     onRowClick: (rowData) => {
-      // console.log(cap_rank)
-      console.log("ROW-DATA" + rowData[0].props.rowData);
       var row_data = rowData[0].props.rowData;
       var rank = null;
       var i = 0;
@@ -382,15 +371,12 @@ function Table() {
         }
         j += 1;
       }
-      console.log("LENGTH OF ROWDATA" + rowData.length);
       var supply_change = null;
       if (row_data.length === 10) {
         supply_change = row_data[8];
       } else {
         supply_change = row_data[7];
       }
-      console.log("THIS IS ROWDATA");
-      console.log(row_data[0]);
       history.push({
         pathname: "/chart",
         search: "?query=" + row_data[0],
@@ -400,7 +386,6 @@ function Table() {
           supply_change: supply_change,
         },
       });
-      // console.log(chartData);
     },
   };
   useEffect(() => {

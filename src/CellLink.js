@@ -158,7 +158,6 @@ class CellLink extends Component {
             'meebits',
             'punks-comic', 'pudgypenguins', 'bored-ape-kennel-club', 'hashmasks', 'cool-cats-nft'];
         let link = "n";
-        console.log(collections);
         if (collections.includes(rowData[0])) {
             link = "https://opensea.io/collection/" + rowData[0] + "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" + rowData[0] + "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW"
         }

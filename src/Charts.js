@@ -108,7 +108,6 @@ function Charts() {
       var total_for_sale = [];
       var floor_pp = [];
       const url = "https://niftyprice.herokuapp.com/charts?";
-      console.log("THIS IS COLLECTION NAME" + location.state.row_data);
       const response = await fetch(
         url +
           new URLSearchParams({
@@ -116,7 +115,6 @@ function Charts() {
           })
       );
       var data = await response.json();
-      console.log("recieved");
       setImage(data.image);
 
       if (location.state.row_data.length === 10) {
@@ -171,13 +169,11 @@ function Charts() {
         floor_pp.push(parseFloat(data.message[i].floorpurchaseprice));
         let element_fpp = [];
         let element_tfs = [];
-        // chart_data_arr.push(data.message[i]);
         let raw_date = data.message[i].date;
         let temp_date = raw_date.replaceAll("-", "/").split(" ");
         let time = temp_date[1].split(":");
         let formatted_date = temp_date[0] + " " + time[0] + ":" + time[1];
 
-        // console.log(formatted_date);
         element_fpp.push(new Date(formatted_date).getTime());
         element_fpp.push(parseFloat(data.message[i].floorpurchaseprice));
         element_tfs.push(new Date(formatted_date).getTime());
@@ -185,7 +181,6 @@ function Charts() {
         series_fpp.push(element_fpp);
         series_tfs.push(element_tfs);
       }
-      // console.log(series_fpp)
       setChartOptions({
         title: {
           text: "Supply History",
@@ -210,8 +205,6 @@ function Charts() {
         ],
       });
       setLoading(false);
-      // console.log(tableToChart);
-      // console.log("!2" + chart_data);
     } catch (e) {
       setLoading(false);
     }

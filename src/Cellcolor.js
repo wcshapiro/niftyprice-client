@@ -17,7 +17,6 @@ class QualityCell extends Component {
             "black": "#000000"
         }
         let color = colors.grey;
-        console.log(value);
         if (parseFloat(value) > 0) {
             color = colors.green;
         } else if (parseFloat(value) <= 0) {

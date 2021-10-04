@@ -35,10 +35,6 @@ class Name extends Component {
         }
 
         const { rowData } = this.props;
-        console.log("DATA IN NAME: ")
-        console.log(rowData)
-        
-        
         var img = null;
         if (rowData.length === 9) {
             img = rowData[8]
