@@ -12,7 +12,7 @@ class CellLink extends Component {
 
 
     render() {
-        const { rowData, index, change } = this.props;
+        const { rowData} = this.props;
         const art_blocks = {
 
             "Subscapes": "art-blocks", //cap
@@ -46,7 +46,6 @@ class CellLink extends Component {
             "Ignition": "art-blocks",  //cap
             "Inspirals": "art-blocks",  //cap
             "NimBuds": "art-blocks",  //cap
-            "Ringers": "art-blocks",  //cap
             "Scribbled Boundaries": "art-blocks",  //cap
             "Spectron": "art-blocks",  //cap
             "Synapses": "art-blocks",  //cap
@@ -164,13 +163,12 @@ class CellLink extends Component {
             link = "https://opensea.io/collection/" + rowData[0] + "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" + rowData[0] + "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW"
         }
         else {
-            let plural = rowData[0].slice(-1) == "s" ? rowData[0] : rowData[0] + "s";
+            let plural = rowData[0].slice(-1) === "s" ? rowData[0] : rowData[0] + "s";
             link = "https://opensea.io/assets/" + art_blocks[rowData[0]] + "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" + rowData[0] + "&search[stringTraits][0][values][0]=All%20" + plural + "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE"
         }
-        let color = "00ff00";
         return (<>
-            <a class="graph-link"></a>
-            <a class="opensea-link" href={link}></a>
+            <a class="graph-link"> </a>
+            <a class="opensea-link" href={link}> </a>
 
         </>
         )

@@ -34,13 +34,13 @@ class Name extends Component {
             'adam-bomb-squad': "Adam Bomb Squad"
         }
 
-        const { rowData, index, change } = this.props;
+        const { rowData } = this.props;
         console.log("DATA IN NAME: ")
         console.log(rowData)
         
         
         var img = null;
-        if (rowData.length == 9) {
+        if (rowData.length === 9) {
             img = rowData[8]
         }
         else {

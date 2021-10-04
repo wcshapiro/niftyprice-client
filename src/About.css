@@ -2,7 +2,6 @@
     padding-bottom: 5rem;
     width: 100%;
     height:100%;
-    /* height: 1700px; */
 }
 .mid-section,.top-section,.bottom-section {
     padding-top: 3rem;
@@ -21,9 +20,6 @@
     position: relative;
     
 }
-/* #people {
-    margin-top: 3rem;
-} */
 .card-content {
     margin-top: 3rem;
 }

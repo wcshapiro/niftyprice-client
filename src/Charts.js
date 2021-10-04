@@ -34,29 +34,17 @@ const alias = {
 }
 const useStyles = makeStyles({
   root: {
-    // display: "flex",
     minHeight: 270,
-    // minWidth: 450,
   },
   details_card: {
-    // display: "flex-right",
     minHeight: 270,
   },
-  //   paper: {
-  //     padding: 2,
-  //     textAlign: "center",
-  //     color: "white",
-  //   },
-
   title: {
     fontSize: 24,
   },
   pos: {
     marginBottom: 12,
   },
-  //   content: {
-  //     flex: "1 0 auto",
-  //   },
   cover: {
     marginTop: 20,
     marginLeft: "15%",
@@ -68,16 +56,11 @@ const useStyles = makeStyles({
     display: "inline",
     marginBottom: 20
   },
-  //   details: {
-  //     // maxWidth: 200,
-  //     display: "flex",
-  //     flexDirection: "column",
-  //   },
 });
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-function Charts(props) {
+function Charts() {
   const location = useLocation();
   const [collection_info, setInfo] = useState({
     name: null,
@@ -90,8 +73,6 @@ function Charts(props) {
   });
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
-  const [chart_data, setChartData] = useState();
-  const [eth_price, setEth] = useState();
   const [image, setImage] = useState();
   const [chart_options, setChartOptions] = useState({
     title: {
@@ -119,16 +100,13 @@ function Charts(props) {
       },
     ],
   });
-  const [error, setError] = useState();
+  
 
   const loadAsyncData = async () => {
     setLoading(true);
-    setError(null);
     try {
-      var chart_data_arr = Array();
-      var total_for_sale = Array();
-      var floor_pp = Array();
-      var dates = Array();
+      var total_for_sale = [];
+      var floor_pp = [];
       const url = "https://niftyprice.herokuapp.com/charts?";
       console.log("THIS IS COLLECTION NAME" + location.state.row_data);
       const response = await fetch(
@@ -137,23 +115,21 @@ function Charts(props) {
             collection: location.state.row_data[0],
           })
       );
-
       var data = await response.json();
       console.log("recieved");
-      // console.log(data.message)
-      setEth(data.eth);
       setImage(data.image);
 
-      if (location.state.row_data.length == 10) {
-        if (location.state.row_data[1] == "Curated") {
-          var type = "art-blocks";
-        } else if (location.state.row_data[1] == "Playground") {
-          var type = "art-blocks-playground";
+      if (location.state.row_data.length === 10) {
+          var type = null;
+        if (location.state.row_data[1] === "Curated") {
+        type = "art-blocks";
+        } else if (location.state.row_data[1] === "Playground") {
+        type = "art-blocks-playground";
         } else {
-          var type = "art-blocks-factory";
+        type = "art-blocks-factory";
         }
         var plural = (plural =
-          location.state.row_data[0].slice(-1) == "s"
+          location.state.row_data[0].slice(-1) === "s"
             ? location.state.row_data[0]
             : location.state.row_data[0] + "s");
         setInfo({
@@ -188,13 +164,13 @@ function Charts(props) {
             "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW",
         });
       }
-      var series_fpp = Array();
-      var series_tfs = Array();
+      var series_fpp = [];
+      var series_tfs = [];
       for (let i in data.message) {
         total_for_sale.push(parseFloat(data.message[i].totalforsale));
         floor_pp.push(parseFloat(data.message[i].floorpurchaseprice));
-        let element_fpp = Array();
-        let element_tfs = Array();
+        let element_fpp = [];
+        let element_tfs = [];
         // chart_data_arr.push(data.message[i]);
         let raw_date = data.message[i].date;
         let temp_date = raw_date.replaceAll("-", "/").split(" ");
@@ -237,7 +213,6 @@ function Charts(props) {
       // console.log(tableToChart);
       // console.log("!2" + chart_data);
     } catch (e) {
-      setError(e);
       setLoading(false);
     }
   };
