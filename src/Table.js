@@ -306,7 +306,7 @@ function Table() {
   const loadAsyncData = async () => {
     setLoading(true);
     try {
-      const url = "https://niftyprice.herokuapp.com?";
+      const url = "https://niftyprice.herokuapp.com?"; //"http://localhost:8080";
       const response = await fetch(url);
       var data = await response.json();
       var data_arr = [];
@@ -346,6 +346,7 @@ function Table() {
     }
   };
   const options = {
+    rowsPerPage:100,
     sortOrder: {
         name:'Floor Cap (ETH)',
         direction:'desc'
