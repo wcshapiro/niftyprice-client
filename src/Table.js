@@ -334,7 +334,10 @@ function Table() {
         let line = data.art_message[i];
         let map = new Map(Object.entries(line));
         var art_data_temp = Array.from(map.values());
+        console.log(art_data_temp)
         art_data_temp[2] = toFixedNumber(parseFloat(art_data_temp[2]), 2, 10);
+        art_data_temp[3] = toFixedNumber(parseFloat(art_data_temp[3]), 2, 10);
+        art_data_temp[4] = toFixedNumber(parseFloat(art_data_temp[4]), 2, 10);
         art_data_temp[5] = toFixedNumber(parseFloat(art_data_temp[5]), 2, 10);
         art_data_arr.push(art_data_temp);
       }
