@@ -53,7 +53,7 @@ const columns = [
   {
     name: "Floor Price (ETH)",
     options: {
-      hint: "Lowest Price an NFT in this collection is trading for",
+      hint: "Lowest price that an NFT in this collection is currently selling for",
       setCellProps: () => ({ align: "center" }),
     },
   },
@@ -61,7 +61,7 @@ const columns = [
   {
     name: "24h%",
     options: {
-      hint: "Percent change in floor price over the past 24h",
+      hint: "Percent change in floor price over the past 24 hours",
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <QualityCell
@@ -77,7 +77,7 @@ const columns = [
   {
     name: "7d%",
     options: {
-      hint: "Percent change in floor price over the past 7d",
+      hint: "Percent change in floor price over the past 7 days",
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <QualityCell
@@ -94,7 +94,7 @@ const columns = [
   {
     name: "Total Minted",
     options: {
-      hint: "Total number of NFT's in this collection that are available for immediate purchase",
+      hint: "Total number of NFTs that were minted and currently exist",
       setCellProps: () => ({ align: "center" }),
       customBodyRender: (value) => {
         return (
@@ -109,7 +109,7 @@ const columns = [
   {
     name: "Float%",
     options: {
-      hint: "Percent of total supply that is currently available",
+      hint: "Percent of total supply that is currently for sale",
       setCellProps: () => ({ align: "center" }),
       customBodyRender: (value) => {
         return (
@@ -126,7 +126,7 @@ const columns = [
       hint: "Floor price multiplied by the total supply",
       filter: true,
       sort: true,
-      
+
       setCellProps: () => ({ align: "center" }),
       customBodyRender: (value) => {
         return (
@@ -137,7 +137,6 @@ const columns = [
       },
       sortCompare: (order) => {
         return (obj1, obj2) => {
-          
           let val1 = parseInt(obj1.data, 10);
           let val2 = parseInt(obj2.data, 10);
           return (val1 - val2) * (order === "asc" ? 1 : -1);
@@ -149,7 +148,6 @@ const columns = [
   {
     name: "Links",
     options: {
-      hint: "Percent of total supply that is currently available",
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <CellLink
@@ -183,7 +181,7 @@ const art_columns = [
   {
     name: "Floor Price",
     options: {
-      hint: "Lowest Price an NFT in this collection is trading for",
+      hint: "Lowest price that an NFT in this collection is currently selling for",
       setCellProps: () => ({ align: "center" }),
     },
   },
@@ -191,7 +189,7 @@ const art_columns = [
   {
     name: "24h%",
     options: {
-      hint: "Percent change in floor price over the past 24h",
+      hint: "Percent change in floor price over the past 24 hours",
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <QualityCell
@@ -206,7 +204,7 @@ const art_columns = [
   {
     name: "7d%",
     options: {
-      hint: "Percent change in floor price over the past 7d",
+      hint: "Percent change in floor price over the past 7 days",
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <QualityCell
@@ -221,7 +219,7 @@ const art_columns = [
   {
     name: "Total Minted",
     options: {
-      hint: "Total number of NFT's in this collection that are available for immediate purchase",
+      hint: "Total number of NFTs that were minted and currently exist",
       setCellProps: () => ({ align: "center" }),
       customBodyRender: (value) => {
         return (
@@ -236,7 +234,7 @@ const art_columns = [
   {
     name: "Float%",
     options: {
-      hint: "Percent of total supply that is currently available",
+      hint: "Percent of total supply that is currently for sale",
       setCellProps: () => ({ align: "center" }),
     },
   },
@@ -246,7 +244,7 @@ const art_columns = [
       hint: "Floor price multiplied by the total supply",
       filter: true,
       sort: true,
-      
+
       customBodyRender: (value) => {
         return (
           <>
@@ -266,7 +264,6 @@ const art_columns = [
   {
     name: "Links",
     options: {
-      hint: "Percent of total supply that is currently available",
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <CellLink
@@ -334,7 +331,7 @@ function Table() {
         let line = data.art_message[i];
         let map = new Map(Object.entries(line));
         var art_data_temp = Array.from(map.values());
-        console.log(art_data_temp)
+        console.log(art_data_temp);
         art_data_temp[2] = toFixedNumber(parseFloat(art_data_temp[2]), 2, 10);
         art_data_temp[3] = toFixedNumber(parseFloat(art_data_temp[3]), 2, 10);
         art_data_temp[4] = toFixedNumber(parseFloat(art_data_temp[4]), 2, 10);
@@ -349,10 +346,10 @@ function Table() {
     }
   };
   const options = {
-    rowsPerPage:100,
+    rowsPerPage: 100,
     sortOrder: {
-        name:'Floor Cap (ETH)',
-        direction:'desc'
+      name: "Floor Cap (ETH)",
+      direction: "desc",
     },
     setTableProps: () => {
       return {
@@ -415,17 +412,18 @@ function Table() {
               <Card id="prices" className={classes.root} elevation={5}>
                 <CardContent>
                   <Typography variant="h5" component="h5">
-                    Live NFT Floor Prices and Performance
+                    Enhanced NFT data with portfolio tracking
                   </Typography>
                   <Typography className={classes.pos} color="textSecondary">
-                    Currently Tracking and providing historical data for over
-                    140 NFT collections. Join to get exclusive access to all
-                    historical data
+                    Get access to more real-time data, metrics and charts to
+                    help inform your NFT purchases and portfolio strategy. Link
+                    your wallet to get real-time portfolio valuations based on a
+                    variety of valuation techniques
                   </Typography>
                 </CardContent>
                 <CardActions style={{ justifyContent: "center" }}>
                   <Button variant="contained" color="primary" href="/purchase">
-                    GET EXCLUSIVE NFT DATA
+                    GET PREMIUM ACCESS
                   </Button>
                 </CardActions>
               </Card>
