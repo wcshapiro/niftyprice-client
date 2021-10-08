@@ -30,13 +30,16 @@ function About() {
               </Grid>
               <Grid item lg={6} xs={12}>
                 <Typography variant="h5" component="h5">
-                  Guys, we’re just getting started. We’re a small team, but
-                  we’re focused and dedicated to be the best source of NFT data
-                  in the market. This is a fast moving space as you all know, so
-                  bare with us as we get our arms and systems around everything.
-                  In the meantime, drop us an email on the Feedback page and let
-                  us know how we can help solve your major issues as an NFT
-                  investor. -NP
+                  Niftyprice is a new and small team focused on providing the
+                  most up to date and comprehensive NFT data in the market
+                  today. As you know, this is a fast moving space, so we are
+                  working hard to continually push updates, increase our
+                  coverage, and enhance our data engine to provide you the best
+                  product possible while staying up to speed on all the rapid
+                  changes taking place in the NFT world. At the end of the day,
+                  we're here for you, the NFT investors and patrons, so please
+                  let us know any feedback you have or how we can help solve
+                  your burning NFT issues. -NP
                 </Typography>
               </Grid>
             </Grid>
