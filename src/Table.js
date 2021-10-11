@@ -90,6 +90,30 @@ const columns = [
       setCellProps: () => ({ align: "right" }),
     },
   },
+  {
+    name: "Floor Cap (ETH)",
+    options: {
+      hint: "Floor price multiplied by the total supply",
+      filter: true,
+      sort: true,
+
+      setCellProps: () => ({ align: "center" }),
+      customBodyRender: (value) => {
+        return (
+          <>
+            <p>{numberWithCommas(value)} </p>{" "}
+          </>
+        );
+      },
+      sortCompare: (order) => {
+        return (obj1, obj2) => {
+          let val1 = parseInt(obj1.data, 10);
+          let val2 = parseInt(obj2.data, 10);
+          return (val1 - val2) * (order === "asc" ? 1 : -1);
+        };
+      },
+    },
+  },
 
   {
     name: "Total Minted",
@@ -120,31 +144,6 @@ const columns = [
       },
     },
   },
-  {
-    name: "Floor Cap (ETH)",
-    options: {
-      hint: "Floor price multiplied by the total supply",
-      filter: true,
-      sort: true,
-
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value)} </p>{" "}
-          </>
-        );
-      },
-      sortCompare: (order) => {
-        return (obj1, obj2) => {
-          let val1 = parseInt(obj1.data, 10);
-          let val2 = parseInt(obj2.data, 10);
-          return (val1 - val2) * (order === "asc" ? 1 : -1);
-        };
-      },
-    },
-  },
-
   {
     name: "Links",
     options: {
@@ -217,28 +216,6 @@ const art_columns = [
     },
   },
   {
-    name: "Total Minted",
-    options: {
-      hint: "Total number of NFTs that were minted and currently exist",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value)}</p>
-          </>
-        );
-      },
-    },
-  },
-
-  {
-    name: "Float%",
-    options: {
-      hint: "Percent of total supply that is currently for sale",
-      setCellProps: () => ({ align: "center" }),
-    },
-  },
-  {
     name: "Floor Cap (ETH)",
     options: {
       hint: "Floor price multiplied by the total supply",
@@ -259,6 +236,28 @@ const art_columns = [
           return (val1 - val2) * (order === "asc" ? 1 : -1);
         };
       },
+    },
+  },
+  {
+    name: "Total Minted",
+    options: {
+      hint: "Total number of NFTs that were minted and currently exist",
+      setCellProps: () => ({ align: "center" }),
+      customBodyRender: (value) => {
+        return (
+          <>
+            <p>{numberWithCommas(value)}</p>
+          </>
+        );
+      },
+    },
+  },
+
+  {
+    name: "Float%",
+    options: {
+      hint: "Percent of total supply that is currently for sale",
+      setCellProps: () => ({ align: "center" }),
     },
   },
   {
