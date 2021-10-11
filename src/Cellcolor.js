@@ -16,11 +16,23 @@ class QualityCell extends Component {
       black: "#000000",
       grey: "EFF2F5",
     };
+    const textColors = {
+      green: "#065f46",
+      red: "#981b1b",
+      black: "#000000",
+    };
+
     let color = colors.grey;
+    let textColor = textColors.black;
     if (parseFloat(value) > 0) {
       color = colors.green;
+      textColor = textColors.green;
     } else if (parseFloat(value) < 0) {
       color = colors.red;
+      textColor = textColors.red;
+    } else if (parseFloat(value) === 0) {
+      color = colors.grey;
+      textColor = textColors.black;
     }
     if (isNaN(value)) {
       var new_value = 0.0;
@@ -33,7 +45,7 @@ class QualityCell extends Component {
         value={value}
         onChange={(event) => change(event.target.value, index)}
         style={{
-          color: colors.black,
+          color: textColor,
           backgroundColor: color,
           borderRadius: 12,
           textAlign: "center",
