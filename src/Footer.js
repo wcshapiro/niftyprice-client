@@ -11,7 +11,7 @@ function Footer() {
         <Grid container justifyContent="space-evenly">
           <Grid item lg={4} sm={6} xs={12}>
             <Typography variant="h5" component="h5" align="left">
-              About
+              Info
             </Typography>
             <Typography variant="h7" component="h7" align="left">
               <a class="link" href="/about">
@@ -21,6 +21,11 @@ function Footer() {
             <Typography variant="h7" component="h7" align="left">
               <a class="link" href="/purchase">
                 Pricing
+              </a>
+            </Typography>
+            <Typography variant="h7" component="h7" align="left">
+              <a class="link" href="/privacy">
+                Privacy Policy
               </a>
             </Typography>
             <div class="about-content"></div>
