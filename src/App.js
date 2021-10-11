@@ -44,7 +44,7 @@ function App() {
               <Route path="/chart">
                 <Charts />
               </Route>
-              <Route path="/">
+              <Route exact path="/">
                 <Table />
               </Route>
               <Route exact path="/privacy">
