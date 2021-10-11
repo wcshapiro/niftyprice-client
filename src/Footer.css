@@ -16,3 +16,11 @@
   max-width: 40px;
   height: 40px;
 }
+#discord {
+  background-image: url("static/images/discord.png");
+  display: block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  max-width: 40px;
+  height: 40px;
+}

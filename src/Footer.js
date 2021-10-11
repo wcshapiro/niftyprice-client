@@ -40,7 +40,14 @@ function Footer() {
               Links
             </Typography>
             <Typography variant="h7" component="h7" align="left">
-              <a href="https://twitter.com/niftyprice_io" id="twitter"> </a>
+              <a href="https://twitter.com/niftyprice_io" id="twitter">
+                {" "}
+              </a>
+            </Typography>
+            <Typography variant="h7" component="h7" align="left">
+              <a href="https://discord.gg/nuaemyG8" id="discord">
+                {" "}
+              </a>
             </Typography>
           </Grid>
         </Grid>
