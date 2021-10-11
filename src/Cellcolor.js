@@ -11,8 +11,8 @@ class QualityCell extends Component {
   render() {
     const { value, index, change } = this.props;
     const colors = {
-      green: "#B2FFA1",
-      red: "#FFA1A1",
+      green: "#D1FAE5",
+      red: "#FEE2E2",
       black: "#000000",
       grey: "EFF2F5",
     };
