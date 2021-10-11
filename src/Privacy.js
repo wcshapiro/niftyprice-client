@@ -1,10 +1,11 @@
 import React from "react";
-import "./App.css";
+import "./Privacy.css";
 
 function Privacy() {
   return (
     <>
       <div id="privacy-container">
+        <h1>niftyprice Privacy Policy</h1>
         <p>Last updated: October 11, 2021</p>
         <p>
           This Privacy Policy describes Our policies and procedures on the
