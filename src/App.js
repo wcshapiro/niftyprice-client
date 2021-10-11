@@ -7,6 +7,7 @@ import Footer from "./Footer.js";
 import Purchase from "./Purchase.js";
 import About from "./About.js";
 import Privacy from "./Privacy.js";
+import Terms from "./Terms.js";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -49,6 +50,9 @@ function App() {
               </Route>
               <Route exact path="/privacy">
                 <Privacy />
+              </Route>
+              <Route exact path="/terms">
+                <Terms />
               </Route>
             </Switch>
           </div>
