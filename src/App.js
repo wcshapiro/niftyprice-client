@@ -6,6 +6,7 @@ import { AppBar, Toolbar, Button, Grid } from "@material-ui/core";
 import Footer from "./Footer.js";
 import Purchase from "./Purchase.js";
 import About from "./About.js";
+import Privacy from "./Privacy.js";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 

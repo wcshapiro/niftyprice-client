@@ -179,7 +179,7 @@ const art_columns = [
   },
   { name: "Category" },
   {
-    name: "Floor Price",
+    name: "Floor Price (ETH)",
     options: {
       hint: "Lowest price that an NFT in this collection is currently selling for",
       setCellProps: () => ({ align: "center" }),
