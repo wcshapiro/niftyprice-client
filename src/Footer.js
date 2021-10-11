@@ -28,6 +28,11 @@ function Footer() {
                 Privacy Policy
               </a>
             </Typography>
+            <Typography variant="h7" component="h7" align="left">
+              <a class="link" href="/terms">
+                Terms of use
+              </a>
+            </Typography>
             <div class="about-content"></div>
           </Grid>
           <Grid item lg={4} sm={6} xs={12}>
