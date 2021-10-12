@@ -55,6 +55,13 @@ const columns = [
     options: {
       hint: "Lowest price that an NFT in this collection is currently selling for",
       setCellProps: () => ({ align: "center" }),
+      customBodyRender: (value) => {
+        return (
+          <>
+            <p>{numberWithCommas(value.toFixed(2))}</p>
+          </>
+        );
+      },
     },
   },
 
@@ -117,6 +124,13 @@ const columns = [
             <p>{value}%</p>
           </>
         );
+      },
+      sortCompare: (order) => {
+        return (obj1, obj2) => {
+          let val1 = parseInt(obj1.data, 10);
+          let val2 = parseInt(obj2.data, 10);
+          return (val1 - val2) * (order === "asc" ? 1 : -1);
+        };
       },
     },
   },
@@ -183,6 +197,13 @@ const art_columns = [
     options: {
       hint: "Lowest price that an NFT in this collection is currently selling for",
       setCellProps: () => ({ align: "center" }),
+      customBodyRender: (value) => {
+        return (
+          <>
+            <p>{numberWithCommas(value.toFixed(2))}</p>
+          </>
+        );
+      },
     },
   },
 
@@ -236,6 +257,20 @@ const art_columns = [
     options: {
       hint: "Percent of total supply that is currently for sale",
       setCellProps: () => ({ align: "center" }),
+      customBodyRender: (value) => {
+        return (
+          <>
+            <p>{value}%</p>
+          </>
+        );
+      },
+      sortCompare: (order) => {
+        return (obj1, obj2) => {
+          let val1 = parseInt(obj1.data, 10);
+          let val2 = parseInt(obj2.data, 10);
+          return (val1 - val2) * (order === "asc" ? 1 : -1);
+        };
+      },
     },
   },
   {
@@ -442,7 +477,7 @@ function Table() {
                         component="h6"
                         align="left"
                       >
-                        Total floor Price (ETH):
+                        Total floor price (ETH):
                       </Typography>
                       <Typography
                         inline
@@ -463,7 +498,7 @@ function Table() {
                         component="h6"
                         align="left"
                       >
-                        Total NFT's Available:
+                        Total NFT's available:
                       </Typography>
                       <Typography
                         inline

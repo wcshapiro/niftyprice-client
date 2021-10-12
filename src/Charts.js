@@ -12,26 +12,26 @@ import { useLocation } from "react-router-dom";
 
 import "./Charts.css";
 const alias = {
-  cryptopunks: "Cryptopunks",
-  boredapeyachtclub: "Bored Ape Yacht Club",
-  veefriends: "VeeFriends",
-  meebits: "Meebits",
-  "punks-comic": "Punks-Comic",
-  pudgypenguins: "Pudgy Penguins",
-  "bored-ape-kennel-club": "Bored Ape Kennel Club",
-  hashmasks: "Hashmasks",
-  "cool-cats-nft": "Cool Cats NFT",
-  galaxyeggs9999: "Galaxy Eggs",
-  "cryptoadz-by-gremplin": "CrypToadz",
-  "mutant-ape-yacht-club": "Mutant Ape Yacht Club",
-  "0n1-force": "On1 Force",
-  curiocardswrapper: "My Curio Cards",
-  "bored-ape-chemistry-club": "Bored Ape Chemistry Club",
-  "creature-world-collection": "Creature World",
-  parallelalpha: "Parellel Alpha",
-  "koala-intelligence-agency": "Koala Intelligence Agency",
-  "adam-bomb-squad": "Adam Bomb Squad",
-};
+    'cryptopunks':'Cryptopunks',
+    'boredapeyachtclub': "Bored Ape Yacht Club",
+    'veefriends': "VeeFriends",
+    'meebits': "Meebits",
+    'punks-comic': "Punks-Comic",
+    'pudgypenguins': "Pudgy Penguins",
+    'bored-ape-kennel-club': "Bored Ape Kennel Club",
+    'hashmasks': "Hashmasks",
+    'cool-cats-nft': "Cool Cats NFT",
+    'galaxyeggs9999': "Galaxy Eggs",
+    'cryptoadz-by-gremplin': "CrypToadz",
+    'mutant-ape-yacht-club': "Mutant Ape Yacht Club",
+    '0n1-force': "On1 Force",
+    'curiocardswrapper': "My Curio Cards",
+    'bored-ape-chemistry-club': "Bored Ape Chemistry Club",
+    'creature-world-collection': "Creature World",
+    'parallelalpha': "Parellel Alpha",
+    'koala-intelligence-agency': "Koala Intelligence Agency",
+    'adam-bomb-squad': "Adam Bomb Squad"
+}
 const useStyles = makeStyles({
   root: {
     minHeight: 270,
@@ -54,7 +54,7 @@ const useStyles = makeStyles({
     minWidth: 200,
     borderRadius: "50%",
     display: "inline",
-    marginBottom: 20,
+    marginBottom: 20
   },
 });
 function numberWithCommas(x) {
@@ -100,6 +100,7 @@ function Charts() {
       },
     ],
   });
+  
 
   const loadAsyncData = async () => {
     setLoading(true);
@@ -117,13 +118,13 @@ function Charts() {
       setImage(data.image);
 
       if (location.state.row_data.length === 10) {
-        var type = null;
+          var type = null;
         if (location.state.row_data[1] === "Curated") {
-          type = "art-blocks";
+        type = "art-blocks";
         } else if (location.state.row_data[1] === "Playground") {
-          type = "art-blocks-playground";
+        type = "art-blocks-playground";
         } else {
-          type = "art-blocks-factory";
+        type = "art-blocks-factory";
         }
         var plural = (plural =
           location.state.row_data[0].slice(-1) === "s"
@@ -186,7 +187,7 @@ function Charts() {
         },
         series: [
           {
-            name: " Supply",
+            name:" Supply",
             data: series_tfs,
           },
         ],
@@ -196,8 +197,9 @@ function Charts() {
           text: "Floor  Price History",
         },
         series: [
+        
           {
-            name: "Floor Price (ETH)",
+              name:"Floor Price (ETH)",
             data: series_fpp,
           },
         ],
@@ -220,10 +222,10 @@ function Charts() {
     <>
       <div class="chart-div">
         <div class="content-div">
-          <Grid container>
+          <Grid container >
             <Grid item xs={12}>
               <div class="card-div">
-                <Grid container spacing={4}>
+                <Grid container  spacing={4}>
                   <Grid item xs={12} md={6} lg={6}>
                     <Card id="prices" className={classes.root} elevation={5}>
                       <Grid container>
@@ -237,9 +239,7 @@ function Charts() {
                                     component="h5"
                                     align="left"
                                   >
-                                    {alias[location.state.row_data[0]]
-                                      ? alias[location.state.row_data[0]]
-                                      : location.state.row_data[0]}
+                                    {alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0]}
                                   </Typography>
                                   <Typography
                                     variant="h5"
@@ -280,19 +280,23 @@ function Charts() {
                     >
                       <CardContent>
                         <Grid container justifyContent="space-between">
-                          <Grid xs={12}>
-                            <Typography variant="h5" component="h5">
-                              Quick Stats
-                            </Typography>
-                          </Grid>
-
+                            <Grid xs={12}>
+                            <Typography
+                            variant="h5"
+                            component="h5"
+                            
+                          >
+                            Quick Stats
+                          </Typography>
+                            </Grid>
+                        
                           <Typography
                             inline
                             variant="h6"
                             component="h6"
                             align="left"
                           >
-                            Floor price (ETH):{" "}
+                            floor price (ETH):{" "}
                           </Typography>
                           <Typography
                             inline
@@ -333,7 +337,7 @@ function Charts() {
                             component="h6"
                             align="left"
                           >
-                            Floor cap (ETH):
+                            floor cap (ETH):
                           </Typography>
                           <Typography
                             inline
@@ -376,7 +380,7 @@ function Charts() {
                             component="h6"
                             align="left"
                           >
-                            24H supply chg. %:{" "}
+                            24H supply %:{" "}
                           </Typography>
                           <Typography
                             variant="h6"
@@ -384,8 +388,8 @@ function Charts() {
                             align="right"
                             style={
                               parseFloat(location.state.supply_change) > 0
-                                ? { color: "#e04343" }
-                                : { color: "#26ad3f" }
+                                ? { color: "#26ad3f" }
+                                : { color: "#e04343" }
                             }
                           >
                             {location.state.supply_change}%
@@ -400,7 +404,7 @@ function Charts() {
                           >
                             Float %:{" "}
                           </Typography>
-                          <Typography variant="h6" component="h6" align="left">
+                          <Typography variant="h6" component="h6" align="left" >
                             {collection_info.float}%
                           </Typography>
                         </Grid>

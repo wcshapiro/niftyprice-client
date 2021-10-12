@@ -53,7 +53,7 @@ class QualityCell extends Component {
           minWidth: 80,
         }}
       >
-        {new_value}%
+        {new_value.toFixed(2)}%
       </p>
     );
   }
