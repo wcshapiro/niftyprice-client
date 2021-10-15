@@ -451,9 +451,7 @@ function Table() {
   useEffect(() => {
     loadAsyncData();
   }, []);
-  useEffect(() => {
-    setTabIndex(parseInt(JSON.parse(window.localStorage.getItem('index'))));
-  }, []);
+  
   useEffect(() => {
     window.localStorage.setItem('index', tabIndex);
   }, [tabIndex]);
