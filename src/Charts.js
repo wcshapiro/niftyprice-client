@@ -107,7 +107,7 @@ function Charts() {
     try {
       var total_for_sale = [];
       var floor_pp = [];
-      const url = "https://niftyprice.herokuapp.com/charts?";
+      const url = "https://niftyprice.herokuapp.com/charts?"; // "http://localhost:8080/charts?";
       const response = await fetch(
         url +
           new URLSearchParams({

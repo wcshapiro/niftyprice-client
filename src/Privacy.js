@@ -1,9 +1,13 @@
 import React from "react";
 import "./Privacy.css";
+import Grid from "@material-ui/core/Grid";
+
 
 function Privacy() {
   return (
     <>
+    <Grid container >
+      <Grid item xs = {12}>
       <div id="privacy-container">
         <h1>niftyprice Privacy Policy</h1>
         <p>Last updated: October 11, 2021</p>
@@ -488,7 +492,11 @@ function Privacy() {
           <li>By email: team@niftyprice.io</li>
         </ul>
       </div>
-    </>
+
+
+      </Grid>
+    </Grid>
+          </>
   );
 }
 export default Privacy;

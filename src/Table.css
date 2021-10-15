@@ -48,6 +48,9 @@
     margin-right: 10px;
  
 }
+.links{
+    width: 80px;
+}
 .eth-snippet {
     float: left;
     width: 20px;

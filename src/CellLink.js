@@ -166,8 +166,11 @@ class CellLink extends Component {
             link = "https://opensea.io/assets/" + art_blocks[rowData[0]] + "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" + rowData[0] + "&search[stringTraits][0][values][0]=All%20" + plural + "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE"
         }
         return (<>
-            <a class="graph-link"> </a>
+        <div class="links">
+        <a class="graph-link"> </a>
             <a class="opensea-link" href={link}> </a>
+        </div>
+            
 
         </>
         )

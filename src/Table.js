@@ -19,7 +19,7 @@ import { useHistory } from "react-router-dom";
 const useStyles = makeStyles({
   root: {
     flexgrow: 1,
-    minHeight: 250,
+    minHeight: 285,
     maxHeight: 360,
   },
   paper: {
@@ -162,6 +162,7 @@ const columns = [
   {
     name: "Links",
     options: {
+        sort:false,
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <CellLink
@@ -299,6 +300,7 @@ const art_columns = [
   {
     name: "Links",
     options: {
+        sort:false,
       customBodyRender: (value, tableMeta, updateValue) => {
         return (
           <CellLink
@@ -322,6 +324,20 @@ function Table() {
     return Math.round(num * pow) / pow;
   }
   const classes = useStyles();
+  const [sortObj,setSortObj] = useState(
+    () => {
+      // getting stored value
+      const saved = JSON.parse(window.localStorage.getItem("sortObj"));
+      const initialValue = saved;
+      return initialValue || {name:"Floor Cap (ETH)",direction: "desc"};
+    }
+  )
+  const [tabIndex, setTabIndex] = useState(() => {
+    // getting stored value
+    const saved = JSON.parse(window.localStorage.getItem("index"));
+    const initialValue = parseInt(saved);
+    return initialValue || 0;
+  });
   const [eth_price, setEth] = useState();
   const [total_fpp, setFPP] = useState();
   const [total_avail, setAvail] = useState();
@@ -338,7 +354,7 @@ function Table() {
   const loadAsyncData = async () => {
     setLoading(true);
     try {
-      const url = "https://niftyprice.herokuapp.com?"; //"http://localhost:8080";
+      const url = "https://niftyprice.herokuapp.com?"; //"http://localhost:8080"; //
       const response = await fetch(url);
       var data = await response.json();
       var data_arr = [];
@@ -366,7 +382,7 @@ function Table() {
         let line = data.art_message[i];
         let map = new Map(Object.entries(line));
         var art_data_temp = Array.from(map.values());
-        console.log(art_data_temp);
+        // console.log(art_data_temp);
         art_data_temp[2] = toFixedNumber(parseFloat(art_data_temp[2]), 2, 10);
         art_data_temp[3] = toFixedNumber(parseFloat(art_data_temp[3]), 2, 10);
         art_data_temp[4] = toFixedNumber(parseFloat(art_data_temp[4]), 2, 10);
@@ -382,10 +398,7 @@ function Table() {
   };
   const options = {
     rowsPerPage: 100,
-    sortOrder: {
-      name: "Floor Cap (ETH)",
-      direction: "desc",
-    },
+    sortOrder: sortObj.name?sortObj:{name:"Floor Cap (ETH)",direction:"desc"},
     setTableProps: () => {
       return {
         size: "small",
@@ -394,6 +407,13 @@ function Table() {
     download: false,
     selectableRowsHideCheckboxes: true,
     responsive: "standard",
+    onColumnSortChange: (colData,direction)=>{
+        setSortObj({
+            name: colData,
+            direction: direction
+        })
+        console.log("CHANGED" + colData +" "+ direction)
+    },
     onRowClick: (rowData) => {
       var row_data = rowData[0].props.rowData;
       var rank = null;
@@ -431,7 +451,16 @@ function Table() {
   useEffect(() => {
     loadAsyncData();
   }, []);
+  useEffect(() => {
+    setTabIndex(parseInt(JSON.parse(window.localStorage.getItem('index'))));
+  }, []);
+  useEffect(() => {
+    window.localStorage.setItem('index', tabIndex);
+  }, [tabIndex]);
 
+  useEffect(() => {
+    window.localStorage.setItem('sortObj', JSON.stringify(sortObj));
+  }, [sortObj]);
   if (loading)
     return (
       <div class="loading">
@@ -455,12 +484,10 @@ function Table() {
                     your wallet to get real-time portfolio valuations based on a
                     variety of valuation techniques
                   </Typography>
-                </CardContent>
-                <CardActions style={{ justifyContent: "center" }}>
                   <Button variant="contained" color="primary" href="/purchase">
                     GET PREMIUM ACCESS
                   </Button>
-                </CardActions>
+                </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12} lg={4}>
@@ -562,7 +589,7 @@ function Table() {
             </Grid>
           </Grid>
         </div>
-        <Tabs>
+        <Tabs selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
           <TabList>
             <Tab>OpenSea Collections</Tab>
             <Tab>Art Blocks</Tab>

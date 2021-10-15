@@ -1,25 +1,8 @@
-dl,
-ol,
-ul {
-  margin-top: 0;
-}
-address,
-dl,
-ol,
-ul {
-  margin-bottom: 1rem;
-}
-ul {
-  display: block;
-  list-style-type: disc;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
-  padding-inline-start: 40px;
-}
+
 #terms-container {
   text-align: left;
-  padding-left: 15em;
-  padding-right: 15em;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  margin-left: 10%;
+  width: 80%;
 }

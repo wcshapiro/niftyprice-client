@@ -1,9 +1,13 @@
 import React from "react";
 import "./Terms.css";
+import Grid from "@material-ui/core/Grid";
+
 
 function Terms() {
   return (
     <>
+    <Grid container >
+      <Grid item xs = {12}>
       <div id="terms-container">
         <h1>niftyprice Terms and Conditions</h1>
         <p>Last updated: October 11, 2021</p>
@@ -290,7 +294,11 @@ function Terms() {
           <li>By email: team@niftyprice.io</li>
         </ul>
       </div>
-    </>
+
+
+      </Grid>
+    </Grid>
+          </>
   );
 }
 export default Terms;
