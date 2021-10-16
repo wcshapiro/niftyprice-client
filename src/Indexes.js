@@ -60,7 +60,7 @@ const useStyles = makeStyles({
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-function Charts() {
+function Indexes() {
   const location = useLocation();
   const [collection_info, setInfo] = useState({
     name: null,
@@ -449,4 +449,4 @@ function Charts() {
     </>
   );
 }
-export default Charts;
+export default Indexes;

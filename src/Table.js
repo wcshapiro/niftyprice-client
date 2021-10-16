@@ -17,6 +17,10 @@ import "react-tabs/style/react-tabs.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
 const useStyles = makeStyles({
+  alert:
+  {
+minHeight:50,
+  },
   root: {
     flexgrow: 1,
     minHeight: 285,
@@ -467,9 +471,21 @@ function Table() {
     );
   return (
     <>
+    <div class = "alertBox" >
+              <Typography variant="h5" color="textSecondary">
+                Announcement: Opensea is migrating the Art Blocks sub-collections. While this migration takes place, our data updates may be slowed. We are working diligently to remain as up-to-date as possible. Thank you for your understanding. 
+
+              </Typography>
+              </div>
       <div class="content-wrap">
         <div class="welcome-container">
+          
           <Grid container justifyContent="space-evenly">
+            <Grid item xs={12} className = {classes.alert}>
+              
+              
+
+            </Grid>
             <Grid item xs={12} lg={4}>
               <Card id="prices" className={classes.root} elevation={5}>
                 <CardContent>

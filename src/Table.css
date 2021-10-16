@@ -51,6 +51,14 @@
 .links{
     width: 80px;
 }
+.alertBox{
+    width: 100%;
+    background-color: rgb(253, 206, 206);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
 .eth-snippet {
     float: left;
     width: 20px;
