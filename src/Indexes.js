@@ -1,37 +1,42 @@
-import React, { useEffect, useState } from "react";
-import HighchartsReact from "highcharts-react-official";
-import HighStock from "highcharts/highstock";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import CardMedia from "@material-ui/core/CardMedia";
-import { makeStyles } from "@material-ui/core/styles";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import HighchartsReact from 'highcharts-react-official';
+import HighStock from 'highcharts/highstock';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import CardMedia from '@material-ui/core/CardMedia';
+import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { useLocation } from 'react-router-dom';
 
-import "./Charts.css";
+import './Charts.css';
 const alias = {
-    'cryptopunks':'Cryptopunks',
-    'boredapeyachtclub': "Bored Ape Yacht Club",
-    'veefriends': "VeeFriends",
-    'meebits': "Meebits",
-    'punks-comic': "Punks-Comic",
-    'pudgypenguins': "Pudgy Penguins",
-    'bored-ape-kennel-club': "Bored Ape Kennel Club",
-    'hashmasks': "Hashmasks",
-    'cool-cats-nft': "Cool Cats NFT",
-    'galaxyeggs9999': "Galaxy Eggs",
-    'cryptoadz-by-gremplin': "CrypToadz",
-    'mutant-ape-yacht-club': "Mutant Ape Yacht Club",
-    '0n1-force': "0n1 Force",
-    'curiocardswrapper': "My Curio Cards",
-    'bored-ape-chemistry-club': "Bored Ape Chemistry Club",
-    'creature-world-collection': "Creature World",
-    'parallelalpha': "Parellel Alpha",
-    'koala-intelligence-agency': "Koala Intelligence Agency",
-    'adam-bomb-squad': "Adam Bomb Squad"
-}
+  cryptopunks: 'Cryptopunks',
+  boredapeyachtclub: 'Bored Ape Yacht Club',
+  veefriends: 'VeeFriends',
+  meebits: 'Meebits',
+  'punks-comic': 'Punks-Comic',
+  pudgypenguins: 'Pudgy Penguins',
+  'bored-ape-kennel-club': 'Bored Ape Kennel Club',
+  hashmasks: 'Hashmasks',
+  'cool-cats-nft': 'Cool Cats NFT',
+  galaxyeggs9999: 'Galaxy Eggs',
+  'cryptoadz-by-gremplin': 'CrypToadz',
+  'mutant-ape-yacht-club': 'Mutant Ape Yacht Club',
+  '0n1-force': 'On1 Force',
+  curiocardswrapper: 'My Curio Cards',
+  'bored-ape-chemistry-club': 'Bored Ape Chemistry Club',
+  'creature-world-collection': 'Creature World',
+  parallelalpha: 'Parellel Alpha',
+  'koala-intelligence-agency': 'Koala Intelligence Agency',
+  'adam-bomb-squad': 'Adam Bomb Squad',
+  cyberkongz: 'CyberKongz',
+  lootproject: 'Loot (for Adventurers)',
+  anonymice: 'Anonymice',
+  'the-doge-pound': 'The Doge Pound',
+  'world-of-women-nft': 'World of Women',
+};
 const useStyles = makeStyles({
   root: {
     minHeight: 270,
@@ -47,18 +52,18 @@ const useStyles = makeStyles({
   },
   cover: {
     marginTop: 20,
-    marginLeft: "15%",
-    float: "left",
+    marginLeft: '15%',
+    float: 'left',
     minHeight: 200,
     maxHeight: 200,
     minWidth: 200,
-    borderRadius: "50%",
-    display: "inline",
-    marginBottom: 20
+    borderRadius: '50%',
+    display: 'inline',
+    marginBottom: 20,
   },
 });
 function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 function Indexes() {
   const location = useLocation();
@@ -76,7 +81,7 @@ function Indexes() {
   const [image, setImage] = useState();
   const [chart_options, setChartOptions] = useState({
     title: {
-      text: "My chart",
+      text: 'My chart',
     },
     xAxis: {
       categories: null,
@@ -89,7 +94,7 @@ function Indexes() {
   });
   const [fpp_chart_options, setChartOptionsFpp] = useState({
     title: {
-      text: "My chart",
+      text: 'My chart',
     },
     xAxis: {
       categories: null,
@@ -100,14 +105,13 @@ function Indexes() {
       },
     ],
   });
-  
 
   const loadAsyncData = async () => {
     setLoading(true);
     try {
       var total_for_sale = [];
       var floor_pp = [];
-      const url = "https://niftyprice.herokuapp.com/charts?"; // "http://localhost:8080/charts?";
+      const url = 'https://niftyprice.herokuapp.com/charts?'; // "http://localhost:8080/charts?";
       const response = await fetch(
         url +
           new URLSearchParams({
@@ -118,18 +122,18 @@ function Indexes() {
       setImage(data.image);
 
       if (location.state.row_data.length === 10) {
-          var type = null;
-        if (location.state.row_data[1] === "Curated") {
-        type = "art-blocks";
-        } else if (location.state.row_data[1] === "Playground") {
-        type = "art-blocks-playground";
+        var type = null;
+        if (location.state.row_data[1] === 'Curated') {
+          type = 'art-blocks';
+        } else if (location.state.row_data[1] === 'Playground') {
+          type = 'art-blocks-playground';
         } else {
-        type = "art-blocks-factory";
+          type = 'art-blocks-factory';
         }
         var plural = (plural =
-          location.state.row_data[0].slice(-1) === "s"
+          location.state.row_data[0].slice(-1) === 's'
             ? location.state.row_data[0]
-            : location.state.row_data[0] + "s");
+            : location.state.row_data[0] + 's');
         setInfo({
           name: location.state.row_data[0],
           floor_price: location.state.row_data[2],
@@ -138,13 +142,13 @@ function Indexes() {
           total_avail: location.state.row_data[5],
           float: location.state.row_data[6],
           link:
-            "https://opensea.io/assets/" +
+            'https://opensea.io/assets/' +
             type +
-            "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
+            '?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=' +
             location.state.row_data[0] +
-            "&search[stringTraits][0][values][0]=All%20" +
+            '&search[stringTraits][0][values][0]=All%20' +
             plural +
-            "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE",
+            '&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE',
         });
       } else {
         setInfo({
@@ -155,11 +159,11 @@ function Indexes() {
           total_avail: location.state.row_data[4],
           float: location.state.row_data[5],
           link:
-            "https://opensea.io/collection/" +
+            'https://opensea.io/collection/' +
             location.state.row_data[0] +
-            "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
+            '?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=' +
             location.state.row_data[0] +
-            "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW",
+            '&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW',
         });
       }
       var series_fpp = [];
@@ -170,9 +174,9 @@ function Indexes() {
         let element_fpp = [];
         let element_tfs = [];
         let raw_date = data.message[i].date;
-        let temp_date = raw_date.replaceAll("-", "/").split(" ");
-        let time = temp_date[1].split(":");
-        let formatted_date = temp_date[0] + " " + time[0] + ":" + time[1];
+        let temp_date = raw_date.replaceAll('-', '/').split(' ');
+        let time = temp_date[1].split(':');
+        let formatted_date = temp_date[0] + ' ' + time[0] + ':' + time[1];
 
         element_fpp.push(new Date(formatted_date).getTime());
         element_fpp.push(parseFloat(data.message[i].floorpurchaseprice));
@@ -183,23 +187,22 @@ function Indexes() {
       }
       setChartOptions({
         title: {
-          text: "Supply History",
+          text: 'Supply History',
         },
         series: [
           {
-            name:" Supply",
+            name: ' Supply',
             data: series_tfs,
           },
         ],
       });
       setChartOptionsFpp({
         title: {
-          text: "Floor  Price History",
+          text: 'Floor  Price History',
         },
         series: [
-        
           {
-              name:"Floor Price (ETH)",
+            name: 'Floor Price (ETH)',
             data: series_fpp,
           },
         ],
@@ -222,10 +225,10 @@ function Indexes() {
     <>
       <div class="chart-div">
         <div class="content-div">
-          <Grid container >
+          <Grid container>
             <Grid item xs={12}>
               <div class="card-div">
-                <Grid container  spacing={4}>
+                <Grid container spacing={4}>
                   <Grid item xs={12} md={6} lg={6}>
                     <Card id="prices" className={classes.root} elevation={5}>
                       <Grid container>
@@ -239,7 +242,9 @@ function Indexes() {
                                     component="h5"
                                     align="left"
                                   >
-                                    {alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0]}
+                                    {alias[location.state.row_data[0]]
+                                      ? alias[location.state.row_data[0]]
+                                      : location.state.row_data[0]}
                                   </Typography>
                                   <Typography
                                     variant="h5"
@@ -280,23 +285,19 @@ function Indexes() {
                     >
                       <CardContent>
                         <Grid container justifyContent="space-between">
-                            <Grid xs={12}>
-                            <Typography
-                            variant="h5"
-                            component="h5"
-                            
-                          >
-                            Quick Stats
-                          </Typography>
-                            </Grid>
-                        
+                          <Grid xs={12}>
+                            <Typography variant="h5" component="h5">
+                              Quick Stats
+                            </Typography>
+                          </Grid>
+
                           <Typography
                             inline
                             variant="h6"
                             component="h6"
                             align="left"
                           >
-                            floor price (ETH):{" "}
+                            floor price (ETH):{' '}
                           </Typography>
                           <Typography
                             inline
@@ -314,7 +315,7 @@ function Indexes() {
                             component="h6"
                             align="left"
                           >
-                            24H %:{" "}
+                            24H %:{' '}
                           </Typography>
                           <Typography
                             inline
@@ -323,8 +324,8 @@ function Indexes() {
                             align="right"
                             style={
                               parseFloat(collection_info.day_change) > 0
-                                ? { color: "#26ad3f" }
-                                : { color: "#e04343" }
+                                ? { color: '#26ad3f' }
+                                : { color: '#e04343' }
                             }
                           >
                             {collection_info.day_change}%
@@ -360,7 +361,7 @@ function Indexes() {
                             component="h6"
                             align="left"
                           >
-                            Total Minted:{" "}
+                            Total Minted:{' '}
                           </Typography>
                           <Typography
                             inline
@@ -380,7 +381,7 @@ function Indexes() {
                             component="h6"
                             align="left"
                           >
-                            24H supply %:{" "}
+                            24H supply %:{' '}
                           </Typography>
                           <Typography
                             variant="h6"
@@ -388,8 +389,8 @@ function Indexes() {
                             align="right"
                             style={
                               parseFloat(location.state.supply_change) > 0
-                                ? { color: "#26ad3f" }
-                                : { color: "#e04343" }
+                                ? { color: '#26ad3f' }
+                                : { color: '#e04343' }
                             }
                           >
                             {location.state.supply_change}%
@@ -402,9 +403,9 @@ function Indexes() {
                             component="h6"
                             align="left"
                           >
-                            Float %:{" "}
+                            Float %:{' '}
                           </Typography>
-                          <Typography variant="h6" component="h6" align="left" >
+                          <Typography variant="h6" component="h6" align="left">
                             {collection_info.float}%
                           </Typography>
                         </Grid>
@@ -423,9 +424,9 @@ function Indexes() {
                 <Grid item xs={12}>
                   <HighchartsReact
                     class="chart"
-                    containerProps={{ style: { width: "100%" } }}
+                    containerProps={{ style: { width: '100%' } }}
                     highcharts={HighStock}
-                    constructorType={"stockChart"}
+                    constructorType={'stockChart'}
                     options={fpp_chart_options}
                   />
                 </Grid>
@@ -435,9 +436,9 @@ function Indexes() {
                 <Grid item xs={12}>
                   <HighchartsReact
                     class="chart"
-                    containerProps={{ style: { width: "100%" } }}
+                    containerProps={{ style: { width: '100%' } }}
                     highcharts={HighStock}
-                    constructorType={"stockChart"}
+                    constructorType={'stockChart'}
                     options={chart_options}
                   />
                 </Grid>
