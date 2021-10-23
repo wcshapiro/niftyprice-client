@@ -1,87 +1,88 @@
 .table-container {
-    width: 80%;
-    margin-left: 10%;
-    margin-top: 3%;
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 3%;
 }
 .background-container {
-    background-color: rgb(190, 190, 190);
+  background-color: rgb(190, 190, 190);
 }
 .welcome-container {
-    /* align-content: center; */
-    margin-top: .5rem;
-    width: 80%;
-    margin-left: 10%;
-    padding-bottom: 3rem;
-    /* height: 15rem;
+  /* align-content: center; */
+  margin-top: 0.5rem;
+  width: 80%;
+  margin-left: 10%;
+  padding-bottom: 3rem;
+  /* height: 15rem;
      */
 }
 
 .welcome-content {
-    border-radius: .5rem;
-    background-color: white;
-    text-align: center;
-    float:left;
-    height: 15rem;
-    
-    box-shadow: 2px 2px 2px 2px rgb(177, 177, 177);
+  border-radius: 0.5rem;
+  background-color: white;
+  text-align: center;
+  float: left;
+  height: 15rem;
 
+  box-shadow: 2px 2px 2px 2px rgb(177, 177, 177);
 }
-.links{
-   align-items: center;
+.links {
+  align-items: center;
 }
 .opensea-link {
-    float: left;
-    background-image: url('static/images/opensea.png');
-    width: 30px;
-    height: 30px;
-    display: block;
- background-repeat: no-repeat;
- background-size: contain;
- 
+  float: left;
+  background-image: url('static/images/opensea.png');
+  width: 30px;
+  height: 30px;
+  display: block;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 .image-snippet {
-    float: left;
-    width: 30px;
-    height: 30px;
-    display: block;
-    border-radius: 50%;
-    margin-right: 10px;
- 
+  float: left;
+  width: 30px;
+  height: 30px;
+  display: block;
+  border-radius: 50%;
+  margin-right: 10px;
 }
-.links{
-    width: 80px;
+.links {
+  width: 80px;
 }
-.alertBox{
-    width: 100%;
-    background-color: rgb(253, 206, 206);
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
+.alertBox {
+  width: 100%;
+  background-color: rgb(253, 206, 206);
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .eth-snippet {
-    float: left;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
+  float: left;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }
 .graph-link {
-    float: left;
-    background-image: url('static/images/graph.png');
-    width: 30px;
-    height: 30px;
-    display: block;
-    
- background-repeat: no-repeat;
- background-size: contain;
+  float: left;
+  background-image: url('static/images/graph.png');
+  width: 30px;
+  height: 30px;
+  display: block;
 
+  background-repeat: no-repeat;
+  background-size: contain;
 }
-.opensea-link:hover, .graph-link:hover {
-    cursor: pointer;
+.opensea-link:hover,
+.graph-link:hover {
+  cursor: pointer;
 }
-.loading{
-    margin-top: 10rem;
+.loading {
+  margin-top: 10rem;
 }
-.stat-spacer{
-    padding-top: .75rem;
+.stat-spacer {
+  padding-top: 0.75rem;
+}
+.jss156 a:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
