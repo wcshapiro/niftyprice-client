@@ -8,14 +8,24 @@
 }
 .welcome-container {
     /* align-content: center; */
-    margin-top: .5rem;
+    margin-top: 2rem;
     width: 80%;
     margin-left: 10%;
     padding-bottom: 3rem;
     /* height: 15rem;
      */
 }
+.index-row{
+    border-bottom: 10px #969696;
+    text-align: center;
+}
 
+
+.index-table{
+    width: 85%;
+    margin-left: 6%;
+}
+.index-quote{text-align: center;}
 .welcome-content {
     border-radius: .5rem;
     background-color: white;
@@ -39,11 +49,27 @@
  background-size: contain;
  
 }
+.index-div{
+    width: 80%;
+    margin-left: 20%;
+}
+.index-title{
+    float: left;
+    
+}
 .image-snippet {
     float: left;
     width: 30px;
     height: 30px;
     display: block;
+    border-radius: 50%;
+    margin-right: 10px;
+ 
+}
+.image-index {
+    float: left;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     margin-right: 10px;
  

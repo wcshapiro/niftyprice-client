@@ -8,6 +8,7 @@ import Purchase from "./Purchase.js";
 import About from "./About.js";
 import Privacy from "./Privacy.js";
 import Terms from "./Terms.js";
+import Indexes from "./Indexes.js";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -26,11 +27,22 @@ function App() {
                 </Grid>
               </Grid>
               <Grid container justify="flex-end" spacing={5}>
+              <Grid item>
+                  <Button variant="contained" color="primary" href="/purchase">
+                    GET PREMIUM ACCESS
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button variant="contained" color="primary" href="https://blog.niftyprice.io/">
+                    Blog
+                  </Button>
+                </Grid>
                 <Grid item>
                   <Button variant="contained" color="primary" href="/about">
                     About Us
                   </Button>
                 </Grid>
+                
               </Grid>
             </Toolbar>
           </AppBar>
@@ -42,8 +54,11 @@ function App() {
               <Route exact path="/about">
                 <About />
               </Route>
-              <Route path="/chart">
+              <Route path="/collections/:collection">
                 <Charts />
+              </Route>
+              <Route path="/indexes/:index">
+                <Indexes />
               </Route>
               <Route exact path="/">
                 <Table />

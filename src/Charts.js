@@ -11,27 +11,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLocation } from "react-router-dom";
 
 import "./Charts.css";
-const alias = {
-    'cryptopunks':'Cryptopunks',
-    'boredapeyachtclub': "Bored Ape Yacht Club",
-    'veefriends': "VeeFriends",
-    'meebits': "Meebits",
-    'punks-comic': "Punks-Comic",
-    'pudgypenguins': "Pudgy Penguins",
-    'bored-ape-kennel-club': "Bored Ape Kennel Club",
-    'hashmasks': "Hashmasks",
-    'cool-cats-nft': "Cool Cats NFT",
-    'galaxyeggs9999': "Galaxy Eggs",
-    'cryptoadz-by-gremplin': "CrypToadz",
-    'mutant-ape-yacht-club': "Mutant Ape Yacht Club",
-    '0n1-force': "0n1 Force",
-    'curiocardswrapper': "My Curio Cards",
-    'bored-ape-chemistry-club': "Bored Ape Chemistry Club",
-    'creature-world-collection': "Creature World",
-    'parallelalpha': "Parellel Alpha",
-    'koala-intelligence-agency': "Koala Intelligence Agency",
-    'adam-bomb-squad': "Adam Bomb Squad"
-}
+
 const useStyles = makeStyles({
   root: {
     minHeight: 270,
@@ -54,13 +34,13 @@ const useStyles = makeStyles({
     minWidth: 200,
     borderRadius: "50%",
     display: "inline",
-    marginBottom: 20
+    marginBottom: 20,
   },
 });
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-function Charts() {
+function Charts(props) {
   const location = useLocation();
   const [collection_info, setInfo] = useState({
     name: null,
@@ -74,6 +54,7 @@ function Charts() {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState();
+  const [alias,setAlias]=useState()
   const [chart_options, setChartOptions] = useState({
     title: {
       text: "My chart",
@@ -100,68 +81,90 @@ function Charts() {
       },
     ],
   });
-  
 
   const loadAsyncData = async () => {
+    console.log("PROPS"+JSON.stringify(location.pathname))
     setLoading(true);
     try {
       var total_for_sale = [];
       var floor_pp = [];
-      const url = "https://niftyprice.herokuapp.com/charts?"; // "http://localhost:8080/charts?";
-      const response = await fetch(
-        url +
-          new URLSearchParams({
-            collection: location.state.row_data[0],
-          })
+      let collection_path = location.pathname.replace("/collections/","collections/:")
+      let collection_name = collection_path.split("/")[1].replace(":","")
+      console.log(("NAME"+collection_name))
+      console.log("PATH"+collection_path)
+      const url = "http://localhost:8080/"+collection_path; //"https://niftyprice.herokuapp.com/charts?";
+      const response = await fetch(url
+        // +
+        //   new URLSearchParams({
+        //     collection: "cryptopunks"//location.state.row_data[0],
+        //   })
       );
       var data = await response.json();
       setImage(data.image);
+      console.log(data.table.collections)
+      console.log(data.message)
+      console.log("INFO"+JSON.stringify(data.alias))
+      setAlias(data.alias);
+      var rank = data.rank
+      console.log("RANKINGS"+rank)
+      var plural = (plural =
+        collection_name.slice(-1) === "s"
+          ? collection_name
+          : collection_name + "s");
+      for(const element of data.table.collections){
+        if (element['Collection Name'] ==  collection_name){
+          console.log("matched")
+          setInfo({
+            rank:rank,
+            name: element['Collection Name'],
+            floor_price: element['Floor Purchase Price'],
+            day_change: element['24h%'],
+            week_change: element['7d%'],
+            supply_change:element['24h supply%'],
+            total_avail: element['Total Float'],
+            float: element['%Float'],
+            link: "https://opensea.io/collection/"+collection_name+"?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW"
+          });
 
-      if (location.state.row_data.length === 10) {
-          var type = null;
-        if (location.state.row_data[1] === "Curated") {
-        type = "art-blocks";
-        } else if (location.state.row_data[1] === "Playground") {
-        type = "art-blocks-playground";
-        } else {
-        type = "art-blocks-factory";
         }
-        var plural = (plural =
-          location.state.row_data[0].slice(-1) === "s"
-            ? location.state.row_data[0]
-            : location.state.row_data[0] + "s");
-        setInfo({
-          name: location.state.row_data[0],
-          floor_price: location.state.row_data[2],
-          day_change: location.state.row_data[3],
-          week_change: location.state.row_data[4],
-          total_avail: location.state.row_data[5],
-          float: location.state.row_data[6],
-          link:
-            "https://opensea.io/assets/" +
-            type +
-            "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
-            location.state.row_data[0] +
-            "&search[stringTraits][0][values][0]=All%20" +
-            plural +
-            "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE",
-        });
-      } else {
-        setInfo({
-          name: location.state.row_data[0],
-          floor_price: location.state.row_data[1],
-          day_change: location.state.row_data[2],
-          week_change: location.state.row_data[3],
-          total_avail: location.state.row_data[4],
-          float: location.state.row_data[5],
-          link:
-            "https://opensea.io/collection/" +
-            location.state.row_data[0] +
-            "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
-            location.state.row_data[0] +
-            "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW",
-        });
+        else {
+          console.log("no match")
+        }
       }
+      for(const element of data.table.art_blocks){
+        
+        if (element['Collection Name'] ==  collection_name){
+          
+
+          var type = element['Category']
+          console.log("matched")
+          setInfo({
+            name: element['Collection Name'],
+            type: type,
+            rank:rank,
+            floor_price: element['Floor Purchase Price'],
+            day_change: element['24h%'],
+            week_change: element['7d%'],
+            supply_change:element['24h supply%'],
+            total_avail: element['Total Float'],
+            float: element['%Float'],
+            link:
+              "https://opensea.io/assets/" +
+              type +
+              "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
+              element['Collection Name'] +
+              "&search[stringTraits][0][values][0]=All%20" +
+              plural +
+              "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE",
+          });
+          // https://opensea.io/collection/0x5f3e321623d141681as1a?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW
+        }
+        else {
+          console.log("no match")
+        }
+      }
+      console.log(data.table.collections)
+
       var series_fpp = [];
       var series_tfs = [];
       for (let i in data.message) {
@@ -181,13 +184,14 @@ function Charts() {
         series_fpp.push(element_fpp);
         series_tfs.push(element_tfs);
       }
+      console.log("pushing data")
       setChartOptions({
         title: {
           text: "Supply History",
         },
         series: [
           {
-            name:" Supply",
+            name: " Supply",
             data: series_tfs,
           },
         ],
@@ -197,256 +201,257 @@ function Charts() {
           text: "Floor  Price History",
         },
         series: [
-        
           {
-              name:"Floor Price (ETH)",
+            name: "Floor Price (ETH)",
             data: series_fpp,
           },
         ],
       });
       setLoading(false);
     } catch (e) {
+      console.log("ERROR: "+e)
       setLoading(false);
     }
   };
   useEffect(() => {
     loadAsyncData();
   }, []);
-  if (loading)
-    return (
+  if (loading || alias==null)
+    {return (
       <div class="loading">
         <CircularProgress />
       </div>
-    );
-  return (
-    <>
-      <div class="chart-div">
-        <div class="content-div">
-          <Grid container >
-            <Grid item xs={12}>
-              <div class="card-div">
-                <Grid container  spacing={4}>
-                  <Grid item xs={12} md={6} lg={6}>
-                    <Card id="prices" className={classes.root} elevation={5}>
-                      <Grid container>
-                        <Grid item xs={12} lg={6}>
-                          <div className={classes.details}>
-                            <CardContent className={classes.content}>
-                              <Grid container>
-                                <Grid item xs={12} lg={12}>
-                                  <Typography
-                                    variant="h5"
-                                    component="h5"
-                                    align="left"
-                                  >
-                                    {alias[location.state.row_data[0]]?alias[location.state.row_data[0]]:location.state.row_data[0]}
-                                  </Typography>
-                                  <Typography
-                                    variant="h5"
-                                    component="h5"
-                                    align="left"
-                                  >
-                                    Floor Cap Rank #{location.state.row_rank}
-                                  </Typography>
-                                </Grid>
-                                <Grid item xs={12} lg={12}>
-                                  <div class="open-link-continer">
-                                    <p class="link-title">OpenSea:</p>
-                                    <a
-                                      class="opensea-link2"
-                                      href={collection_info.link}
-                                    ></a>
-                                  </div>
-                                </Grid>
-                              </Grid>
-                            </CardContent>
-                          </div>
-                        </Grid>
-                        <Grid item xs={12} lg={6}>
-                          <CardMedia
-                            image={image}
-                            className={classes.cover}
-                            title="NFT COLLECTION IMAGE"
-                          />
-                        </Grid>
-                      </Grid>
-                    </Card>
-                  </Grid>
-                  <Grid item lg={6} md={6} xs={12}>
-                    <Card
-                      id="prices"
-                      className={classes.details_card}
-                      elevation={5}
-                    >
-                      <CardContent>
-                        <Grid container justifyContent="space-between">
-                            <Grid xs={12}>
-                            <Typography
-                            variant="h5"
-                            component="h5"
-                            
-                          >
-                            Quick Stats
-                          </Typography>
-                            </Grid>
-                        
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="left"
-                          >
-                            floor price (ETH):{" "}
-                          </Typography>
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="right"
-                          >
-                            {collection_info.floor_price}
-                          </Typography>
-                        </Grid>
-                        <Grid container justifyContent="space-between">
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="left"
-                          >
-                            24H %:{" "}
-                          </Typography>
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="right"
-                            style={
-                              parseFloat(collection_info.day_change) > 0
-                                ? { color: "#26ad3f" }
-                                : { color: "#e04343" }
-                            }
-                          >
-                            {collection_info.day_change}%
-                          </Typography>
-                        </Grid>
-                        <Grid container justifyContent="space-between">
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="left"
-                          >
-                            floor cap (ETH):
-                          </Typography>
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="right"
-                          >
-                            {numberWithCommas(
-                              (
-                                collection_info.floor_price *
-                                collection_info.total_avail
-                              ).toFixed(2)
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid container justifyContent="space-between">
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="left"
-                          >
-                            Total Minted:{" "}
-                          </Typography>
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="right"
-                          >
-                            {numberWithCommas(
-                              parseInt(collection_info.total_avail)
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid container justifyContent="space-between">
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="left"
-                          >
-                            24H supply %:{" "}
-                          </Typography>
-                          <Typography
-                            variant="h6"
-                            component="h6"
-                            align="right"
-                            style={
-                              parseFloat(location.state.supply_change) > 0
-                                ? { color: "#26ad3f" }
-                                : { color: "#e04343" }
-                            }
-                          >
-                            {location.state.supply_change}%
-                          </Typography>
-                        </Grid>
-                        <Grid container justifyContent="space-between">
-                          <Typography
-                            inline
-                            variant="h6"
-                            component="h6"
-                            align="left"
-                          >
-                            Float %:{" "}
-                          </Typography>
-                          <Typography variant="h6" component="h6" align="left" >
-                            {collection_info.float}%
-                          </Typography>
-                        </Grid>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </Grid>
-              </div>
-            </Grid>
-
-            <Grid item xs={12}>
-              <p> </p>
-            </Grid>
-            <Grid item xs={12}>
+    );}
+    else{
+      return (
+        <>
+          <div class="chart-div">
+            <div class="content-div">
               <Grid container>
                 <Grid item xs={12}>
-                  <HighchartsReact
-                    class="chart"
-                    containerProps={{ style: { width: "100%" } }}
-                    highcharts={HighStock}
-                    constructorType={"stockChart"}
-                    options={fpp_chart_options}
-                  />
+                  <div class="card-div">
+                    <Grid container spacing={4}>
+                      <Grid item xs={12} md={6} lg={6}>
+                        <Card id="prices" className={classes.root} elevation={5}>
+                          <Grid container>
+                            <Grid item xs={12} lg={6}>
+                              <div className={classes.details}>
+                                <CardContent className={classes.content}>
+                                  <Grid container>
+                                    <Grid item xs={12} lg={12}>
+                                      <Typography
+                                        variant="h5"
+                                        component="h5"
+                                        align="left"
+                                      >
+                                        {alias[collection_info.name]
+                                          ? alias[collection_info.name]
+                                          : collection_info.name}
+                                      </Typography>
+                                      <Typography
+                                        variant="h5"
+                                        component="h5"
+                                        align="left"
+                                      >
+                                        Floor Cap Rank {collection_info.rank}
+                                      </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} lg={12}>
+                                      <div class="open-link-continer">
+                                        <p class="link-title">OpenSea:</p>
+                                        <a
+                                          class="opensea-link2"
+                                          href={collection_info.link}
+                                        ></a>
+                                      </div>
+                                    </Grid>
+                                  </Grid>
+                                </CardContent>
+                              </div>
+                            </Grid>
+                            <Grid item xs={12} lg={6}>
+                              <CardMedia
+                                image={image}
+                                className={classes.cover}
+                                title="NFT COLLECTION IMAGE"
+                              />
+                            </Grid>
+                          </Grid>
+                        </Card>
+                      </Grid>
+                      <Grid item lg={6} md={6} xs={12}>
+                        <Card
+                          id="prices"
+                          className={classes.details_card}
+                          elevation={5}
+                        >
+                          <CardContent>
+                            <Grid container justifyContent="space-between">
+                              <Grid xs={12}>
+                                <Typography variant="h5" component="h5">
+                                  Quick Stats
+                                </Typography>
+                              </Grid>
+    
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="left"
+                              >
+                                floor price (ETH):{" "}
+                              </Typography>
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="right"
+                              >
+                                {collection_info.floor_price}
+                              </Typography>
+                            </Grid>
+                            <Grid container justifyContent="space-between">
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="left"
+                              >
+                                24H %:{" "}
+                              </Typography>
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="right"
+                                style={
+                                  parseFloat(collection_info.day_change) > 0
+                                    ? { color: "#26ad3f" }
+                                    : { color: "#e04343" }
+                                }
+                              >
+                                {collection_info.day_change}%
+                              </Typography>
+                            </Grid>
+                            <Grid container justifyContent="space-between">
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="left"
+                              >
+                                floor cap (ETH):
+                              </Typography>
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="right"
+                              >
+                                {numberWithCommas(
+                                  (
+                                    collection_info.floor_price *
+                                    collection_info.total_avail
+                                  ).toFixed(2)
+                                )}
+                              </Typography>
+                            </Grid>
+                            <Grid container justifyContent="space-between">
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="left"
+                              >
+                                Total Minted:{" "}
+                              </Typography>
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="right"
+                              >
+                                {numberWithCommas(
+                                  parseInt(collection_info.total_avail)
+                                )}
+                              </Typography>
+                            </Grid>
+                            <Grid container justifyContent="space-between">
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="left"
+                              >
+                                24H supply %:{" "}
+                              </Typography>
+                              <Typography
+                                variant="h6"
+                                component="h6"
+                                align="right"
+                                style={
+                                  parseFloat(collection_info.supply_change) > 0
+                                    ? { color: "#e04343" }
+                                    : { color: "#26ad3f" }
+                                }
+                              >
+                                {collection_info.supply_change}%
+                              </Typography>
+                            </Grid>
+                            <Grid container justifyContent="space-between">
+                              <Typography
+                                inline
+                                variant="h6"
+                                component="h6"
+                                align="left"
+                              >
+                                Float %:{" "}
+                              </Typography>
+                              <Typography variant="h6" component="h6" align="left">
+                                {collection_info.float}%
+                              </Typography>
+                            </Grid>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    </Grid>
+                  </div>
                 </Grid>
-                <Grid item lg={12}>
-                  <hr></hr>
+    
+                <Grid item xs={12}>
+                  <p> </p>
                 </Grid>
                 <Grid item xs={12}>
-                  <HighchartsReact
-                    class="chart"
-                    containerProps={{ style: { width: "100%" } }}
-                    highcharts={HighStock}
-                    constructorType={"stockChart"}
-                    options={chart_options}
-                  />
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <HighchartsReact
+                        class="chart"
+                        containerProps={{ style: { width: "100%" } }}
+                        highcharts={HighStock}
+                        constructorType={"stockChart"}
+                        options={fpp_chart_options}
+                      />
+                    </Grid>
+                    <Grid item lg={12}>
+                      <hr></hr>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <HighchartsReact
+                        class="chart"
+                        containerProps={{ style: { width: "100%" } }}
+                        highcharts={HighStock}
+                        constructorType={"stockChart"}
+                        options={chart_options}
+                      />
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </Grid>
-        </div>
-      </div>
-    </>
-  );
+            </div>
+          </div>
+        </>
+      );
+    }
+  
 }
 export default Charts;
