@@ -92,7 +92,7 @@ function Charts(props) {
       let collection_name = collection_path.split("/")[1].replace(":","")
       console.log(("NAME"+collection_name))
       console.log("PATH"+collection_path)
-      const url = "http://localhost:8080/"+collection_path; //"https://niftyprice.herokuapp.com/charts?";
+      const url = "https://niftyprice.herokuapp.com/"+collection_path; //"http://localhost:8080/"+collection_path; //
       const response = await fetch(url
         // +
         //   new URLSearchParams({

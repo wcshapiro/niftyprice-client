@@ -64,7 +64,7 @@ function Indexes() {
       let index_path = location.pathname.replace("/indexes/", "indexes/:");
       let index_name = index_path.split("/")[1].replace(":", "").replace("-","_");
       console.log("NAME  :" + index_path);
-      const url = "http://localhost:8080/" + index_path; //"https://niftyprice.herokuapp.com/charts?";
+      const url = "https://niftyprice.herokuapp.com/" + index_path; // "http://localhost:8080/" + index_path; //
       console.log("SENDING TO INDEXES");
       const response = await fetch(url);
       console.log("RESPONSE");
