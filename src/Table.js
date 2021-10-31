@@ -3,12 +3,8 @@ import MUIDataTable from "mui-datatables";
 import "./Table.css";
 import "./App.css";
 import Grid from "@material-ui/core/Grid";
-import { Button } from "@material-ui/core";
 import QualityCell from "./Cellcolor.js";
-import CellLink from "./CellLink.js";
-import Name from "./Name.js";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -16,15 +12,16 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
+import { index_metadata } from "./index_config.js";
+
 const useStyles = makeStyles({
-  alert:
-  {
-minHeight:50,
+  alert: {
+    minHeight: 50,
   },
   root: {
     flexgrow: 1,
     minHeight: 285,
-    maxHeight: 360,
+    maxHeight: 285,
   },
   paper: {
     padding: 2,
@@ -39,285 +36,6 @@ minHeight:50,
     marginBottom: 12,
   },
 });
-const columns = [
-  {
-    name: "Collection Name",
-    options: {
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <Name
-            rowData={tableMeta.rowData}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-    },
-  },
-  {
-    name: "Floor Price (ETH)",
-    options: {
-      hint: "Lowest price that an NFT in this collection is currently selling for",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value.toFixed(2))}</p>
-          </>
-        );
-      },
-    },
-  },
-
-  {
-    name: "24h%",
-    options: {
-      hint: "Percent change in floor price over the past 24 hours",
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <QualityCell
-            value={value}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-      setCellProps: () => ({ align: "right" }),
-    },
-  },
-  {
-    name: "7d%",
-    options: {
-      hint: "Percent change in floor price over the past 7 days",
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <QualityCell
-            value={value}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-      setCellProps: () => ({ align: "right" }),
-    },
-  },
-
-  {
-    name: "Total Minted",
-    options: {
-      hint: "Total number of NFTs that were minted and currently exist",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value)}</p>
-          </>
-        );
-      },
-    },
-  },
-
-  {
-    name: "Float%",
-    options: {
-      hint: "Percent of total supply that is currently for sale",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{value}%</p>
-          </>
-        );
-      },
-      sortCompare: (order) => {
-        return (obj1, obj2) => {
-          let val1 = parseInt(obj1.data, 10);
-          let val2 = parseInt(obj2.data, 10);
-          return (val1 - val2) * (order === "asc" ? 1 : -1);
-        };
-      },
-    },
-  },
-  {
-    name: "Floor Cap (ETH)",
-    options: {
-      hint: "Floor price multiplied by the total supply",
-      filter: true,
-      sort: true,
-
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value)} </p>{" "}
-          </>
-        );
-      },
-      sortCompare: (order) => {
-        return (obj1, obj2) => {
-          let val1 = parseInt(obj1.data, 10);
-          let val2 = parseInt(obj2.data, 10);
-          return (val1 - val2) * (order === "asc" ? 1 : -1);
-        };
-      },
-    },
-  },
-
-  {
-    name: "Links",
-    options: {
-        sort:false,
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <CellLink
-            rowData={tableMeta.rowData}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-    },
-  },
-  { options: { display: false, viewColumns: false, filter: false } },
-];
-
-const art_columns = [
-  {
-    name: "Collection Name",
-    options: {
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <Name
-            rowData={tableMeta.rowData}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-    },
-  },
-  { name: "Category" },
-  {
-    name: "Floor Price (ETH)",
-    options: {
-      hint: "Lowest price that an NFT in this collection is currently selling for",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value.toFixed(2))}</p>
-          </>
-        );
-      },
-    },
-  },
-
-  {
-    name: "24h%",
-    options: {
-      hint: "Percent change in floor price over the past 24 hours",
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <QualityCell
-            value={value}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-    },
-  },
-  {
-    name: "7d%",
-    options: {
-      hint: "Percent change in floor price over the past 7 days",
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <QualityCell
-            value={value}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-    },
-  },
-  {
-    name: "Total Minted",
-    options: {
-      hint: "Total number of NFTs that were minted and currently exist",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value)}</p>
-          </>
-        );
-      },
-    },
-  },
-
-  {
-    name: "Float%",
-    options: {
-      hint: "Percent of total supply that is currently for sale",
-      setCellProps: () => ({ align: "center" }),
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{value}%</p>
-          </>
-        );
-      },
-      sortCompare: (order) => {
-        return (obj1, obj2) => {
-          let val1 = parseInt(obj1.data, 10);
-          let val2 = parseInt(obj2.data, 10);
-          return (val1 - val2) * (order === "asc" ? 1 : -1);
-        };
-      },
-    },
-  },
-  {
-    name: "Floor Cap (ETH)",
-    options: {
-      hint: "Floor price multiplied by the total supply",
-      filter: true,
-      sort: true,
-
-      customBodyRender: (value) => {
-        return (
-          <>
-            <p>{numberWithCommas(value)}</p>
-          </>
-        );
-      },
-      sortCompare: (order) => {
-        return (obj1, obj2) => {
-          let val1 = parseInt(obj1.data, 10);
-          let val2 = parseInt(obj2.data, 10);
-          return (val1 - val2) * (order === "asc" ? 1 : -1);
-        };
-      },
-    },
-  },
-  {
-    name: "Links",
-    options: {
-        sort:false,
-      customBodyRender: (value, tableMeta, updateValue) => {
-        return (
-          <CellLink
-            rowData={tableMeta.rowData}
-            index={tableMeta.columnIndex}
-            change={(event) => updateValue(event)}
-          />
-        );
-      },
-    },
-  },
-  { options: { display: false, viewColumns: false, filter: false } },
-];
 
 function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "---";
@@ -328,14 +46,12 @@ function Table() {
     return Math.round(num * pow) / pow;
   }
   const classes = useStyles();
-  const [sortObj,setSortObj] = useState(
-    () => {
-      // getting stored value
-      const saved = JSON.parse(window.localStorage.getItem("sortObj"));
-      const initialValue = saved;
-      return initialValue || {name:"Floor Cap (ETH)",direction: "desc"};
-    }
-  )
+  const [sortObj, setSortObj] = useState(() => {
+    // getting stored value
+    const saved = JSON.parse(window.localStorage.getItem("sortObj"));
+    const initialValue = saved;
+    return initialValue || { name: "Floor Cap (ETH)", direction: "desc" };
+  });
   const [tabIndex, setTabIndex] = useState(() => {
     // getting stored value
     const saved = JSON.parse(window.localStorage.getItem("index"));
@@ -348,12 +64,14 @@ function Table() {
   const [total_fc, setTFC] = useState();
   const [cap_rank, setRank] = useState();
   const [cap_rank_art, setRankArt] = useState();
+  const [alias, setAlias] = useState();
 
   const history = useHistory();
 
   const [loading, setLoading] = useState(false);
   const [table_data, setTableData] = useState();
   const [art_blocks_data, setArtBlocks] = useState();
+  const [index_data, setIndexData] = useState();
 
   const loadAsyncData = async () => {
     setLoading(true);
@@ -369,6 +87,10 @@ function Table() {
       setTFC(data.total_floor_cap);
       setRank(data.floor_cap_rankings);
       setRankArt(data.floor_cap_rankings_art);
+      setAlias(data.alias);
+      console.log(alias);
+      console.log("INDEX INFORMATION" + JSON.stringify(data.index));
+      setIndexData(data.index);
 
       for (let i in data.message) {
         let line = data.message[i];
@@ -394,7 +116,9 @@ function Table() {
         art_data_arr.push(art_data_temp);
       }
       setTableData(data_arr);
+      console.log(data_arr);
       setArtBlocks(art_data_arr);
+      console.log(art_data_arr);
       setLoading(false);
     } catch (e) {
       setLoading(false);
@@ -402,7 +126,9 @@ function Table() {
   };
   const options = {
     rowsPerPage: 100,
-    sortOrder: sortObj.name?sortObj:{name:"Floor Cap (ETH)",direction:"desc"},
+    sortOrder: sortObj.name
+      ? sortObj
+      : { name: "Floor Cap (ETH)", direction: "desc" },
     setTableProps: () => {
       return {
         size: "small",
@@ -411,230 +137,627 @@ function Table() {
     download: false,
     selectableRowsHideCheckboxes: true,
     responsive: "standard",
-    onColumnSortChange: (colData,direction)=>{
-        setSortObj({
-            name: colData,
-            direction: direction
-        })
-        console.log("CHANGED" + colData +" "+ direction)
+    onColumnSortChange: (colData, direction) => {
+      setSortObj({
+        name: colData,
+        direction: direction,
+      });
+      console.log("CHANGED" + colData + " " + direction);
     },
     onRowClick: (rowData) => {
-      var row_data = rowData[0].props.rowData;
-      var rank = null;
-      var i = 0;
-      for (const arr of cap_rank) {
-        if (arr[1] === row_data[0]) {
-          rank = i + 1;
+      console.log(rowData);
+      console.log(
+        "ROW DATA" + JSON.stringify(rowData[0].props.children[1].props.children)
+      );
+      var name = rowData[0].props.children[1].props.children;
+      for (const element in alias) {
+        if (alias[element] == name) {
+          name = element;
+          console.log("Found match" + element);
         }
-        i += 1;
-      }
-      var j = 0;
-      for (const arr of cap_rank_art) {
-        if (arr[1] === row_data[0]) {
-          rank = j + 1;
-        }
-        j += 1;
-      }
-      var supply_change = null;
-      if (row_data.length === 10) {
-        supply_change = row_data[8];
-      } else {
-        supply_change = row_data[7];
       }
       history.push({
-        pathname: "/chart",
-        search: "?query=" + row_data[0],
-        state: {
-          row_data: row_data,
-          row_rank: rank,
-          supply_change: supply_change,
-        },
+        pathname: "/collections/" + name,
       });
     },
   };
   useEffect(() => {
     loadAsyncData();
   }, []);
-  
+
   useEffect(() => {
-    window.localStorage.setItem('index', tabIndex);
+    window.localStorage.setItem("index", tabIndex);
   }, [tabIndex]);
 
   useEffect(() => {
-    window.localStorage.setItem('sortObj', JSON.stringify(sortObj));
+    window.localStorage.setItem("sortObj", JSON.stringify(sortObj));
   }, [sortObj]);
-  if (loading)
+  if (loading || index_data == undefined) {
     return (
       <div class="loading">
         <CircularProgress />
       </div>
     );
-  return (
-    <>
-    <div class = "alertBox" >
-              <Typography variant="h5" color="textSecondary">
-                Announcement: Opensea is migrating the Art Blocks sub-collections. While this migration takes place, our data updates may be slowed. We are working diligently to remain as up-to-date as possible. Thank you for your understanding. 
+  } else {
+    var columns = [
+      {
+        name: "Collection Name",
+        options: {
+          customBodyRender: (value, tableMeta, updateValue) => {
+            var img = null;
+            if (tableMeta.rowData.length === 9) {
+              img = tableMeta.rowData[8];
+            } else {
+              img = tableMeta.rowData[9];
+            }
+            return (
+              <>
+                <img src={img} class="image-snippet" alt="no img"></img>
+                <a>
+                  {alias[tableMeta.rowData[0]]
+                    ? alias[tableMeta.rowData[0]]
+                    : tableMeta.rowData[0]}
+                </a>
+              </>
+            );
+          },
+        },
+      },
+      {
+        name: "Floor Price (ETH)",
+        options: {
+          hint: "Lowest price that an NFT in this collection is currently selling for",
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{numberWithCommas(value.toFixed(2))}</p>
+              </>
+            );
+          },
+        },
+      },
 
-              </Typography>
-              </div>
-      <div class="content-wrap">
-        <div class="welcome-container">
-          
-          <Grid container justifyContent="space-evenly">
-            <Grid item xs={12} className = {classes.alert}>
-              
-              
+      {
+        name: "24h%",
+        options: {
+          hint: "Percent change in floor price over the past 24 hours",
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+              <QualityCell
+                value={value}
+                index={tableMeta.columnIndex}
+                change={(event) => updateValue(event)}
+              />
+            );
+          },
+          setCellProps: () => ({ align: "right" }),
+        },
+      },
+      {
+        name: "7d%",
+        options: {
+          hint: "Percent change in floor price over the past 7 days",
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+              <QualityCell
+                value={value}
+                index={tableMeta.columnIndex}
+                change={(event) => updateValue(event)}
+              />
+            );
+          },
+          setCellProps: () => ({ align: "right" }),
+        },
+      },
 
+      {
+        name: "Total Minted",
+        options: {
+          hint: "Total number of NFTs that were minted and currently exist",
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{numberWithCommas(value)}</p>
+              </>
+            );
+          },
+        },
+      },
+
+      {
+        name: "Float%",
+        options: {
+          hint: "Percent of total supply that is currently for sale",
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{value}%</p>
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+        },
+      },
+      {
+        name: "Floor Cap (ETH)",
+        options: {
+          hint: "Floor price multiplied by the total supply",
+          filter: true,
+          sort: true,
+
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{numberWithCommas(value)} </p>{" "}
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+        },
+      },
+
+      {
+        name: "Links",
+        options: {
+          sort: false,
+          customBodyRender: (value, tableMeta, updateValue) => {
+            let link = "n";
+            if (tableMeta.rowData[0] in alias) {
+              link =
+                "https://opensea.io/collection/" +
+                tableMeta.rowData[0] +
+                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
+                tableMeta.rowData[0] +
+                "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW";
+            } else {
+              let plural =
+                tableMeta.rowData[0].slice(-1) === "s"
+                  ? tableMeta.rowData[0]
+                  : tableMeta.rowData[0] + "s";
+              link =
+                "https://opensea.io/assets/" +
+                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
+                tableMeta.rowData[0] +
+                "&search[stringTraits][0][values][0]=All%20" +
+                plural +
+                "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE";
+            }
+            return (
+              <>
+                <div class="links">
+                  <a class="graph-link"> </a>
+                  <a class="opensea-link" href={link}>
+                    {" "}
+                  </a>
+                </div>
+              </>
+            );
+          },
+        },
+      },
+      { options: { display: false, viewColumns: false, filter: false } },
+    ];
+
+    var art_columns = [
+      {
+        name: "Collection Name",
+        options: {
+          customBodyRender: (value, tableMeta, updateValue) => {
+            var img = null;
+            if (tableMeta.rowData.length === 9) {
+              img = tableMeta.rowData[8];
+            } else {
+              img = tableMeta.rowData[9];
+            }
+            return (
+              <>
+                <img src={img} class="image-snippet" alt="no img"></img>
+                <a>
+                  {alias[tableMeta.rowData[0]]
+                    ? alias[tableMeta.rowData[0]]
+                    : tableMeta.rowData[0]}
+                </a>
+              </>
+            );
+          },
+        },
+      },
+      { name: "Category" },
+      {
+        name: "Floor Price (ETH)",
+        options: {
+          hint: "Lowest price that an NFT in this collection is currently selling for",
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{numberWithCommas(value.toFixed(2))}</p>
+              </>
+            );
+          },
+        },
+      },
+
+      {
+        name: "24h%",
+        options: {
+          hint: "Percent change in floor price over the past 24 hours",
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+              <QualityCell
+                value={value}
+                index={tableMeta.columnIndex}
+                change={(event) => updateValue(event)}
+              />
+            );
+          },
+        },
+      },
+      {
+        name: "7d%",
+        options: {
+          hint: "Percent change in floor price over the past 7 days",
+          customBodyRender: (value, tableMeta, updateValue) => {
+            return (
+              <QualityCell
+                value={value}
+                index={tableMeta.columnIndex}
+                change={(event) => updateValue(event)}
+              />
+            );
+          },
+        },
+      },
+      {
+        name: "Total Minted",
+        options: {
+          hint: "Total number of NFTs that were minted and currently exist",
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{numberWithCommas(value)}</p>
+              </>
+            );
+          },
+        },
+      },
+
+      {
+        name: "Float%",
+        options: {
+          hint: "Percent of total supply that is currently for sale",
+          setCellProps: () => ({ align: "center" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{value}%</p>
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+        },
+      },
+      {
+        name: "Floor Cap (ETH)",
+        options: {
+          hint: "Floor price multiplied by the total supply",
+          filter: true,
+          sort: true,
+
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{numberWithCommas(value)}</p>
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+        },
+      },
+      {
+        name: "Links",
+        options: {
+          sort: false,
+          customBodyRender: (value, tableMeta, updateValue) => {
+            let link = "n";
+            if (tableMeta.rowData[0] in alias) {
+              link =
+                "https://opensea.io/collection/" +
+                tableMeta.rowData[0] +
+                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
+                tableMeta.rowData[0] +
+                "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW";
+            } else {
+              let plural =
+                tableMeta.rowData[0].slice(-1) === "s"
+                  ? tableMeta.rowData[0]
+                  : tableMeta.rowData[0] + "s";
+              link =
+                "https://opensea.io/assets/" +
+                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
+                tableMeta.rowData[0] +
+                "&search[stringTraits][0][values][0]=All%20" +
+                plural +
+                "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE";
+            }
+            return (
+              <>
+                <div class="links">
+                  <a class="graph-link"> </a>
+                  <a class="opensea-link" href={link}>
+                    {" "}
+                  </a>
+                </div>
+              </>
+            );
+          },
+        },
+      },
+      { options: { display: false, viewColumns: false, filter: false } },
+    ];
+
+    return (
+      <>
+        <div class="content-wrap">
+          <div class="welcome-container">
+            <Grid container justifyContent="space-evenly">
+              <Grid item xs={12}>
+                <Typography align="left" variant="h5">
+                  Today’s NFT Floor Prices by Floor Cap
+                </Typography>
+                <Typography align="left" variant="subtitle1">
+                  View additional metrics and historical price charts by
+                  clicking on individual collections
+                </Typography>
+              </Grid>
+              <Grid item xs={12} className={classes.alert}></Grid>
+              <Grid item xs={12} lg={4}>
+                <Card id="prices" className={classes.root} elevation={5}>
+                  <CardContent>
+                    <div class="index-div">
+                      <img
+                        src={index_metadata.Playground.image}
+                        class="image-index"
+                        alt="no img"
+                      ></img>
+                      <h3 class = "index-title">Art Blocks Stats</h3>
+                    </div>
+                    <table class="index-table">
+                      <tr class="index-row">
+                        <th>Collection</th>
+                        <th>Floor CAP (ETH)</th>
+                        <th>24H%</th>
+                        <hr />
+                      </tr>
+                      {Object.keys(index_data).map(function (object, i) {
+                        if (object != "blue_chip") {
+                          return (
+                            <>
+                              <tr class="index-row" >
+                                <td class = "index-name">
+                                  <a href={"indexes/"+object}>{object}</a>
+                                </td>
+                                <td>
+                                  <p class = "index-quote">
+                                    {numberWithCommas(
+                                      (
+                                        parseFloat(index_data[object].quote) /
+                                        index_metadata[object].divisor
+                                      ).toFixed(2)
+                                    )}
+                                  </p>
+                                </td>
+                                <td>
+                                <Typography 
+                                  style={
+                                    parseFloat(index_data[object].percent) > 0
+                                    ? {
+                                      color: "#065f46",
+                                      backgroundColor: "#D1FAE5",
+                                      borderRadius: 12,
+                                      textAlign: "center",
+                                      float: "right",
+                                      maxWidth: 80,
+                                      minWidth: 80,
+                                      minHeight:25,
+                                    }
+                                  : {
+                                      color: "#981b1b",
+                                      backgroundColor: "#FEE2E2",
+                                      borderRadius: 12,
+                                      minHeight:25,
+                                      textAlign: "center",
+                                      float: "right",
+                                      maxWidth: 80,
+                                      minWidth: 80,
+                                    }
+                                  }
+                                  >
+                                    {parseFloat(
+                                      index_data[object].percent.toFixed(2)
+                                    )}%
+                                  </Typography>
+                                </td>
+                                
+                              </tr>
+                            </>
+                          );
+                        }
+                      })}
+                    </table>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} lg={4}>
+                <Card id="prices" className={classes.root} elevation={5}>
+                  <CardContent>
+                  <div class="index-div">
+                      <img
+                        src={index_metadata.blue_chip.table_image}
+                        class="image-index"
+                        alt="no img"
+                      ></img>
+                      <h3 class = "index-title">NFT Indexes</h3>
+                    </div>
+                  <table class="index-table">
+                  <tr class="index-row">
+                        <th>Index</th>
+                        <th>Value</th>
+                        <th>Change</th>
+                        <th>24H%</th>
+                        
+                      </tr >
+                      {Object.keys(index_data).map(function (object, i) {
+                        if (object == "blue_chip") {
+                          return (
+                            <>
+                              <tr class="index-row">
+                                <td class = "index-name">
+                                <a href={"indexes/"+object.replace("_","-")}>{object.replace("_"," ")}</a>
+                                </td>
+                                <td>
+                                  <p class = "index-quote">
+                                    {numberWithCommas(
+                                      (
+                                        parseFloat(index_data[object].quote) /
+                                        index_metadata[object].divisor
+                                      ).toFixed(2)
+                                    )}
+                                  </p>
+
+                                </td>
+                                <td>
+                                  <Typography
+                                  style={
+                                    parseFloat(index_data[object].percent) > 0
+                                    ? {
+                                      color: "#065f46",
+                                      textAlign: "center",
+                                      float: "right",
+                                      maxWidth: 80,
+                                      minWidth: 80,
+                                    }
+                                  : {
+                                      color: "#981b1b",
+                                      textAlign: "center",
+                                      float: "right",
+                                      maxWidth: 80,
+                                      minWidth: 80,
+                                    }
+                                  }
+                                  >
+                                    {(parseFloat(
+                                      index_data[object].change
+                                    )/(index_metadata[object].divisor)).toFixed(2)}
+                                  </Typography>
+                                </td>
+                                <td>
+                                  <Typography 
+                                  style={
+                                    parseFloat(index_data[object].percent) > 0
+                                    ? {
+                                      color: "#065f46",
+                                      backgroundColor: "#D1FAE5",
+                                      borderRadius: 12,
+                                      textAlign: "center",
+                                      float: "right",
+                                      maxWidth: 80,
+                                      minWidth: 80,
+                                      minHeight:25,
+                                    }
+                                  : {
+                                      color: "#981b1b",
+                                      backgroundColor: "#FEE2E2",
+                                      borderRadius: 12,
+                                      minHeight:25,
+                                      textAlign: "center",
+                                      float: "right",
+                                      maxWidth: 80,
+                                      minWidth: 80,
+                                    }
+                                  }
+                                  >
+                                    {parseFloat(
+                                      index_data[object].percent.toFixed(2)
+                                    )}%
+                                  </Typography>
+                                </td>
+                              </tr>
+                            </>
+                          );
+                        }
+                      })}
+                    </table>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-            <Grid item xs={12} lg={4}>
-              <Card id="prices" className={classes.root} elevation={5}>
-                <CardContent>
-                  <Typography variant="h5" component="h5">
-                    Enhanced NFT data with portfolio tracking
-                  </Typography>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Get access to more real-time data, metrics and charts to
-                    help inform your NFT purchases and portfolio strategy. Link
-                    your wallet to get real-time portfolio valuations based on a
-                    variety of valuation techniques
-                  </Typography>
-                  <Button variant="contained" color="primary" href="/purchase">
-                    GET PREMIUM ACCESS
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} lg={4}>
-              <Card id="prices" className={classes.root} elevation={5}>
-                <CardContent>
-                  <Typography variant="h5" component="h5">
-                    Quick Stats
-                  </Typography>
-                  <div class="stat-spacer">
-                    <Grid container justifyContent="space-between">
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        align="left"
-                      >
-                        Total floor price (ETH):
-                      </Typography>
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        color="inherit"
-                        align="right"
-                      >
-                        {numberWithCommas(parseFloat(total_fpp).toFixed(2))}
-                      </Typography>
-                    </Grid>
-                  </div>
-                  <div class="stat-spacer">
-                    <Grid container justifyContent="space-between">
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        align="left"
-                      >
-                        Total NFT's available:
-                      </Typography>
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        color="inherit"
-                        align="right"
-                      >
-                        {numberWithCommas(parseFloat(total_avail))}
-                      </Typography>
-                    </Grid>
-                  </div>
-                  <div class="stat-spacer">
-                    <Grid container justifyContent="space-between">
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        align="left"
-                      >
-                        Ethereum price (USD):
-                      </Typography>
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        color="inherit"
-                        align="right"
-                      >
-                        ${numberWithCommas(parseFloat(eth_price))}
-                      </Typography>
-                    </Grid>
-                  </div>
-                  <div class="stat-spacer">
-                    <Grid container justifyContent="space-between">
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        align="left"
-                      >
-                        Total floor cap (USD):
-                      </Typography>
-                      <Typography
-                        inline
-                        variant="h6"
-                        component="h6"
-                        color="inherit"
-                        align="right"
-                      >
-                        $
-                        {numberWithCommas(
-                          ((eth_price * total_fc) / 1000000000).toFixed(2)
-                        )}
-                        B
-                      </Typography>
-                    </Grid>
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+          </div>
+          <Tabs
+            selectedIndex={tabIndex}
+            onSelect={(index) => setTabIndex(index)}
+          >
+            <TabList>
+              <Tab>OpenSea Collections</Tab>
+              <Tab>Art Blocks</Tab>
+            </TabList>
+            <div class="table-container">
+              <TabPanel>
+                <Grid item xs={12}>
+                  <MUIDataTable
+                    title={"Collections"}
+                    data={table_data}
+                    columns={columns}
+                    options={options}
+                  />
+                </Grid>
+              </TabPanel>
+            </div>
+            <div class="table-container">
+              <TabPanel>
+                <Grid item xs={12}>
+                  <MUIDataTable
+                    title={"Art Blocks"}
+                    data={art_blocks_data}
+                    columns={art_columns}
+                    options={options}
+                  />
+                </Grid>
+              </TabPanel>
+            </div>
+          </Tabs>
         </div>
-        <Tabs selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
-          <TabList>
-            <Tab>OpenSea Collections</Tab>
-            <Tab>Art Blocks</Tab>
-          </TabList>
-          <div class="table-container">
-            <TabPanel>
-              <Grid item xs={12}>
-                <MUIDataTable
-                  title={"Collections"}
-                  data={table_data}
-                  columns={columns}
-                  options={options}
-                />
-              </Grid>
-            </TabPanel>
-          </div>
-          <div class="table-container">
-            <TabPanel>
-              <Grid item xs={12}>
-                <MUIDataTable
-                  title={"Art Blocks"}
-                  data={art_blocks_data}
-                  columns={art_columns}
-                  options={options}
-                />
-              </Grid>
-            </TabPanel>
-          </div>
-        </Tabs>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }
 export default Table;
