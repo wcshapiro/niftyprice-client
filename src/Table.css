@@ -15,12 +15,21 @@
     /* height: 15rem;
      */
 }
+.MuiTableRow-root:hover{
+    cursor: pointer;
+}
 .index-row{
     border-bottom: 10px #969696;
     text-align: center;
 }
+[data-colindex="0"]:hover{
+    text-decoration: underline;
+}
 
 
+.index-content:hover{
+    cursor: pointer;
+}
 .index-table{
     width: 85%;
     margin-left: 6%;

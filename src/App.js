@@ -9,6 +9,7 @@ import About from "./About.js";
 import Privacy from "./Privacy.js";
 import Terms from "./Terms.js";
 import Indexes from "./Indexes.js";
+import { slide as Menu } from 'react-burger-menu'
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -26,6 +27,22 @@ function App() {
                   </a>
                 </Grid>
               </Grid>
+              <Menu right>
+              <Button variant="contained" color="primary" href="/" id="menu-button">
+                    Home
+                  </Button>
+              <Button variant="contained" color="primary" href="/purchase" id="menu-button">
+                    GET PREMIUM ACCESS
+                  </Button>
+                  <Button variant="contained" color="primary" href="https://blog.niftyprice.io/" id="menu-button">
+                    Blog
+                  </Button>
+                  <Button variant="contained" color="primary" href="/about" id="menu-button">
+                    About Us
+                  </Button>
+        
+      </Menu>
+      <div class="nav-buttons">
               <Grid container justify="flex-end" spacing={5}>
               <Grid item>
                   <Button variant="contained" color="primary" href="/purchase">
@@ -44,6 +61,7 @@ function App() {
                 </Grid>
                 
               </Grid>
+              </div>
             </Toolbar>
           </AppBar>
           <div class="content-wrap">

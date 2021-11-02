@@ -41,6 +41,11 @@ function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "---";
 }
 function Table() {
+  const travel=(object)=>{
+    history.push({
+      pathname: "/indexes/" + object,
+    });
+  }
   function toFixedNumber(num, digits, base) {
     var pow = Math.pow(base || 10, digits);
     return Math.round(num * pow) / pow;
@@ -88,7 +93,7 @@ function Table() {
       setRank(data.floor_cap_rankings);
       setRankArt(data.floor_cap_rankings_art);
       setAlias(data.alias);
-      console.log(alias);
+      console.log("ALIAS" + JSON.stringify(alias));
       console.log("INDEX INFORMATION" + JSON.stringify(data.index));
       setIndexData(data.index);
 
@@ -317,27 +322,12 @@ function Table() {
         options: {
           sort: false,
           customBodyRender: (value, tableMeta, updateValue) => {
-            let link = "n";
-            if (tableMeta.rowData[0] in alias) {
-              link =
-                "https://opensea.io/collection/" +
-                tableMeta.rowData[0] +
-                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
-                tableMeta.rowData[0] +
-                "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW";
-            } else {
-              let plural =
-                tableMeta.rowData[0].slice(-1) === "s"
-                  ? tableMeta.rowData[0]
-                  : tableMeta.rowData[0] + "s";
-              link =
-                "https://opensea.io/assets/" +
-                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
-                tableMeta.rowData[0] +
-                "&search[stringTraits][0][values][0]=All%20" +
-                plural +
-                "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE";
-            }
+            let link =
+              "https://opensea.io/collection/" +
+              tableMeta.rowData[0] +
+              "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
+              tableMeta.rowData[0] +
+              "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW";
             return (
               <>
                 <div class="links">
@@ -488,27 +478,21 @@ function Table() {
         options: {
           sort: false,
           customBodyRender: (value, tableMeta, updateValue) => {
-            let link = "n";
-            if (tableMeta.rowData[0] in alias) {
-              link =
-                "https://opensea.io/collection/" +
-                tableMeta.rowData[0] +
-                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
-                tableMeta.rowData[0] +
-                "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW";
-            } else {
-              let plural =
-                tableMeta.rowData[0].slice(-1) === "s"
-                  ? tableMeta.rowData[0]
-                  : tableMeta.rowData[0] + "s";
-              link =
-                "https://opensea.io/assets/" +
-                "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&search[stringTraits][0][name]=" +
-                tableMeta.rowData[0] +
-                "&search[stringTraits][0][values][0]=All%20" +
-                plural +
-                "&search[toggles][0]=BUY_NOW&search[sortAscending]=true&search[sortBy]=PRICE";
+            let link_name = tableMeta.rowData[0];
+
+            for (const element in alias) {
+              if (alias[element] == tableMeta.rowData[0]) {
+                link_name = element;
+                console.log("Found match" + element);
+              }
             }
+
+            let link =
+              "https://opensea.io/collection/" +
+              link_name +
+              "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c&collectionSlug=" +
+              link_name +
+              "&search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW";
             return (
               <>
                 <div class="links">
@@ -549,174 +533,212 @@ function Table() {
                         class="image-index"
                         alt="no img"
                       ></img>
-                      <h3 class = "index-title">Art Blocks Stats</h3>
+                      <h3 class="index-title">Art Blocks Stats</h3>
                     </div>
-                    <table class="index-table">
-                      <tr class="index-row">
-                        <th>Collection</th>
-                        <th>Floor CAP (ETH)</th>
-                        <th>24H%</th>
-                        <hr />
-                      </tr>
-                      {Object.keys(index_data).map(function (object, i) {
-                        if (object != "blue_chip") {
-                          return (
-                            <>
-                              <tr class="index-row" >
-                                <td class = "index-name">
-                                  <a href={"indexes/"+object}>{object}</a>
-                                </td>
-                                <td>
-                                  <p class = "index-quote">
+                    <Grid container justifyContent="space-evenly">
+                      <Grid item xs={4}>
+                        <Typography variant="subtitle2" align="left">
+                          Collection
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography variant="subtitle2" align="center">
+                          Floor CAP (ETH)
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography variant="subtitle2" align="right">
+                          24H%
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <hr></hr>
+                    {Object.keys(index_data).map(function (object, i) {
+                      if (object != "blue_chip") {
+                        return (
+                          <>
+                            <div class="index-content"  onClick={()=>travel(object)}>
+                              <Grid container justifyContent="space-evenly">
+                                <Grid item xs={4}>
+                                  <Typography align="left">{object}</Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography align="center">
                                     {numberWithCommas(
                                       (
                                         parseFloat(index_data[object].quote) /
                                         index_metadata[object].divisor
                                       ).toFixed(2)
                                     )}
-                                  </p>
-                                </td>
-                                <td>
-                                <Typography 
-                                  style={
-                                    parseFloat(index_data[object].percent) > 0
-                                    ? {
-                                      color: "#065f46",
-                                      backgroundColor: "#D1FAE5",
-                                      borderRadius: 12,
-                                      textAlign: "center",
-                                      float: "right",
-                                      maxWidth: 80,
-                                      minWidth: 80,
-                                      minHeight:25,
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={4}>
+                                  <Typography
+                                    align="center"
+                                    style={
+                                      parseFloat(index_data[object].percent) > 0
+                                        ? {
+                                            color: "#065f46",
+                                            backgroundColor: "#D1FAE5",
+                                            borderRadius: 12,
+                                            textAlign: "center",
+                                            float: "right",
+                                            maxWidth: 80,
+                                            minWidth: 80,
+                                            minHeight: 25,
+                                          }
+                                        : {
+                                            color: "#981b1b",
+                                            backgroundColor: "#FEE2E2",
+                                            borderRadius: 12,
+                                            minHeight: 25,
+                                            textAlign: "center",
+                                            float: "right",
+                                            maxWidth: 80,
+                                            minWidth: 80,
+                                          }
                                     }
-                                  : {
-                                      color: "#981b1b",
-                                      backgroundColor: "#FEE2E2",
-                                      borderRadius: 12,
-                                      minHeight:25,
-                                      textAlign: "center",
-                                      float: "right",
-                                      maxWidth: 80,
-                                      minWidth: 80,
-                                    }
-                                  }
                                   >
                                     {parseFloat(
                                       index_data[object].percent.toFixed(2)
-                                    )}%
+                                    )}
+                                    %
                                   </Typography>
-                                </td>
-                                
-                              </tr>
-                            </>
-                          );
-                        }
-                      })}
-                    </table>
+                                </Grid>
+                              </Grid>
+                            </div>
+                            <hr></hr>
+                          </>
+                        );
+                      }
+                    })}
                   </CardContent>
                 </Card>
               </Grid>
               <Grid item xs={12} lg={4}>
                 <Card id="prices" className={classes.root} elevation={5}>
                   <CardContent>
-                  <div class="index-div">
+                    <div class="index-div">
                       <img
                         src={index_metadata.blue_chip.table_image}
                         class="image-index"
                         alt="no img"
                       ></img>
-                      <h3 class = "index-title">NFT Indexes</h3>
+                      <h3 class="index-title">NFT Indexes</h3>
                     </div>
-                  <table class="index-table">
-                  <tr class="index-row">
-                        <th>Index</th>
-                        <th>Value</th>
-                        <th>Change</th>
-                        <th>24H%</th>
-                        
-                      </tr >
-                      {Object.keys(index_data).map(function (object, i) {
-                        if (object == "blue_chip") {
-                          return (
-                            <>
-                              <tr class="index-row">
-                                <td class = "index-name">
-                                <a href={"indexes/"+object.replace("_","-")}>{object.replace("_"," ")}</a>
-                                </td>
-                                <td>
-                                  <p class = "index-quote">
-                                    {numberWithCommas(
-                                      (
-                                        parseFloat(index_data[object].quote) /
-                                        index_metadata[object].divisor
-                                      ).toFixed(2)
-                                    )}
-                                  </p>
-
-                                </td>
-                                <td>
-                                  <Typography
+                    <Grid container justifyContent="space-evenly">
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="left">
+                          Index
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="center">
+                          Value
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="center">
+                          Change
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="right">
+                          24H%
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <hr></hr>
+                    {Object.keys(index_data).map(function (object, i) {
+                      if (object == "blue_chip") {
+                        return (
+                          <>
+                          <div class = "index-content" onClick={()=>travel(object)}>
+                            <Grid container justifyContent="space-evenly">
+                              <Grid item xs={3}>
+                                <Typography align="left">
+                                  {" "}
+                                  {object.replace("_", " ")}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={3}>
+                                <Typography align="center">
+                                  {numberWithCommas(
+                                    (
+                                      parseFloat(index_data[object].quote) /
+                                      index_metadata[object].divisor
+                                    ).toFixed(2)
+                                  )}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={3}>
+                                <Typography
+                                  align="center"
                                   style={
                                     parseFloat(index_data[object].percent) > 0
-                                    ? {
-                                      color: "#065f46",
-                                      textAlign: "center",
-                                      float: "right",
-                                      maxWidth: 80,
-                                      minWidth: 80,
-                                    }
-                                  : {
-                                      color: "#981b1b",
-                                      textAlign: "center",
-                                      float: "right",
-                                      maxWidth: 80,
-                                      minWidth: 80,
-                                    }
+                                      ? {
+                                          color: "#065f46",
+                                          textAlign: "center",
+                                          float: "right",
+                                          maxWidth: 80,
+                                          minWidth: 80,
+                                        }
+                                      : {
+                                          color: "#981b1b",
+                                          textAlign: "center",
+                                          float: "right",
+                                          maxWidth: 80,
+                                          minWidth: 80,
+                                        }
                                   }
-                                  >
-                                    {(parseFloat(
-                                      index_data[object].change
-                                    )/(index_metadata[object].divisor)).toFixed(2)}
-                                  </Typography>
-                                </td>
-                                <td>
-                                  <Typography 
+                                >
+                                  {(
+                                    parseFloat(index_data[object].change) /
+                                    index_metadata[object].divisor
+                                  ).toFixed(2)}
+                                </Typography>{" "}
+                              </Grid>
+                              <Grid item xs={3}>
+                                <Typography
+                                  align="right"
                                   style={
                                     parseFloat(index_data[object].percent) > 0
-                                    ? {
-                                      color: "#065f46",
-                                      backgroundColor: "#D1FAE5",
-                                      borderRadius: 12,
-                                      textAlign: "center",
-                                      float: "right",
-                                      maxWidth: 80,
-                                      minWidth: 80,
-                                      minHeight:25,
-                                    }
-                                  : {
-                                      color: "#981b1b",
-                                      backgroundColor: "#FEE2E2",
-                                      borderRadius: 12,
-                                      minHeight:25,
-                                      textAlign: "center",
-                                      float: "right",
-                                      maxWidth: 80,
-                                      minWidth: 80,
-                                    }
+                                      ? {
+                                          color: "#065f46",
+                                          backgroundColor: "#D1FAE5",
+                                          borderRadius: 12,
+                                          textAlign: "center",
+                                          float: "right",
+                                          maxWidth: 80,
+                                          minWidth: 80,
+                                          minHeight: 25,
+                                        }
+                                      : {
+                                          color: "#981b1b",
+                                          backgroundColor: "#FEE2E2",
+                                          borderRadius: 12,
+                                          minHeight: 25,
+                                          textAlign: "center",
+                                          float: "right",
+                                          maxWidth: 80,
+                                          minWidth: 80,
+                                        }
                                   }
-                                  >
-                                    {parseFloat(
-                                      index_data[object].percent.toFixed(2)
-                                    )}%
-                                  </Typography>
-                                </td>
-                              </tr>
-                            </>
-                          );
-                        }
-                      })}
-                    </table>
+                                >
+                                  {parseFloat(
+                                    index_data[object].percent.toFixed(2)
+                                  )}
+                                  %
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                            
+                            <hr></hr>
+                            </div>
+                          </>
+                        );
+                      }
+                    })}
                   </CardContent>
                 </Card>
               </Grid>
