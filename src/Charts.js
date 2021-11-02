@@ -231,7 +231,9 @@ function Charts(props) {
         <title>{alias[collection_info.name]
                                           ? alias[collection_info.name]
                                           : collection_info.name} live floor price tracking and charts</title>
-        <meta name="description" content="COCK" data-react-helmet="true"/>
+        <meta name="description" content={"View real-time NFT floor prices and charts for " + alias[collection_info.name]
+                                          ? alias[collection_info.name]
+                                          : collection_info.name + ". Track your portfolio profit and loss, set price alerts, and track other market metrics."} />
       </Helmet>
           <div class="chart-div">
             <div class="content-div">
