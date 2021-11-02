@@ -9,6 +9,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLocation } from "react-router-dom";
+import {Helmet} from "react-helmet";
 
 import "./Charts.css";
 
@@ -225,6 +226,15 @@ function Charts(props) {
     else{
       return (
         <>
+        <Helmet htmlAttributes>
+        <html lang="en" />
+        <title>{alias[collection_info.name]
+                                          ? alias[collection_info.name]
+                                          : collection_info.name} live floor price tracking and charts</title>
+        <meta name="description" content={"View real-time NFT floor prices and charts for " + alias[collection_info.name]
+                                          ? alias[collection_info.name]
+                                          : collection_info.name + ". Track your portfolio profit and loss, set price alerts, and track other market metrics."} />
+      </Helmet>
           <div class="chart-div">
             <div class="content-div">
               <Grid container>

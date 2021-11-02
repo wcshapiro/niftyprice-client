@@ -1,7 +1,8 @@
 const index_metadata = {
   blue_chip: {
     title: 'Blue Chip',
-    description: `The “NiftyPrice – Blue Chip Index” is a floor cap-weighted
+    description: `The “NiftyPrice – Blue Chip Index” (Punks, Apes,
+        Ringers, Fidenza, Chromie Squiggle, Autoglyphs) is a floor cap-weighted
         index that tracks the performance of the four
         prominent “Blue Chip” NFTs: CryptoPunks, Bored
         Ape Yacht Club, Art Blocks Ringers and Art
