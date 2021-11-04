@@ -81,7 +81,7 @@ function Table() {
   const loadAsyncData = async () => {
     setLoading(true);
     try {
-      const url = "http://localhost:8080"; //"https://niftyprice.herokuapp.com?"; //
+      const url = "https://niftyprice.herokuapp.com?"; //"http://localhost:8080"; //
       const response = await fetch(url);
       var data = await response.json();
       var data_arr = [];
