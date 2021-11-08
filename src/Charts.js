@@ -224,16 +224,17 @@ function Charts(props) {
       </div>
     );}
     else{
+      var name = alias[collection_info.name]? alias[collection_info.name] : collection_info.name;
+      var description = "View real-time NFT floor prices and charts for "+name+" Track your portfolio profit and loss, set price alerts, and track other market metrics.";
       return (
+        
         <>
         <Helmet htmlAttributes>
         <html lang="en" />
         <title>{alias[collection_info.name]
                                           ? alias[collection_info.name]
                                           : collection_info.name} live floor price tracking and charts</title>
-        <meta name="description" content={"View real-time NFT floor prices and charts for " + alias[collection_info.name]
-                                          ? alias[collection_info.name]
-                                          : collection_info.name + ". Track your portfolio profit and loss, set price alerts, and track other market metrics."} />
+        <meta name="description" content={description} />
       </Helmet>
           <div class="chart-div">
             <div class="content-div">
