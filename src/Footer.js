@@ -1,7 +1,7 @@
-import React from "react";
-import "./Footer.css";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import './Footer.css';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 function Footer() {
   return (
@@ -50,13 +50,21 @@ function Footer() {
               Links
             </Typography>
             <Typography variant="h7" component="h7" align="left">
-              <a href="https://twitter.com/niftyprice_io" id="twitter">
-                {" "}
+              <a
+                href="https://twitter.com/niftyprice_io"
+                id="twitter"
+                target="_blank"
+              >
+                {' '}
               </a>
             </Typography>
             <Typography variant="h7" component="h7" align="left">
-              <a href="https://discord.gg/nuaemyG8" id="discord">
-                {" "}
+              <a
+                href="https://discord.gg/6szJV3FTjK"
+                id="discord"
+                target="_blank"
+              >
+                {' '}
               </a>
             </Typography>
           </Grid>
