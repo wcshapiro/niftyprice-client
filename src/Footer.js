@@ -2,17 +2,15 @@ import React from 'react';
 import './Footer.css';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Form from './Form.js'
+import Form from './Form.js';
 
 function Footer() {
   return (
     <>
-
       <hr></hr>
       <div class="footer">
         <Grid container justifyContent="space-evenly">
-          <Grid item xs={12}>
-          </Grid>
+          <Grid item xs={12}></Grid>
           <Grid item lg={4} sm={6} xs={12}>
             <Typography variant="h5" component="h5" align="left">
               Info
@@ -44,10 +42,10 @@ function Footer() {
               Contact
             </Typography>
             <Typography variant="h7" component="h7" align="left">
+              <p>Join today to get news, charts, new drops, etc!</p>
+              <Form />
               <p>Email: team@niftyprice.io</p>
               <p>© 2021 | niftyprice.io</p>
-              <p>Join today to get news, charts, new drops, etc!</p> 
-              <Form/>
             </Typography>
             <div class="contact-content"></div>
           </Grid>
@@ -73,9 +71,6 @@ function Footer() {
                 {' '}
               </a>
             </Typography>
-            
-
-            
           </Grid>
         </Grid>
       </div>
