@@ -1,6 +1,6 @@
 .table-container {
-    width: 80%;
-    margin-left: 10%;
+    width: 95%;
+    margin-left: 2.5%;
     margin-top: 3%;
 }
 .background-container {
@@ -68,12 +68,20 @@
 }
 .image-snippet {
     float: left;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     display: block;
     border-radius: 50%;
     margin-right: 10px;
  
+}
+.title-item{
+    float: right;
+}
+.title-box{
+    align-content:right ;
+    margin-top: 0px;
+    margin-right: 0px;
 }
 .image-index {
     float: left;
