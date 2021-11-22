@@ -1,0 +1,22 @@
+.newsletter-wrap{
+    margin-top: 15%;
+    width: 60%;
+    margin-left: 20%;
+    
+}
+.title-content{
+    padding-bottom: 2rem;
+}
+.subtitle-content{
+    padding-top: 1rem;
+    color: gray;
+}
+.newsletter-wrap #MERGE0{
+    width: 500px;
+    height: 30px;
+}
+.newsletter-wrap #mc-embedded-subscribe{
+    height: 36px;
+    margin-left: 10px;
+    width: 120px;
+}

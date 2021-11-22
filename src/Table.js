@@ -41,11 +41,11 @@ function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "---";
 }
 function Table() {
-  const travel=(object)=>{
+  const travel = (object) => {
     history.push({
       pathname: "/indexes/" + object,
     });
-  }
+  };
   function toFixedNumber(num, digits, base) {
     var pow = Math.pow(base || 10, digits);
     return Math.round(num * pow) / pow;
@@ -149,12 +149,14 @@ function Table() {
       });
       console.log("CHANGED" + colData + " " + direction);
     },
-    onRowClick: (rowData) => {
-      console.log(rowData);
-      console.log(
-        "ROW DATA" + JSON.stringify(rowData[0].props.children[1].props.children)
-      );
-      var name = rowData[0].props.children[1].props.children;
+    onRowClick: (rowData,rowMeta) => {
+
+      console.log("ROWDATAAAA")
+      console.log(rowData)
+      console.log(rowMeta)
+      console.log(rowMeta.dataIndex)
+      console.log(table_data)
+      var name = rowData[rowData.length-1].includes("artblocks")?art_blocks_data[rowMeta.dataIndex][0]:table_data[rowMeta.dataIndex][0];
       for (const element in alias) {
         if (alias[element] == name) {
           name = element;
@@ -188,21 +190,44 @@ function Table() {
       {
         name: "Collection Name",
         options: {
+          setCellProps: () => ({
+            style: { maxWidth: "300px", minWidth: "190px" },
+          }),
+          setCellHeaderProps: () => ({ style: { padding: "10px" } }),
+
           customBodyRender: (value, tableMeta, updateValue) => {
-            var img = null;
-            if (tableMeta.rowData.length === 9) {
-              img = tableMeta.rowData[8];
-            } else {
-              img = tableMeta.rowData[9];
-            }
+            var img = tableMeta.rowData[tableMeta.rowData.length - 1];
+
             return (
               <>
-                <img src={img} class="image-snippet" alt="no img"></img>
-                <a>
-                  {alias[tableMeta.rowData[0]]
-                    ? alias[tableMeta.rowData[0]]
-                    : tableMeta.rowData[0]}
-                </a>
+                <Grid container >
+                  <Grid item xs={3}>
+                    <img src={img} class="image-snippet" alt="no img"></img>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Grid container>
+                      <Grid item xs={12}>
+                        <Typography variant="subtitle3" align="right">
+                          {alias[tableMeta.rowData[0]]
+                            ? alias[tableMeta.rowData[0]]
+                            : tableMeta.rowData[0]}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography
+                          style={{
+                            color: "#787878",
+                            "text-decoration": "underline",
+                          }}
+                          variant="subtitle3"
+                          align="right"
+                        >
+                          {tableMeta.rowData[4]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </>
             );
           },
@@ -211,8 +236,10 @@ function Table() {
       {
         name: "Floor Price (ETH)",
         options: {
+          
           hint: "Lowest price that an NFT in this collection is currently selling for",
-          setCellProps: () => ({ align: "center" }),
+          setCellProps: () => ({ align: "left",style: {  padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
           customBodyRender: (value) => {
             return (
               <>
@@ -236,7 +263,8 @@ function Table() {
               />
             );
           },
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ align: "left",style: { paddingLeft: "5px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
         },
       },
       {
@@ -252,34 +280,62 @@ function Table() {
               />
             );
           },
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ style: { paddingRight: "20px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
         },
       },
 
       {
         name: "Total Minted",
+        // options: {
+        //   hint: "Total number of NFTs that were minted and currently exist",
+        //   setCellProps: () => ({ align: "center" }),
+        //   customBodyRender: (value) => {
+        //     return (
+        //       <>
+        //         <p>{numberWithCommas(value)}</p>
+        //       </>
+        //     );
+        //   },
+        // },
+        options: { display: false, viewColumns: false, filter: false },
+      },
+      {
+        name: "Floor Cap (ETH)",
         options: {
-          hint: "Total number of NFTs that were minted and currently exist",
-          setCellProps: () => ({ align: "center" }),
+          hint: "Floor price multiplied by the total supply",
+          filter: true,
+          sort: true,
+
+          setCellProps: () => ({ style: { align: "right", padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
           customBodyRender: (value) => {
             return (
               <>
-                <p>{numberWithCommas(value)}</p>
+                <p>{numberWithCommas(value)} </p>{" "}
               </>
             );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
           },
         },
       },
 
       {
-        name: "Float%",
+        name: "24H Volume",
         options: {
-          hint: "Percent of total supply that is currently for sale",
-          setCellProps: () => ({ align: "center" }),
+          hint: "Daily Volume",
+          setCellProps: () => ({ style: { align: "right", padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
           customBodyRender: (value) => {
             return (
               <>
-                <p>{value}%</p>
+                <p>{(isNaN(value)||(value == null))?"---":value}</p>
               </>
             );
           },
@@ -293,17 +349,82 @@ function Table() {
         },
       },
       {
-        name: "Floor Cap (ETH)",
+        name: "24H Volume%",
         options: {
-          hint: "Floor price multiplied by the total supply",
-          filter: true,
-          sort: true,
-
-          setCellProps: () => ({ align: "center" }),
+          hint: "Change in volume within the past 24h hour period",
+          setCellProps: () => ({ style: { align: "right", padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
           customBodyRender: (value) => {
             return (
               <>
-                <p>{numberWithCommas(value)} </p>{" "}
+                <p>{(isNaN(value)||(value == null))?"---":value+"%"}</p>
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+           display: false, viewColumns: false, filter: false 
+        },
+      },
+      {
+        name: "24H Sales",
+        options: {
+          hint: "Sales within the past 24h hour period",
+          setCellProps: () => ({ style: { align: "right", padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{(isNaN(value)||(value == null))?"---":value}</p>
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+        },
+      },
+      {
+        name: "Owners",
+        options: {
+          hint: "Number of Unique Owners",
+          setCellProps: () => ({ style: { align: "right", padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{(isNaN(value)||(value == null))?"---":value}</p>
+              </>
+            );
+          },
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+        },
+      },
+      {
+        name: "%Listed",
+        options: {
+          hint: "Percent of total supply that is currently for sale",
+          setCellProps: () => ({ style: { align: "right", padding: "0px" } }),
+          setCellHeaderProps: () => ({ style: { padding: "0px" } }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                <p>{value}%</p>
               </>
             );
           },
@@ -349,12 +470,7 @@ function Table() {
         name: "Collection Name",
         options: {
           customBodyRender: (value, tableMeta, updateValue) => {
-            var img = null;
-            if (tableMeta.rowData.length === 9) {
-              img = tableMeta.rowData[8];
-            } else {
-              img = tableMeta.rowData[9];
-            }
+            var img = tableMeta.rowData[tableMeta.rowData.length - 1];
             return (
               <>
                 <img src={img} class="image-snippet" alt="no img"></img>
@@ -416,21 +532,22 @@ function Table() {
       },
       {
         name: "Total Minted",
-        options: {
-          hint: "Total number of NFTs that were minted and currently exist",
-          setCellProps: () => ({ align: "center" }),
-          customBodyRender: (value) => {
-            return (
-              <>
-                <p>{numberWithCommas(value)}</p>
-              </>
-            );
-          },
-        },
+        // options: {
+        //   hint: "Total number of NFTs that were minted and currently exist",
+        //   setCellProps: () => ({ align: "center" }),
+        //   customBodyRender: (value) => {
+        //     return (
+        //       <>
+        //         <p>{numberWithCommas(value)}</p>
+        //       </>
+        //     );
+        //   },
+        // },
+        options: { display: false, viewColumns: false, filter: false },
       },
 
       {
-        name: "Float%",
+        name: "%Listed",
         options: {
           hint: "Percent of total supply that is currently for sale",
           setCellProps: () => ({ align: "center" }),
@@ -557,7 +674,10 @@ function Table() {
                       if (object != "blue_chip") {
                         return (
                           <>
-                            <div class="index-content"  onClick={()=>travel(object)}>
+                            <div
+                              class="index-content"
+                              onClick={() => travel(object)}
+                            >
                               <Grid container justifyContent="space-evenly">
                                 <Grid item xs={4}>
                                   <Typography align="left">{object}</Typography>
@@ -653,87 +773,90 @@ function Table() {
                       if (object == "blue_chip") {
                         return (
                           <>
-                          <div class = "index-content" onClick={()=>travel(object)}>
-                            <Grid container justifyContent="space-evenly">
-                              <Grid item xs={3}>
-                                <Typography align="left">
-                                  {" "}
-                                  {object.replace("_", " ")}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={3}>
-                                <Typography align="center">
-                                  {numberWithCommas(
-                                    (
-                                      parseFloat(index_data[object].quote) /
+                            <div
+                              class="index-content"
+                              onClick={() => travel(object)}
+                            >
+                              <Grid container justifyContent="space-evenly">
+                                <Grid item xs={3}>
+                                  <Typography align="left">
+                                    {" "}
+                                    {object.replace("_", " ")}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                  <Typography align="center">
+                                    {numberWithCommas(
+                                      (
+                                        parseFloat(index_data[object].quote) /
+                                        index_metadata[object].divisor
+                                      ).toFixed(2)
+                                    )}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={3}>
+                                  <Typography
+                                    align="center"
+                                    style={
+                                      parseFloat(index_data[object].percent) > 0
+                                        ? {
+                                            color: "#065f46",
+                                            textAlign: "center",
+                                            float: "right",
+                                            maxWidth: 80,
+                                            minWidth: 80,
+                                          }
+                                        : {
+                                            color: "#981b1b",
+                                            textAlign: "center",
+                                            float: "right",
+                                            maxWidth: 80,
+                                            minWidth: 80,
+                                          }
+                                    }
+                                  >
+                                    {(
+                                      parseFloat(index_data[object].change) /
                                       index_metadata[object].divisor
-                                    ).toFixed(2)
-                                  )}
-                                </Typography>
+                                    ).toFixed(2)}
+                                  </Typography>{" "}
+                                </Grid>
+                                <Grid item xs={3}>
+                                  <Typography
+                                    align="right"
+                                    style={
+                                      parseFloat(index_data[object].percent) > 0
+                                        ? {
+                                            color: "#065f46",
+                                            backgroundColor: "#D1FAE5",
+                                            borderRadius: 12,
+                                            textAlign: "center",
+                                            float: "right",
+                                            maxWidth: 80,
+                                            minWidth: 80,
+                                            minHeight: 25,
+                                          }
+                                        : {
+                                            color: "#981b1b",
+                                            backgroundColor: "#FEE2E2",
+                                            borderRadius: 12,
+                                            minHeight: 25,
+                                            textAlign: "center",
+                                            float: "right",
+                                            maxWidth: 80,
+                                            minWidth: 80,
+                                          }
+                                    }
+                                  >
+                                    {parseFloat(
+                                      index_data[object].percent.toFixed(2)
+                                    )}
+                                    %
+                                  </Typography>
+                                </Grid>
                               </Grid>
-                              <Grid item xs={3}>
-                                <Typography
-                                  align="center"
-                                  style={
-                                    parseFloat(index_data[object].percent) > 0
-                                      ? {
-                                          color: "#065f46",
-                                          textAlign: "center",
-                                          float: "right",
-                                          maxWidth: 80,
-                                          minWidth: 80,
-                                        }
-                                      : {
-                                          color: "#981b1b",
-                                          textAlign: "center",
-                                          float: "right",
-                                          maxWidth: 80,
-                                          minWidth: 80,
-                                        }
-                                  }
-                                >
-                                  {(
-                                    parseFloat(index_data[object].change) /
-                                    index_metadata[object].divisor
-                                  ).toFixed(2)}
-                                </Typography>{" "}
-                              </Grid>
-                              <Grid item xs={3}>
-                                <Typography
-                                  align="right"
-                                  style={
-                                    parseFloat(index_data[object].percent) > 0
-                                      ? {
-                                          color: "#065f46",
-                                          backgroundColor: "#D1FAE5",
-                                          borderRadius: 12,
-                                          textAlign: "center",
-                                          float: "right",
-                                          maxWidth: 80,
-                                          minWidth: 80,
-                                          minHeight: 25,
-                                        }
-                                      : {
-                                          color: "#981b1b",
-                                          backgroundColor: "#FEE2E2",
-                                          borderRadius: 12,
-                                          minHeight: 25,
-                                          textAlign: "center",
-                                          float: "right",
-                                          maxWidth: 80,
-                                          minWidth: 80,
-                                        }
-                                  }
-                                >
-                                  {parseFloat(
-                                    index_data[object].percent.toFixed(2)
-                                  )}
-                                  %
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                            
-                            <hr></hr>
+
+                              <hr></hr>
                             </div>
                           </>
                         );

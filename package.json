@@ -12,7 +12,10 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@usedapp/core": "^0.6.3",
     "api": "^3.3.2",
+    "ethers": "^4.0.49",
+    "fs": "^0.0.1-security",
     "highcharts": "^9.2.2",
     "highcharts-react-official": "^3.0.0",
     "material-table": "^1.63.0",
@@ -24,6 +27,7 @@
     "react-charts": "^3.0.0-beta.32",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
+    "react-hook-form": "^7.19.5",
     "react-moment": "^1.1.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
@@ -33,7 +37,9 @@
     "recharts": "^2.1.1",
     "styled-components": "^5.3.0",
     "tunnel": "^0.0.6",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "web3-eth-contract": "^1.6.1",
+    "web3-react": "^5.0.5"
   },
   "scripts": {
     "build": "react-scripts build",
