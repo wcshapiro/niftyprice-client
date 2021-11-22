@@ -2,11 +2,11 @@
   text-align: center;
   position: relative;
   min-height: 100vh;
-  padding-bottom: 15rem;
+  padding-bottom: 1rem;
   background-color: #ffffff;
 }
 #niftyprice {
-  background-image: url("static/images/niftyprice.png");
+  background-image: url('static/images/niftyprice.png');
   display: block;
   background-repeat: no-repeat;
   background-size: contain;
@@ -16,7 +16,7 @@
   height: 40px;
   margin-bottom: 1rem;
 }
-.nav-buttons{
+.nav-buttons {
   width: 1400px;
 }
 @media screen and (max-width: 1200px) {
@@ -27,14 +27,13 @@
 @media screen and (min-width: 1200px) {
   .bm-burger-button {
     display: none;
-    
   }
 }
 .bm-burger-button {
   position: relative;
   width: 36px;
   height: 30px;
-  
+
   top: 0px;
   right: 0;
   float: right;
@@ -76,7 +75,7 @@ Note: Beware of modifying this element as it can break the animations - you shou
   padding: 2.5em 1.5em 0;
   font-size: 1.15em;
 }
-#menu-button{
+#menu-button {
   margin-bottom: 10px;
 }
 

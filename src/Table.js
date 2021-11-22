@@ -644,7 +644,7 @@ function Table() {
                   clicking on individual collections
                 </Typography>
               </Grid>
-              <Grid item xs={12} className={classes.alert}></Grid>
+              {/*<Grid item xs={12} className={classes.alert}></Grid>*/}
               <Grid item xs={12} lg={4}>
                 <Card id="prices" className={classes.root} elevation={5}>
                   <CardContent>
