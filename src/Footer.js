@@ -44,10 +44,11 @@ function Footer() {
               Contact
             </Typography>
             <Typography variant="h7" component="h7" align="left">
+            <p>Join today to get news, charts, and more!</p> 
+              <Form/>
               <p>Email: team@niftyprice.io</p>
               <p>© 2021 | niftyprice.io</p>
-              <p>Join today to get news, charts, new drops, etc!</p> 
-              <Form/>
+              
             </Typography>
             <div class="contact-content"></div>
           </Grid>

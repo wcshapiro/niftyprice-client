@@ -217,7 +217,7 @@ function Table() {
                         <Typography
                           style={{
                             color: "#787878",
-                            "text-decoration": "underline",
+                            
                           }}
                           variant="subtitle3"
                           align="right"
