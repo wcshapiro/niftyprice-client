@@ -12,11 +12,12 @@
     color: gray;
 }
 .newsletter-wrap #MERGE0{
-    width: 500px;
+    width: 80%;
     height: 30px;
 }
 .newsletter-wrap #mc-embedded-subscribe{
+    margin-top: 10px;
     height: 36px;
-    margin-left: 10px;
+    margin-left: 20px;
     width: 120px;
 }

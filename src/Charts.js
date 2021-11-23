@@ -482,7 +482,7 @@ function Charts(props) {
                         </CardContent>
                       </Card>
                     </Grid>
-                    {stats?<Grid item xs={4}>
+                    {stats?<Grid item xs={12} md={12} lg={4}>
                       <Card id="prices" className={classes.root} elevation={5}>
                         <CardContent>
                           {Object.keys(stats).map(function (object, i) {
