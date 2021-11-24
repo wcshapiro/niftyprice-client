@@ -228,6 +228,19 @@ function Wallet() {
                 ? parseFloat(collection_floor_price)
                 : 0;
               setTotalEth(total_val);
+              setChartOptionsFpp({
+                title: {
+                  text: "Portfolio Value",
+                },
+                
+                series: [
+                  {
+                    name:"Portfolio Value USD",
+                    data: [[Date.now(),total_val]],
+                  },
+                ],
+              })
+              
               var params = [transaction_hash];
               const transaction_data = await ethereum.request({
                 method: "eth_getTransactionByHash",
