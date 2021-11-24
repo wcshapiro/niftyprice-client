@@ -93,8 +93,8 @@ function Table() {
       setRank(data.floor_cap_rankings);
       setRankArt(data.floor_cap_rankings_art);
       setAlias(data.alias);
-      console.log("ALIAS" + JSON.stringify(alias));
-      console.log("INDEX INFORMATION" + JSON.stringify(data.index));
+      // console.log("ALIAS" + JSON.stringify(alias));
+      // console.log("INDEX INFORMATION" + JSON.stringify(data.index));
       setIndexData(data.index);
 
       for (let i in data.message) {
@@ -121,9 +121,9 @@ function Table() {
         art_data_arr.push(art_data_temp);
       }
       setTableData(data_arr);
-      console.log(data_arr);
+      // console.log(data_arr);
       setArtBlocks(art_data_arr);
-      console.log(art_data_arr);
+      // console.log(art_data_arr);
       setLoading(false);
     } catch (e) {
       setLoading(false);
@@ -147,20 +147,20 @@ function Table() {
         name: colData,
         direction: direction,
       });
-      console.log("CHANGED" + colData + " " + direction);
+      // console.log("CHANGED" + colData + " " + direction);
     },
     onRowClick: (rowData,rowMeta) => {
 
-      console.log("ROWDATAAAA")
-      console.log(rowData)
-      console.log(rowMeta)
-      console.log(rowMeta.dataIndex)
-      console.log(table_data)
+      // console.log("ROWDATAAAA")
+      // console.log(rowData)
+      // console.log(rowMeta)
+      // console.log(rowMeta.dataIndex)
+      // console.log(table_data)
       var name = rowData[rowData.length-1].includes("artblocks")?art_blocks_data[rowMeta.dataIndex][0]:table_data[rowMeta.dataIndex][0];
       for (const element in alias) {
         if (alias[element] == name) {
           name = element;
-          console.log("Found match" + element);
+          // console.log("Found match" + element);
         }
       }
       history.push({
@@ -600,7 +600,7 @@ function Table() {
             for (const element in alias) {
               if (alias[element] == tableMeta.rowData[0]) {
                 link_name = element;
-                console.log("Found match" + element);
+                // console.log("Found match" + element);
               }
             }
 

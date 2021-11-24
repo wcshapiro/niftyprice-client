@@ -71,7 +71,7 @@ function Wallet() {
   const [addr, setAddr] = useState(null);
 
   const context = useWeb3Context();
-  console.log(context);
+  // console.log(context);
 
   if (context.error) {
     console.error("Error!");
@@ -197,10 +197,10 @@ function Wallet() {
         for (const asset of data.asset_events) {
           if (asset.transaction && asset.event_type == "transfer") {
             if (Object.keys(assets).includes(asset.asset.id.toString())) {
-              console.log("FOUND DUP removing" + Number(asset.asset.id));
-              console.log(table_data_object);
+              // console.log("FOUND DUP removing" + Number(asset.asset.id));
+              // console.log(table_data_object);
               delete table_data_object[Number(asset.asset.id)];
-              console.log(table_data_object);
+              // console.log(table_data_object);
             } else {
               assets[asset.asset.id] = true;
               var image = asset.asset.image_thumbnail_url;
@@ -214,10 +214,10 @@ function Wallet() {
                   : "https://api.opensea.io/api/v1/collection/" +
                     slug +
                     "/stats";
-              console.log(slug);
-              console.log(asset_name);
-              console.log(url);
-              console.log(asset);
+              // console.log(slug);
+              // console.log(asset_name);
+              // console.log(url);
+              // console.log(asset);
               var transaction_hash = asset.transaction.transaction_hash;
               // console.log(transaction_hash);
 
@@ -270,7 +270,7 @@ function Wallet() {
               var asset_url = "https://api.opensea.io/api/v1/asset/"+asset.contract_address+"/"+asset.asset.token_id+"/"
               const asset_data = await fetch(asset_url)
               const asset_response = await asset_data.json()
-              console.log(asset_response)
+              // console.log(asset_response)
               table_data_object[asset.asset.id] = {
                 name: asset_name,
                 token_id: asset.asset.token_id,
@@ -310,7 +310,7 @@ function Wallet() {
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
       // console.log(traits);
-      console.log(rowData);
+      // console.log(rowData);
       // console.log(tokenMap);
       // console.log(tokenMap[rowData[1]]);
       return (
