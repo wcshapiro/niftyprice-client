@@ -48,7 +48,7 @@ function App() {
                   href="/purchase"
                   id="menu-button"
                 >
-                  GET PREMIUM ACCESS
+                  Feedback
                 </Button>
                 <Button
                   variant="contained"
@@ -74,14 +74,14 @@ function App() {
                 >
                   Newsletter
                 </Button>
-                {/* <Button
+                <Button
                   variant="contained"
                   color="primary"
                   href="/wallet"
                   id="menu-button"
                 >
                   Wallet{" "}
-                </Button> */}
+                </Button>
               </Menu>
               <div class="nav-buttons">
                 <Grid container justify="flex-end" spacing={3}>
@@ -91,7 +91,7 @@ function App() {
                       color="primary"
                       href="/purchase"
                     >
-                      GET PREMIUM ACCESS
+                      Feedback
                     </Button>
                   </Grid>
                   <Grid item>
@@ -108,11 +108,11 @@ function App() {
                       About Us
                     </Button>
                   </Grid>
-                  {/* <Grid item>
+                  <Grid item>
                     <Button variant="contained" color="primary" href="/wallet">
                       Wallet
                     </Button>
-                  </Grid> */}
+                  </Grid>
                   <Grid item>
                     <Button variant="contained" color="primary" href="/newsletter">
                       Newsletter

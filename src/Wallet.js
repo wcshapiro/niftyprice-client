@@ -71,7 +71,7 @@ function Wallet() {
   const [addr, setAddr] = useState(null);
 
   const context = useWeb3Context();
-  console.log(context);
+  // console.log(context);
 
   if (context.error) {
     console.error("Error!");
@@ -133,8 +133,6 @@ function Wallet() {
         .isMember(addr)
         .call({ from: addr })
         .then((value) => {
-          // console.log("RESPONSE OFF");
-          // console.log(value);
           let check = isBoolean(value);
           check && setAuth(value);
         });
@@ -155,8 +153,6 @@ function Wallet() {
       etherscan_api_token;
     const gwei_data = await fetch(url);
     const gwei_price = await gwei_data.json();
-    // console.log("WEI");
-    // console.log(gwei_price.result.ProposeGasPrice);
     setGwei(gwei_price.result.ProposeGasPrice);
   };
 
@@ -180,133 +176,123 @@ function Wallet() {
         var table_data_object = {};
         var table_data_list = [];
         var token_ids = [];
+        var headers = {
+          "Access-Control-Allow-Origin": "http, https",
+          "Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTONS",
+          "Access-Control-Allow-Headers":
+            "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+          Accept: "application/json",
+          "X-API-KEY": opensea_api_token,
+        };
+        var url =
+          "https://api.opensea.io/api/v1/events?account_address=" +
+          addr +
+          "&only_opensea=false&limit=200";
+        const events = await fetch(url, { headers });
+        var data = await events.json();
+        // console.log(data);
+        // setNumNFT(data.assets.length);
+        // var asset_traits = {};
+        var assets = {};
+        for (const asset of data.asset_events) {
+          if (asset.transaction && asset.event_type == "transfer") {
+            if (Object.keys(assets).includes(asset.asset.id.toString())) {
+              // console.log("FOUND DUP removing" + Number(asset.asset.id));
+              // console.log(table_data_object);
+              delete table_data_object[Number(asset.asset.id)];
+              // console.log(table_data_object);
+            } else {
+              assets[asset.asset.id] = true;
+              var image = asset.asset.image_thumbnail_url;
+              var slug = asset.collection_slug;
+              var asset_name = asset.asset.name
+                ? asset.asset.name.split("#")[0]
+                : asset.asset.collection.name;
+              var url =
+                slug == "art-blocks-factory" || slug == "art-blocks"
+                  ? "https://niftyprice.herokuapp.com/floor/:" + asset_name
+                  : "https://api.opensea.io/api/v1/collection/" +
+                    slug +
+                    "/stats";
+              // console.log(slug);
+              // console.log(asset_name);
+              // console.log(url);
+              // console.log(asset);
+              var transaction_hash = asset.transaction.transaction_hash;
+              // console.log(transaction_hash);
 
-        const tokens = await fetch(
-          "https://api.opensea.io/api/v1/assets?owner=" + addr,
-          {
-            headers: {
-              Accept: "application/json",
-              "X-API-KEY": opensea_api_token,
-            },
-          }
-        );
-        var data = await tokens.json();
-        // console.log(data.assets);
-        setNumNFT(data.assets.length);
-        var asset_traits = {};
-        for (const asset of data.assets) {
-          var token_id = asset.token_id;
-          var asset_id = asset.id;
-          asset_to_token[asset_id] = token_id;
-          token_to_asset[token_id] = asset_id;
-          asset_from_contract[asset.asset_contract.address] = asset_id
-          var trait_list = asset.traits;
-          asset_traits[asset_id] = trait_list;
-          var last_price = asset.last_sale
-            ? asset.last_sale.total_price / 1000000000000000000
-            : null;
-          var image = asset.image_thumbnail_url;
-          var slug = asset.collection.slug;
-          console.log(asset);
-          var asset_name = (slug == "art-blocks-factory")?asset.name.split("#")[0]:slug
-          var url =
-            slug == "art-blocks-factory"
-              ? "https://niftyprice.herokuapp.com/floor/:" + asset_name 
-              : "https://api.opensea.io/api/v1/collection/" + slug + "/stats";
-          const floor_price = await fetch(url);
-          var data = await floor_price.json();
-          var collection_floor_price = data.stats.floor_price;
-          total_val += parseFloat(collection_floor_price);
-          setTotalEth(total_val);
-          setChartOptionsFpp({
-            title: {
-              text: "Portfolio Value",
-            },
-            xAxis: {
-              categories: null,
-            },
-            series: [
-              {
-                name: "Portfolio Value (ETH)",
-                data: [total_val],
-              },
-            ],
-          });
-          console.log(asset);
-          table_data_object[asset_id] = {
-            name: asset_name,
-            token_id: token_id,
-            cost: last_price,
-            collection_floor: parseFloat(collection_floor_price),
-            gas_used: null,
-            profit: null,
-            image: image,
-          };
-          console.log(table_data_object[asset_id])
-        }
-        setTokenMap(token_to_asset);
-        setTraits(asset_traits);
-        var ether_token_transactions = [];
-        const address_transactions = await fetch(
-          "https://api.etherscan.io/api?module=account&action=tokennfttx&address=" +
-            addr +
-            // "0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"
-            "&page=1&offset=0&startblock=0&endblock=27025780&sort=asc&apikey=" +
-            etherscan_api_token
-        );
-        const address_transactions_data = await address_transactions.json();
-        console.log("Transaction data")
-        console.log(address_transactions_data);
-        for (const transaction in address_transactions_data["result"]) {
-          // console.log(address_transactions_data["result"][transaction]);
-          ether_token_transactions.push(
-            address_transactions_data["result"][transaction]
-          );
-        }
-
-       
-        for (const token_transactions of ether_token_transactions) {
-          console.log("object")
-          console.log(token_transactions);
-          // console.log(token_transactions.hash);
-
-          var params = [
-            // "0x87ce902cdb45f9cb9be9de638a04798b20f166d322a2c8288bde27c3dea69cd1"
-            token_transactions.hash,
-          ];
-          const transaction_data = await ethereum.request({
-            method: "eth_getTransactionByHash",
-            params: params,
-          });
-          var trans_hash_data = await transaction_data;
-          console.log("HASH");
-          console.log(trans_hash_data);
-          var paid_price =
-            parseFloat(Number(trans_hash_data.value), 16) / 1000000000000000000;
-          // console.log(paid_price);
-          if (table_data_object[token_to_asset[token_transactions.tokenID]]) {
-            table_data_object[token_to_asset[token_transactions.tokenID]].cost =paid_price;
-            table_data_object[token_to_asset[token_transactions.tokenID]].profit = (table_data_object[token_to_asset[token_transactions.tokenID]].collection_floor - paid_price).toFixed(4);
-            profits +=table_data_object[token_to_asset[token_transactions.tokenID]].collection_floor - paid_price;
-            table_data_object[token_to_asset[token_transactions.tokenID]].gas_used ="$" +
-              (
+              const floor_price = await fetch(url);
+              var data = await floor_price.json();
+              var collection_floor_price = data.stats.floor_price;
+              total_val += parseFloat(collection_floor_price)
+                ? parseFloat(collection_floor_price)
+                : 0;
+              setTotalEth(total_val);
+              setChartOptionsFpp({
+                title: {
+                  text: "Portfolio Value",
+                },
+                
+                series: [
+                  {
+                    name:"Portfolio Value USD",
+                    data: [[Date.now(),total_val]],
+                  },
+                ],
+              })
+              
+              var params = [transaction_hash];
+              const transaction_data = await ethereum.request({
+                method: "eth_getTransactionByHash",
+                params: params,
+              });
+              var trans_hash_data = await transaction_data;
+              // console.log("HASH");
+              // console.log(trans_hash_data);
+              var paid_price =
+                parseFloat(Number(trans_hash_data.value), 16) /
+                1000000000000000000;
+              // console.log(paid_price);
+              var gas_used = (
                 parseFloat(Number(trans_hash_data.gas, 16)) *
                 0.000000001 *
                 parseFloat(Number(trans_hash_data.gasPrice, 16)) *
-                0.000000001 *
-                eth
-              ).toFixed(2);
-              console.log(table_data_list)
-            table_data_list.push(
-              Object.values(
-                table_data_object[token_to_asset[token_transactions.tokenID]]
-              )
-            );
+                0.000000001
+              ).toFixed(4);
+              var profit =
+                collection_floor_price -
+                paid_price -
+                parseFloat(Number(trans_hash_data.gas, 16)) *
+                  0.000000001 *
+                  parseFloat(Number(trans_hash_data.gasPrice, 16)) *
+                  0.000000001;
+              profits += profit;
+              var asset_url = "https://api.opensea.io/api/v1/asset/"+asset.contract_address+"/"+asset.asset.token_id+"/"
+              const asset_data = await fetch(asset_url)
+              const asset_response = await asset_data.json()
+              // console.log(asset_response)
+              table_data_object[asset.asset.id] = {
+                name: asset_name,
+                token_id: asset.asset.token_id,
+                cost: paid_price.toFixed(4),
+                collection_floor: collection_floor_price,
+                gas_used: gas_used,
+                profit: profit.toFixed(4),
+                traits: asset_response.traits,
+                etherscan_transaction: null,
+                opensea_link: asset_response.permalink,
+                image: image,
+              };
+            }
           }
-
-          //
-          //
         }
+        for (const nft of Object.values(table_data_object)) {
+          table_data_list.push(Object.values(nft));
+        }
+        setNumNFT(table_data_list.length);
+        // setTokenMap(token_to_asset);
+        // setTraits(asset_traits);
+
         setProfit(profits);
         setWalletData(table_data_list);
         // console.log("OBJECT AHAH");
@@ -324,7 +310,7 @@ function Wallet() {
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
       // console.log(traits);
-      // console.log(rowData[1]);
+      // console.log(rowData);
       // console.log(tokenMap);
       // console.log(tokenMap[rowData[1]]);
       return (
@@ -333,7 +319,7 @@ function Wallet() {
             <td colSpan={6}>
               <table>
                 <TableRow className={classes.row}>
-                  {Object.values(traits[tokenMap[rowData[1]]]).map(function (
+                  {Object.values(rowData[6]).map(function (
                     object,
                     i
                   ) {
@@ -345,7 +331,7 @@ function Wallet() {
                   })}
                 </TableRow>
                 <TableRow className={classes.row}>
-                  {Object.values(traits[tokenMap[rowData[1]]]).map(function (
+                  {Object.values(rowData[6]).map(function (
                     object,
                     i
                   ) {
@@ -422,24 +408,63 @@ function Wallet() {
         name: "NFT",
         options: {
           customBodyRender: (value, tableMeta, updateValue) => {
-            var img = tableMeta.rowData[6];
+            // console.log(tableMeta.rowData);
+            var img = tableMeta.rowData[tableMeta.rowData.length - 1];
             return (
               <>
-                <img src={img} class="image-snippet" alt="no img"></img>
-                <a>{tableMeta.rowData[0]}</a>
+                <Grid container>
+                  <Grid item xs={3}>
+                    <img src={img} class="image-snippet" alt="no img"></img>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Grid container>
+                      <Grid item xs={12}>
+                        <Typography variant="subtitle3" align="right">
+                          {tableMeta.rowData[0]}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography
+                          style={{
+                            color: "#787878",
+                            "text-decoration": "underline",
+                          }}
+                          variant="subtitle3"
+                          align="right"
+                        >
+                          {tableMeta.rowData[1]}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </>
             );
           },
         },
       },
-      { name: "Token ID" },
+      {
+        name: "Token ID",
+        options: { display: false, viewColumns: false, filter: false },
+      },
       { name: "Paid Price (ETH)" },
       { name: "Collection Floor (ETH)" },
-      { name: "Gas Cost (USD)" },
+      { name: "Gas Cost (ETH)" },
       { name: "P/L (ETH)" },
-      // { name: "Current Value (ETH)" },
       // { name: "Current Value (USD)" },
       // { name: "Traits Floor" },
+      {
+        name: "Traits",
+        options: { display: false, viewColumns: false, filter: false },
+      },
+      {
+        name: "Etherscan Link",
+        options: { display: false, viewColumns: false, filter: false },
+      },
+      {
+        name: "Opensea Link",
+        options: { display: false, viewColumns: false, filter: false },
+      },
       {
         name: "Image",
         options: { display: false, viewColumns: false, filter: false },
@@ -530,8 +555,9 @@ function Wallet() {
                               spacing={4}
                             >
                               <Grid item xs={12}>
-                                evaluate your portfolio, sign up by paying us at
-                                the smart contract listed here:
+                                <Typography variant="h6">Register for Premium via smart contract!</Typography>
+                                <Typography>Price is .05 ETH</Typography>
+
                               </Grid>
                               <Grid item>
                                 <Button
@@ -545,7 +571,15 @@ function Wallet() {
                               </Grid>
                             </Grid>
                           </>
-                        ) : (
+                        ) : (auth && addr && !wallet_data)?(<>
+                        <Grid container justifyContent="space-between">
+                              <Grid item xs={12} className={classes.items}>
+
+                        <CircularProgress />
+                        </Grid>
+                        </Grid>
+
+                        </>):(
                           <>
                             <Grid container justifyContent="space-between">
                               <Grid item xs={12} className={classes.items}>
@@ -675,7 +709,6 @@ function Wallet() {
                                   variant="subtitle1"
                                   align="right"
                                 >
-                                  
                                   {profit
                                     ? numberWithCommas(
                                         (eth_price * profit).toFixed(2)

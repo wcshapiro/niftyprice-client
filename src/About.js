@@ -11,7 +11,7 @@ import { Timeline } from "react-twitter-widgets";
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-    maxHeight: 400,
+    maxHeight: 450,
   },
 });
 
@@ -22,7 +22,7 @@ function About() {
       <div class="about-wrap">
         <Grid container justifyContent="center">
           <div class="top-section">
-            <Grid container justifyContent="space-evenly">
+            <Grid container justifyContent="space-evenly" spacing={4}>
               <Grid item lg={6} xs={12}>
                 <Typography variant="h2" component="h2">
                   What is Niftyprice?

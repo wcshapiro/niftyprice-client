@@ -96,9 +96,9 @@ function Charts(props) {
       "X-API-KEY": "c38932a3b50647cbb30d2f5601e81850",
     };
     const resp = await fetch(url, { headers });
-    console.log("COLLECTION STATS");
+    // console.log("COLLECTION STATS");
     var data = await resp.json();
-    console.log(data);
+    // console.log(data);
     setStats({
       "1d Volume":numberWithCommas(data.stats.one_day_volume.toFixed(2)),
       "1d Volume Change %":data.stats.one_day_change.toFixed(2),
@@ -114,7 +114,7 @@ function Charts(props) {
   //   get_stats();
   // }, []);
   const loadAsyncData = async () => {
-    console.log("PROPS" + JSON.stringify(location.pathname));
+    // console.log("PROPS" + JSON.stringify(location.pathname));
     setLoading(true);
     try {
       var total_for_sale = [];
@@ -124,8 +124,8 @@ function Charts(props) {
         "collections/:"
       );
       let collection_name = collection_path.split("/")[1].replace(":", "");
-      console.log("NAME" + collection_name);
-      console.log("PATH" + collection_path);
+      // console.log("NAME" + collection_name);
+      // console.log("PATH" + collection_path);
       const url = "https://niftyprice.herokuapp.com/"+collection_path; //"http://localhost:8080/" + collection_path; //
       const response = await fetch(
         url
@@ -135,16 +135,16 @@ function Charts(props) {
         //   })
       );
       var data = await response.json();
-      console.log("DATA");
-      console.log(data);
+      // console.log("DATA");
+      // console.log(data);
 
       setImage(data.image);
-      console.log(data.table.collections);
-      console.log(data.message);
-      console.log("INFO" + JSON.stringify(data.alias));
+      // console.log(data.table.collections);
+      // console.log(data.message);
+      // console.log("INFO" + JSON.stringify(data.alias));
       setAlias(data.alias);
       var rank = data.rank;
-      console.log("RANKINGS" + rank);
+      // console.log("RANKINGS" + rank);
       var plural = (plural =
         collection_name.slice(-1) === "s"
           ? collection_name
@@ -153,7 +153,7 @@ function Charts(props) {
         
         if (element["Collection Name"] == collection_name) {
           get_stats();
-          console.log("matched");
+          // console.log("matched");
           setInfo({
             rank: rank,
             name: element["Collection Name"],
@@ -169,14 +169,14 @@ function Charts(props) {
               "?ref=0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW",
           });
         } else {
-          console.log("no match");
+          // console.log("no match");
         }
       }
       for (const element of data.table.art_blocks) {
         
         if (element["Collection Name"] == collection_name) {
           var type = element["Category"];
-          console.log("matched");
+          // console.log("matched");
           
           setInfo({
             name: element["Collection Name"],
@@ -199,10 +199,10 @@ function Charts(props) {
           });
           // https://opensea.io/collection/0x5f3e321623d141681as1a?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW
         } else {
-          console.log("no match");
+          // console.log("no match");
         }
       }
-      console.log(data.table.collections);
+      // console.log(data.table.collections);
 
       var series_fpp = [];
       var series_tfs = [];
@@ -226,7 +226,7 @@ function Charts(props) {
         }
         series_fpp.push(element_fpp);
       }
-      console.log("pushing data");
+      // console.log("pushing data");
       setChartOptions({
         title: {
           text: "Supply History",
@@ -482,7 +482,7 @@ function Charts(props) {
                         </CardContent>
                       </Card>
                     </Grid>
-                    {stats?<Grid item xs={4}>
+                    {stats?<Grid item xs={12} md={12} lg={4}>
                       <Card id="prices" className={classes.root} elevation={5}>
                         <CardContent>
                           {Object.keys(stats).map(function (object, i) {
