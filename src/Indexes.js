@@ -64,18 +64,18 @@ function Indexes() {
     try {
       let index_path = location.pathname.replace("/indexes/", "indexes/:");
       let index_name = index_path.split("/")[1].replace(":", "").replace("-","_");
-      console.log("NAME  :" + index_path);
-      const url = "https://niftyprice.herokuapp.com/" + index_path; // "http://localhost:8080/" + index_path; //
-      console.log("SENDING TO INDEXES");
+      // console.log("NAME  :" + index_path);
+      const url =  "http://localhost:8080/" + index_path; //"https://niftyprice.herokuapp.com/" + index_path; //
+      // console.log("SENDING TO INDEXES");
       const response = await fetch(url);
-      console.log("RESPONSE");
-      console.log(response);
+      // console.log("RESPONSE");
+      // console.log(response);
       var data = await response.json();
-      console.log("INDEX" + JSON.stringify(data.message.index_stats));
+      // console.log("INDEX" + JSON.stringify(data.message.index_stats));
       var series_index = [];
       for (const key in data.message.index) {
         var chart_datapoint = null;
-        console.log("KEY" + key + "VALUE" + data.message.index[key]);
+        // console.log("KEY" + key + "VALUE" + data.message.index[key]);
 
         if (data.message.index[key] != null) {
           if (index_name == "blue_chip") {
@@ -108,12 +108,12 @@ function Indexes() {
         change: data.message.index_stats.change/index_metadata[index_name].divisor,
         percent: data.message.index_stats.percent,
       });
-      console.log("INDEXMAP: " + indexMap);
-      console.log("TIHS IS SERIES INDEX:" + series_index);
+      // console.log("INDEXMAP: " + indexMap);
+      // console.log("TIHS IS SERIES INDEX:" + series_index);
       setLoading(false);
     } catch (e) {
       setLoading(false);
-      console.log("THERE WAS AN ERROR: " + e);
+      // console.log("THERE WAS AN ERROR: " + e);
     }
   };
   useEffect(() => {

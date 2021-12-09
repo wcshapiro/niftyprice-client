@@ -7,6 +7,7 @@ import Footer from "./Footer.js";
 import Purchase from "./Purchase.js";
 import About from "./About.js";
 import Privacy from "./Privacy.js";
+import Ticker from "./Ticker.js";
 import Terms from "./Terms.js";
 import Form from "./Form.js";
 import Newsletter from "./Newsletter.js";
@@ -16,6 +17,8 @@ import Wallet from "./Wallet.js";
 import Web3Provider, { useWeb3Context, Web3Consumer } from 'web3-react';
 import { Connectors } from 'web3-react'
 import { ethers } from "ethers";
+
+
 import connectors from "./connectors";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -36,15 +39,16 @@ function App() {
               <Menu right>
                 <Button
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                   href="/"
                   id="menu-button"
                 >
                   Home
                 </Button>
                 <Button
+                
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                   href="/purchase"
                   id="menu-button"
                 >
@@ -52,7 +56,7 @@ function App() {
                 </Button>
                 <Button
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                   href="https://blog.niftyprice.io/"
                   id="menu-button"
                 >
@@ -60,7 +64,7 @@ function App() {
                 </Button>
                 <Button
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                   href="/about"
                   id="menu-button"
                 >
@@ -68,7 +72,7 @@ function App() {
                 </Button>
                 <Button
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                   href="/newsletter"
                   id="menu-button"
                 >
@@ -76,11 +80,11 @@ function App() {
                 </Button>
                 <Button
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor: '#D9841C', color: '#FFFFFF'}}
                   href="/wallet"
                   id="menu-button"
                 >
-                  Wallet{" "}
+                  Premium Access
                 </Button>
               </Menu>
               <div class="nav-buttons">
@@ -88,8 +92,7 @@ function App() {
                   <Grid item>
                     <Button
                       variant="contained"
-                      color="primary"
-                      href="/purchase"
+                      style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}                      href="/purchase"
                     >
                       Feedback
                     </Button>
@@ -97,31 +100,29 @@ function App() {
                   <Grid item>
                     <Button
                       variant="contained"
-                      color="primary"
+                      style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                       href="https://blog.niftyprice.io/"
                     >
                       Blog
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary" href="/about">
+                    <Button variant="contained" style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}} href="/about">
                       About Us
                     </Button>
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" color="primary" href="/wallet">
-                      Wallet
+                    <Button variant="contained" style={{backgroundColor: '#D9841C', color: '#FFFFFF'}} href="/wallet">
+                      Premium Access
                     </Button>
                   </Grid>
-                  <Grid item>
-                    <Button variant="contained" color="primary" href="/newsletter">
-                      Newsletter
-                    </Button>
-                  </Grid>
+                  
                 </Grid>
               </div>
             </Toolbar>
+            <Ticker />
           </AppBar>
+          
           <div class="content-wrap">
             <Switch>
               <Route exact path="/purchase">

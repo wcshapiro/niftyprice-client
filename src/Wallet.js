@@ -36,6 +36,10 @@ const useStyles = makeStyles({
   alert: {
     minHeight: 50,
   },
+  cell: {
+    position: "relative",
+    height: 160,
+  },
   row: {
     maxWidth: 50,
     overflow: "auto",
@@ -72,7 +76,6 @@ function Wallet() {
 
   const context = useWeb3Context();
   // console.log(context);
-
   if (context.error) {
     console.error("Error!");
   }
@@ -89,30 +92,23 @@ function Wallet() {
   const [wallet_data, setWalletData] = useState([]);
   const [total_eth, setTotalEth] = useState();
   const [eth_price, setEth] = useState(null);
+  const [client_data, setClientData] = useState();
   const [num_nft, setNumNFT] = useState();
   const [traits, setTraits] = useState({});
   const [profit, setProfit] = useState();
+  const [floor_map, setFloorMap] = useState({});
+  const [rarity, setRarity] = useState();
   const [gwei_price, setGwei] = useState();
-  const [fpp_chart_options, setChartOptionsFpp] = useState({
-    title: {
-      text: "Portfolio Value",
-    },
-    xAxis: {
-      categories: null,
-    },
-    series: [
-      {
-        data: [0],
-      },
-    ],
-  });
-  var get_eth = () => {
+  const [fpp_chart_options, setChartOptionsFpp] = useState();
+  const [fpp_chart, setFloorChartOptionsFpp] = useState();
+  const get_eth = async () => {
     return new Promise((resolve, reject) => {
-      const response = fetch("https://niftyprice.herokuapp.com/wallet")
+      const response = fetch("https://niftyprice.herokuapp.com/wallet/:" + addr) //https://niftyprice.herokuapp.com/wallet/:
         .then((resp) => resp.json())
         .then((data) => {
           setEth(data.message.eth);
-          resolve(data.message.eth);
+          setClientData(data.message.info);
+          resolve(client_data);
         })
         .catch((e) => {
           console.log(e);
@@ -155,16 +151,38 @@ function Wallet() {
     const gwei_price = await gwei_data.json();
     setGwei(gwei_price.result.ProposeGasPrice);
   };
-
   const connect_metamask = async () => {
     const accounts = await ethereum.send("eth_requestAccounts");
     setAddr(accounts.result[0]);
+    // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c");
   };
-
-  const loadAsyncData = async (eth) => {
+  const disconnect_metamask = async () => {
+    setAddr(null);
+    // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c");
+  };
+  const purchase_premium = async () => {
+    var provider = await detectEthereumProvider();
+    var web3 = new Web3(provider);
+    var address = "0x4ba0fC55646f6c82134CE3dc19aC64d02176e47c";
+    var Contract = require("web3-eth-contract");
+    Contract.setProvider(provider);
+    var contract = new Contract(abi, address);
+    // console.log("PURCHASING PREMIUM");
+    if (addr) {
+      contract.methods
+        .register()
+        .send({ from: addr, gas: 100000, value: web3.toWei(0.05, "ether") })
+        .then((value) => {
+          // console.log("RETURN VAL", value);
+        });
+    }
+  };
+  const loadAsyncData = async () => {
     // setLoading(true);
+    var data = client_data;
     if (ethereum) {
-      if (addr != null) {
+      // console.log("CLIENT", data);
+      if (addr != null && data != undefined && data.data) {
         // console.log(accounts.result[0])
         // setAddr(accounts.result[0]);
         // console.log(accounts.result);
@@ -176,21 +194,22 @@ function Wallet() {
         var table_data_object = {};
         var table_data_list = [];
         var token_ids = [];
-        var headers = {
-          "Access-Control-Allow-Origin": "http, https",
-          "Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTONS",
-          "Access-Control-Allow-Headers":
-            "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-          Accept: "application/json",
-          "X-API-KEY": opensea_api_token,
-        };
-        var url =
-          "https://api.opensea.io/api/v1/events?account_address=" +
-          addr +
-          "&only_opensea=false&limit=200";
-        const events = await fetch(url, { headers });
-        var data = await events.json();
-        // console.log(data);
+        // var headers = {
+        //   "Access-Control-Allow-Origin": "http, https",
+        //   "Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTONS",
+        //   "Access-Control-Allow-Headers":
+        //     "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+        //   Accept: "application/json",
+        //   "X-API-KEY": opensea_api_token,
+        // };
+        // var url =
+        //   "https://api.opensea.io/api/v1/events?account_address=" +
+        //   addr +
+        //   "&only_opensea=false&limit=200";
+        // const events = await fetch(url, { headers });
+        // var data = await events.json();
+        var data = data.data;
+        // console.log("DATA", data);
         // setNumNFT(data.assets.length);
         // var asset_traits = {};
         var assets = {};
@@ -219,7 +238,8 @@ function Wallet() {
               // console.log(url);
               // console.log(asset);
               var transaction_hash = asset.transaction.transaction_hash;
-              // console.log(transaction_hash);
+              // console.log();
+              var transaction_date = asset.transaction.timestamp;
 
               const floor_price = await fetch(url);
               var data = await floor_price.json();
@@ -228,19 +248,7 @@ function Wallet() {
                 ? parseFloat(collection_floor_price)
                 : 0;
               setTotalEth(total_val);
-              setChartOptionsFpp({
-                title: {
-                  text: "Portfolio Value",
-                },
-                
-                series: [
-                  {
-                    name:"Portfolio Value USD",
-                    data: [[Date.now(),total_val]],
-                  },
-                ],
-              })
-              
+
               var params = [transaction_hash];
               const transaction_data = await ethereum.request({
                 method: "eth_getTransactionByHash",
@@ -267,10 +275,25 @@ function Wallet() {
                   parseFloat(Number(trans_hash_data.gasPrice, 16)) *
                   0.000000001;
               profits += profit;
-              var asset_url = "https://api.opensea.io/api/v1/asset/"+asset.contract_address+"/"+asset.asset.token_id+"/"
-              const asset_data = await fetch(asset_url)
-              const asset_response = await asset_data.json()
-              // console.log(asset_response)
+              var asset_url =
+                "https://api.opensea.io/api/v1/asset/" +
+                asset.contract_address +
+                "/" +
+                asset.asset.token_id +
+                "/";
+              const asset_data = await fetch(asset_url);
+              const asset_response = await asset_data.json();
+              // console.log(asset_response);
+              var total_supply = asset_response.collection.stats.total_supply;
+              var total_rarity = 0;
+              var index = 0;
+              for (const element of asset_response.traits) {
+                // console.log(element);
+                total_rarity += element.trait_count / total_supply;
+                index += 1;
+              }
+              total_rarity = total_rarity / index;
+              // setRarity(total_rarity);
               table_data_object[asset.asset.id] = {
                 name: asset_name,
                 token_id: asset.asset.token_id,
@@ -281,14 +304,53 @@ function Wallet() {
                 traits: asset_response.traits,
                 etherscan_transaction: null,
                 opensea_link: asset_response.permalink,
+                date: transaction_date,
+                total: total_supply,
+                clean_name: asset_name,
+                total_rarity: total_rarity,
                 image: image,
               };
             }
           }
         }
+        let series_list = [];
+        var floor_vals_map = {};
         for (const nft of Object.values(table_data_object)) {
+          let date = new Date(Object.values(nft)[9]);
+          let url =
+            "https://niftyprice.herokuapp.com/collections/:" + Object.values(nft)[0]; // https://niftyprice.herokuapp.com/wallet/:
+          var response = await fetch(url);
+          var nft_data = await response.json();
+          // console.log(nft_data);
+          var nft_vals = [];
+          var floor_vals = [];
+
+          for (const entry of nft_data.message) {
+            let entry_date = new Date(entry.date);
+            let totalvals = [
+              entry_date.getTime(),
+              parseFloat(entry.floorpurchaseprice),
+            ];
+            floor_vals.push(totalvals);
+            if (entry_date > date) {
+              let curr_val = parseFloat(entry.floorpurchaseprice) * eth_price;
+              let vals = [entry_date.getTime(), curr_val];
+              nft_vals.push(vals);
+            }
+          }
+          series_list.push({ name: Object.values(nft)[0], data: nft_vals });
+          let temp_floor_map = floor_map;
+          temp_floor_map[Object.values(nft)[0]] = floor_vals;
+          setFloorMap(temp_floor_map);
           table_data_list.push(Object.values(nft));
+          // console.log(Object.entries(nft_history));
         }
+        setChartOptionsFpp({
+          title: {
+            text: "Portfolio Value",
+          },
+          series: series_list,
+        });
         setNumNFT(table_data_list.length);
         // setTokenMap(token_to_asset);
         // setTraits(asset_traits);
@@ -305,53 +367,145 @@ function Wallet() {
       });
     }
   };
+
   const options = {
     expandableRowsHeader: false,
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
+      // console.log(rowData, rowMeta);
+      // console.log("CHECKING", rowData[rowData.length - 2]);
+
       // console.log(traits);
-      // console.log(rowData);
       // console.log(tokenMap);
       // console.log(tokenMap[rowData[1]]);
       return (
         <>
           <tr>
             <td colSpan={6}>
-              <table>
-                <TableRow className={classes.row}>
-                  {Object.values(rowData[6]).map(function (
-                    object,
-                    i
-                  ) {
+              <table class="trait-table">
+                <tr>
+                  <th>Trait Name</th>
+                  <th>Trait Value</th>
+                  <th># of NFTs With Trait</th>
+                  <th>Rarity %</th>
+                  <th>Rarity Meter</th>
+                </tr>
+                {Object.values(rowData[6]).map(function (object, i) {
+                  return (
+                    <>
+                      <tr>
+                        <td>{object.trait_type}</td>
+                        <td>{object.value}</td>
+                        <td>{object.trait_count}</td>
+                        <td>
+                          {((object.trait_count / rowData[10]) * 100).toFixed(
+                            2
+                          )}
+                          %
+                        </td>
+                        <td>
+                          <div class="barchart">
+                            <div
+                              class="bar-fill"
+                              style={{
+                                width:
+                                  ((object.trait_count / rowData[10]) * 100)
+                                    .toFixed(2)
+                                    .toString() + "%",
+                              }}
+                            >
+                              {(
+                                (object.trait_count / rowData[10]) *
+                                100
+                              ).toFixed(2)}
+                              %
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })}
+                <tfoot>
+                  <td>Total Rarity Meter</td>
+
+                  <td colSpan={rowData[6].length}>
+                    <div class="total-barchart">
+                      <div
+                        class="total-bar-fill"
+                        style={{
+                          width:
+                            (rowData[rowData.length - 2] * 100).toFixed(2) +
+                            "%",
+                        }}
+                      >
+                        {(rowData[rowData.length - 2] * 100).toFixed(2)}%
+                      </div>
+                    </div>
+                  </td>
+                </tfoot>
+
+                {/* <TableRow className={classes.row}>
+                  {Object.values(rowData[6]).map(function (object, i) {
                     return (
                       <>
-                        <TableCell>{object.trait_type}</TableCell>
+                        <TableCell className={classes.cell}>
+                          {object.value} <br></br>
+                          {object.trait_count}/{rowData[10]} <br></br>
+                          <p>% with traits:</p>
+                          <div class="barchart">
+                            <div
+                              class="bar-fill"
+                              style={{
+                                width:
+                                  ((object.trait_count / rowData[10]) * 100)
+                                    .toFixed(2)
+                                    .toString() + "%",
+                              }}
+                            >
+                              {(
+                                (object.trait_count / rowData[10]) *
+                                100
+                              ).toFixed(2)}
+                              %
+                            </div>
+                          </div>
+                        </TableCell>
                       </>
                     );
                   })}
-                </TableRow>
-                <TableRow className={classes.row}>
-                  {Object.values(rowData[6]).map(function (
-                    object,
-                    i
-                  ) {
-                    return (
-                      <>
-                        <TableCell>{object.value}</TableCell>
-                      </>
-                    );
-                  })}
-                </TableRow>
+                </TableRow> */}
               </table>
             </td>
           </tr>
+          <tr>
+            {floor_map[rowData[rowData.length - 3]].length > 1 ? (
+              <td colSpan={4}>
+                <HighchartsReact
+                  class="chart"
+                  containerProps={{ style: { width: "100%" } }}
+                  highcharts={HighStock}
+                  constructorType={"stockChart"}
+                  options={{
+                    title: {
+                      text: "Floor Price History",
+                    },
+
+                    series: [
+                      {
+                        name: "Price (ETH)",
+                        data: floor_map[rowData[rowData.length - 3]],
+                      },
+                    ],
+                  }}
+                />
+              </td>
+            ) : (
+              ""
+            )}
+          </tr>
         </>
       );
-
-      // return <>{
-
-      //   traits[rowData[1]].entries()||"NOTHIN"
-      //   }
     },
     rowsPerPage: 100,
     // sortOrder: sortObj.name
@@ -369,6 +523,7 @@ function Wallet() {
   useEffect(() => {
     authenticate();
   }, [addr]);
+
   useEffect(() => {
     check_ethereum();
   }, []);
@@ -376,25 +531,15 @@ function Wallet() {
     gwei();
   }, []);
   useEffect(() => {
-    get_eth().then((res) => {
-      loadAsyncData(res);
-    });
+    get_eth();
   }, [addr, auth]);
-  // if (!auth && addr) {
-  //   return (
-  //     <>
-  //       <div class="loading">
-  //         This is a paid website feature!
-  //         <br></br>
-  //         If you have not paid, please deposit .141ETH into
-  //         0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886 to unlock this feature
-  //         <br></br>
-  //         <CircularProgress />
-  //       </div>
-  //     </>
-  //   );
-  // } else
-  if (loading || eth_price == null) {
+  useEffect(() => {
+    if (addr && auth) {
+      loadAsyncData();
+    }
+  }, [addr, auth,client_data]);
+
+  if (loading) {
     return (
       <>
         <div class="loading">
@@ -412,7 +557,7 @@ function Wallet() {
             var img = tableMeta.rowData[tableMeta.rowData.length - 1];
             return (
               <>
-                <Grid container>
+                <Grid container justifyContent="space-evenly">
                   <Grid item xs={3}>
                     <img src={img} class="image-snippet" alt="no img"></img>
                   </Grid>
@@ -463,58 +608,82 @@ function Wallet() {
       },
       {
         name: "Opensea Link",
+        options: {
+          customBodyRender: (value, tableMeta) => {
+            // console.log("VAL", value);
+            return (
+              <a class="opensea-link" href={value}>
+                {" "}
+              </a>
+            );
+          },
+        },
+      },
+      {
+        name: "Date",
+        options: { display: false, viewColumns: false, filter: false },
+      },
+      {
+        name: "Total",
         options: { display: false, viewColumns: false, filter: false },
       },
       {
         name: "Image",
         options: { display: false, viewColumns: false, filter: false },
       },
+      {
+        name: "Clean Name",
+        options: { display: false, viewColumns: false, filter: false },
+      },
+      {
+        name: "Rarity Name",
+        options: { display: false, viewColumns: false, filter: false },
+      },
     ];
     return (
       <>
-        <Grid item xs={12} style={{ backgroundColor: "#d6ceb6", height: 50 }}>
+        <Grid item xs={12} style={{ backgroundColor: "#d6ceb6" }}>
           <Typography
             variant="subtitle1"
             style={{
               paddingTop: 10,
+              paddingBottom: 10,
             }}
           >
             {" "}
-            Beta Product! We are working quickly to include additional charts,
-            analysis, historical portfolio performance and more!
+            Beta Product! We are working quickly to include many new features.
+            Just added: rarity tracking, floor price analysis, historical
+            portfolio performance and more!
           </Typography>
         </Grid>
         <Grid container justifyContent="space-evenly">
           <div class="wallet-content">
             <div class="wallet-cards">
-              <Grid container justifyContent="flex-end">
+              <Grid container justifyContent="center">
                 <Grid item xs={4}>
                   {!addr && is_provider ? (
                     <Button
                       variant="contained"
-                      color="primary"
+                      style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                       onClick={connect_metamask}
                       id="menu-button"
                     >
                       Connect to Metamask
                     </Button>
-                  ) : (
-                    ""
+                  ) : (""
+                    // <Button
+                    //   variant="contained"
+                    //   style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
+                    //   onClick={disconnect_metamask}
+                    //   id="menu-button"
+                    // >
+                    //   Disconnect
+                    // </Button>
                   )}
                 </Grid>
-                <Grid item xs={4}>
-                  <Typography
-                    variant="subtitle1"
-                    style={{
-                      color: "#787878",
-                    }}
-                  >
-                    Gas Price: {gwei_price} (GWEI)
-                  </Typography>
-                </Grid>
               </Grid>
-              <Grid container justifyContent="space-evenly">
-                <Grid item xs={5}>
+              <Grid container justifyContent="space-evenly" spacing={4}>
+                <Grid item xs={12} lg={5}>
                   <Card className={classes.root} elevation={5}>
                     <CardContent>
                       <Grid container justifyContent="space-between">
@@ -538,7 +707,7 @@ function Wallet() {
                               <Grid item xs={12}>
                                 <Button
                                   variant="contained"
-                                  color="primary"
+                                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                                   id="menu-button"
                                   href="https://metamask.io/download"
                                 >
@@ -547,39 +716,34 @@ function Wallet() {
                               </Grid>
                             </Grid>
                           </>
-                        ) : !auth && addr ? (
+                        ) : (!auth && addr )? (
                           <>
                             <Grid
                               container
                               justifyContent="space-evenly"
                               spacing={4}
                             >
-                              <Grid item xs={12}>
-                                <Typography variant="h6">Register for Premium via smart contract!</Typography>
-                                <Typography>Price is .05 ETH</Typography>
-
-                              </Grid>
                               <Grid item>
                                 <Button
                                   variant="contained"
-                                  color="primary"
+                                  style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
                                   id="menu-button"
-                                  href="https://etherscan.io/address/0x4ba0fC55646f6c82134CE3dc19aC64d02176e47c#writeContract"
+                                  onClick={purchase_premium}
                                 >
-                                  Sign Up for Premium
+                                  Get Premium for .05 ETH
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ) : (auth && addr && !wallet_data)?(<>
-                        <Grid container justifyContent="space-between">
+                        ) : auth && addr && !wallet_data ? (
+                          <>
+                            <Grid container justifyContent="space-between">
                               <Grid item xs={12} className={classes.items}>
-
-                        <CircularProgress />
-                        </Grid>
-                        </Grid>
-
-                        </>):(
+                                <CircularProgress />
+                              </Grid>
+                            </Grid>
+                          </>
+                        ) : (
                           <>
                             <Grid container justifyContent="space-between">
                               <Grid item xs={12} className={classes.items}>
@@ -670,29 +834,7 @@ function Wallet() {
                                 </Typography>
                               </Grid>
                             </Grid>
-                            <Grid container justifyContent="space-between">
-                              <Grid item xs={6} className={classes.items}>
-                                <Typography
-                                  inline
-                                  variant="subtitle1"
-                                  align="left"
-                                >
-                                  24H%
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6} className={classes.items}>
-                                <Typography
-                                  inline
-                                  variant="subtitle1"
-                                  align="right"
-                                >
-                                  ---
-                                  {/* {numberWithCommas(
-                                (eth_price * profit).toFixed(2)
-                              )} */}
-                                </Typography>
-                              </Grid>
-                            </Grid>
+
                             <Grid container justifyContent="space-between">
                               <Grid item xs={6} className={classes.items}>
                                 <Typography
@@ -723,7 +865,7 @@ function Wallet() {
                     </CardContent>
                   </Card>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={12} lg={5}>
                   <HighchartsReact
                     class="chart"
                     containerProps={{ style: { width: "100%" } }}
