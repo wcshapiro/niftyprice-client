@@ -13,6 +13,7 @@ import 'react-tabs/style/react-tabs.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from 'react-router-dom';
 import { index_metadata } from './index_config.js';
+import Chart from './static/images/chart.png';
 
 const useStyles = makeStyles({
   alert: {
@@ -22,6 +23,8 @@ const useStyles = makeStyles({
     flexgrow: 1,
     minHeight: 285,
     maxHeight: 285,
+    // maxWidth:350,
+    overflow: 'scroll',
   },
   paper: {
     padding: 2,
@@ -44,6 +47,11 @@ function Table() {
   const travel = (object) => {
     history.push({
       pathname: '/indexes/' + object,
+    });
+  };
+  const travel_mover = (object) => {
+    history.push({
+      pathname: '/collections/' + object,
     });
   };
   function toFixedNumber(num, digits, base) {
@@ -77,11 +85,12 @@ function Table() {
   const [table_data, setTableData] = useState();
   const [art_blocks_data, setArtBlocks] = useState();
   const [index_data, setIndexData] = useState();
+  const [movers_data, setMoversData] = useState();
 
   const loadAsyncData = async () => {
     setLoading(true);
     try {
-      const url = 'https://niftyprice.herokuapp.com?'; //"http://localhost:8080"; //
+      const url = 'https://niftyprice.herokuapp.com'; //"https://niftyprice.herokuapp.com?"; //
       const response = await fetch(url);
       var data = await response.json();
       var data_arr = [];
@@ -91,21 +100,25 @@ function Table() {
       setAvail(data.total_avail);
       setTFC(data.total_floor_cap);
       setRank(data.floor_cap_rankings);
+      var rankings = {};
+
+      for (let i = 0; i < data.floor_cap_rankings.length; i++) {
+        rankings[data.floor_cap_rankings[i][1]] = i + 1;
+      }
       setRankArt(data.floor_cap_rankings_art);
       setAlias(data.alias);
-      // console.log("ALIAS" + JSON.stringify(alias));
-      // console.log("INDEX INFORMATION" + JSON.stringify(data.index));
       setIndexData(data.index);
-
       for (let i in data.message) {
         let line = data.message[i];
         let map = new Map(Object.entries(line));
         var data_temp = Array.from(map.values());
+        let rank = [rankings[data_temp[0]]];
         data_temp[1] = toFixedNumber(parseFloat(data_temp[1]), 2, 10);
         data_temp[2] = toFixedNumber(parseFloat(data_temp[2]), 2, 10);
         data_temp[3] = toFixedNumber(parseFloat(data_temp[3]), 2, 10);
         data_temp[5] = toFixedNumber(parseFloat(data_temp[5]), 2, 10);
         data_temp[7] = toFixedNumber(parseFloat(data_temp[7]), 2, 10);
+        data_temp.unshift(rank);
         data_arr.push(data_temp);
       }
 
@@ -113,7 +126,6 @@ function Table() {
         let line = data.art_message[i];
         let map = new Map(Object.entries(line));
         var art_data_temp = Array.from(map.values());
-        // console.log(art_data_temp);
         art_data_temp[2] = toFixedNumber(parseFloat(art_data_temp[2]), 2, 10);
         art_data_temp[3] = toFixedNumber(parseFloat(art_data_temp[3]), 2, 10);
         art_data_temp[4] = toFixedNumber(parseFloat(art_data_temp[4]), 2, 10);
@@ -121,9 +133,25 @@ function Table() {
         art_data_arr.push(art_data_temp);
       }
       setTableData(data_arr);
-      // console.log(data_arr);
       setArtBlocks(art_data_arr);
-      // console.log(art_data_arr);
+      var top_art = art_data_arr.sort(function (a, b) {
+        return b[3] - a[3];
+      });
+
+      var top_os = data_arr.sort(function (a, b) {
+        return b[3] - a[3];
+      });
+      var top_movers = [];
+      for (let i = 0; i < 5; i++) {
+        top_movers.push([top_art[i][0], top_art[i][2], top_art[i][3]]);
+        top_movers.push([top_os[i][1], top_os[i][2], top_os[i][3]]);
+      }
+      setMoversData(
+        top_movers.sort(function (a, b) {
+          return b[2] - a[2];
+        })
+      );
+
       setLoading(false);
     } catch (e) {
       setLoading(false);
@@ -147,21 +175,14 @@ function Table() {
         name: colData,
         direction: direction,
       });
-      // console.log("CHANGED" + colData + " " + direction);
     },
     onRowClick: (rowData, rowMeta) => {
-      // console.log("ROWDATAAAA")
-      // console.log(rowData)
-      // console.log(rowMeta)
-      // console.log(rowMeta.dataIndex)
-      // console.log(table_data)
       var name = rowData[rowData.length - 1].includes('artblocks')
         ? art_blocks_data[rowMeta.dataIndex][0]
-        : table_data[rowMeta.dataIndex][0];
+        : table_data[rowMeta.dataIndex][1];
       for (const element in alias) {
         if (alias[element] == name) {
           name = element;
-          // console.log("Found match" + element);
         }
       }
       history.push({
@@ -188,6 +209,7 @@ function Table() {
     );
   } else {
     var columns = [
+      { name: '#' },
       {
         name: 'Collection Name',
         options: {
@@ -209,9 +231,9 @@ function Table() {
                     <Grid container>
                       <Grid item xs={12}>
                         <Typography variant="subtitle3" align="right">
-                          {alias[tableMeta.rowData[0]]
-                            ? alias[tableMeta.rowData[0]]
-                            : tableMeta.rowData[0]}
+                          {alias[tableMeta.rowData[1]]
+                            ? alias[tableMeta.rowData[1]]
+                            : tableMeta.rowData[1]}
                         </Typography>
                       </Grid>
                       <Grid item xs={12}>
@@ -222,7 +244,7 @@ function Table() {
                           variant="subtitle3"
                           align="right"
                         >
-                          {tableMeta.rowData[4]}
+                          {tableMeta.rowData[5]}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -365,14 +387,12 @@ function Table() {
           },
           sortCompare: (order) => {
             return (obj1, obj2) => {
-              let val1 = parseInt(obj1.data, 10);
-              let val2 = parseInt(obj2.data, 10);
+              let val1 = parseFloat(obj1.data, 10);
+              let val2 = parseFloat(obj2.data, 10);
               return (val1 - val2) * (order === 'asc' ? 1 : -1);
             };
           },
-          display: false,
-          viewColumns: false,
-          filter: false,
+          //  display: false, viewColumns: false, filter: false
         },
       },
       {
@@ -604,7 +624,6 @@ function Table() {
             for (const element in alias) {
               if (alias[element] == tableMeta.rowData[0]) {
                 link_name = element;
-                // console.log("Found match" + element);
               }
             }
 
@@ -644,8 +663,110 @@ function Table() {
                   clicking on individual collections
                 </Typography>
               </Grid>
-              {/*<Grid item xs={12} className={classes.alert}></Grid>*/}
-              <Grid item xs={12} lg={4}>
+            </Grid>
+            {/* <Grid item xs={12} > */}
+            <Grid container justifyContent="space-evenly">
+              <Grid item xs={12} lg={3}>
+                <Card id="prices" className={classes.root} elevation={5}>
+                  <CardContent>
+                    <div class="index-div">
+                      <img src={Chart} class="image-index" alt="no img"></img>
+                      <h3 class="index-title">Top Movers</h3>
+                    </div>
+                    <Grid container justifyContent="space-evenly">
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="left">
+                          Collection
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="center">
+                          Floor Price
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="subtitle2" align="center">
+                          24H%
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <hr></hr>
+                    {movers_data.map(function (object, i) {
+                      return (
+                        <>
+                          <div onClick={() => travel_mover(object[0])}>
+                            <Grid container justifyContent="space-evenly">
+                              <Grid
+                                item
+                                xs={6}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'flex-start',
+                                }}
+                              >
+                                <div class="title-box">
+                                  <Typography
+                                    inline
+                                    component="body2"
+                                    align="left"
+                                    style={{ maxWidth: 120, minWidth: 80 }}
+                                  >
+                                    {' '}
+                                    {alias[object[0]]
+                                      ? alias[object[0]]
+                                      : object[0]}
+                                  </Typography>
+                                </div>
+                              </Grid>
+                              <Grid item xs={3}>
+                                <Typography align="left">
+                                  {numberWithCommas(
+                                    parseFloat(object[1]).toFixed(2)
+                                  )}
+                                </Typography>
+                              </Grid>
+
+                              <Grid item xs={3}>
+                                <Typography
+                                  align="right"
+                                  style={
+                                    parseFloat(object[2]) > 0
+                                      ? {
+                                          color: '#065f46',
+                                          backgroundColor: '#D1FAE5',
+                                          borderRadius: 12,
+                                          textAlign: 'center',
+                                          float: 'right',
+                                          maxWidth: 80,
+                                          minWidth: 80,
+                                          minHeight: 25,
+                                        }
+                                      : {
+                                          color: '#981b1b',
+                                          backgroundColor: '#FEE2E2',
+                                          borderRadius: 12,
+                                          minHeight: 25,
+                                          textAlign: 'center',
+                                          float: 'right',
+                                          maxWidth: 80,
+                                          minWidth: 80,
+                                        }
+                                  }
+                                >
+                                  {parseFloat(object[2]).toFixed(2)}%
+                                </Typography>
+                              </Grid>
+                            </Grid>
+
+                            <hr></hr>
+                          </div>
+                        </>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} lg={3}>
                 <Card id="prices" className={classes.root} elevation={5}>
                   <CardContent>
                     <div class="index-div">
@@ -739,7 +860,7 @@ function Table() {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} lg={4}>
+              <Grid item xs={12} lg={3}>
                 <Card id="prices" className={classes.root} elevation={5}>
                   <CardContent>
                     <div class="index-div">
@@ -869,6 +990,8 @@ function Table() {
                   </CardContent>
                 </Card>
               </Grid>
+
+              {/* </Grid> */}
             </Grid>
           </div>
           <Tabs

@@ -9,8 +9,8 @@
 .welcome-container {
     /* align-content: center; */
     margin-top: 2rem;
-    width: 80%;
-    margin-left: 10%;
+    width: 95%;
+    margin-left: 2.5%;
     padding-bottom: 3rem;
     /* height: 15rem;
      */
@@ -22,7 +22,7 @@
     border-bottom: 10px #969696;
     text-align: center;
 }
-[data-colindex="0"]:hover{
+[data-colindex="1"]:hover{
     text-decoration: underline;
 }
 
@@ -74,6 +74,11 @@
     border-radius: 50%;
     margin-right: 10px;
  
+}
+.title-box{
+    overflow-x: scroll;
+    max-width: 80px;
+    white-space: nowrap;
 }
 .title-item{
     float: right;

@@ -19,3 +19,37 @@ margin-top: 2rem;}
 .trait-block{
     width: 100%;
 }
+.barchart{
+    
+    width: 100px;
+    height: 20px;
+    border: 1px solid black;
+}
+.total-barchart{
+    
+    height: 20px;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.bar-fill{
+align-items: center;
+vertical-align:middle;
+    height: 20px;
+    background-color: rgba(123, 229, 255, 0.589);
+}
+.total-bar-fill{
+    height: 20px;
+        background-color: rgba(123, 229, 255, 0.589);
+    }
+.trait-table{
+border: 1px solid black;
+    }
+    .trait-table td{
+        border: 1px solid black;
+        
+            }
+            .trait-table th{
+                border: 1px solid black;
+                
+                    }
