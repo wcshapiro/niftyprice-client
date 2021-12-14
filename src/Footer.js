@@ -35,6 +35,11 @@ function Footer() {
                 Terms of use
               </a>
             </Typography>
+            <Typography variant="subtitle2" component="subtitle2" align="left">
+              <a class="link" href="/faq">
+                FAQ
+              </a>
+            </Typography>
             <div class="about-content"></div>
           </Grid>
           <Grid item lg={4} sm={6} xs={12}>

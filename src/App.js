@@ -10,6 +10,8 @@ import Privacy from "./Privacy.js";
 import Ticker from "./Ticker.js";
 import Terms from "./Terms.js";
 import Form from "./Form.js";
+import FAQ from "./FAQ.js";
+import Demo from "./Demo.js";
 import Newsletter from "./Newsletter.js";
 import Indexes from "./Indexes.js";
 import { slide as Menu } from "react-burger-menu";
@@ -148,6 +150,12 @@ function App() {
               </Route>
               <Route exact path="/newsletter">
                 <Newsletter />
+              </Route>
+              <Route exact path="/faq">
+                <FAQ />
+              </Route>
+              <Route exact path="/demo">
+                <Demo />
               </Route>
               <Route exact path="/wallet">
                 <Web3Provider connectors={connectors} libraryName="ethers.js">

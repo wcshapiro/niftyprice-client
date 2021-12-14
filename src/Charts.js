@@ -221,7 +221,7 @@ function Charts(props) {
         "1d Volume": numberWithCommas(data.stats.one_day_volume.toFixed(2)),
         "1d Volume Change %": data.stats.one_day_change.toFixed(2),
         "7d Volume": numberWithCommas(data.stats.seven_day_volume.toFixed(2)),
-        "30d Volume Change %": data.stats.seven_day_change.toFixed(2),
+        "7d Volume Change %": data.stats.seven_day_change.toFixed(2),
         "30d Volume": numberWithCommas(data.stats.thirty_day_volume.toFixed(2)),
         "30d Volume Change %": data.stats.thirty_day_change.toFixed(2),
         "1d Sales": numberWithCommas(data.stats.one_day_sales),

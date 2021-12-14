@@ -103,7 +103,8 @@ function Wallet() {
   const [fpp_chart, setFloorChartOptionsFpp] = useState();
   const get_eth = async () => {
     return new Promise((resolve, reject) => {
-      const response = fetch("https://niftyprice.herokuapp.com/wallet/:" + addr) //https://niftyprice.herokuapp.com/wallet/:
+      let url =  "https://niftyprice.herokuapp.com/wallet/:" + addr // "http://localhost:8080/wallet/:"+addr //
+      const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
         .then((resp) => resp.json())
         .then((data) => {
           setEth(data.message.eth);
@@ -154,6 +155,7 @@ function Wallet() {
   const connect_metamask = async () => {
     const accounts = await ethereum.send("eth_requestAccounts");
     setAddr(accounts.result[0]);
+    // setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01")
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c");
   };
   const disconnect_metamask = async () => {
@@ -364,6 +366,7 @@ function Wallet() {
       ethereum.on("accountsChanged", function (accounts) {
         // console.log(accounts[0]);
         setAddr(accounts[0]);
+        // setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01")
       });
     }
   };
