@@ -11,15 +11,22 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import Watermark from "../static/images/watermark.png"
+
 
 import "./Charts.css";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
-    minHeight: 270,
+    minHeight: 280,
+    maxHeight:280,
+    overflow:"scroll"
+
   },
+  
   details_card: {
-    minHeight: 270,
+    minHeight: 280,
   },
   title: {
     fontSize: 24,
@@ -42,6 +49,7 @@ const useStyles = makeStyles({
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+
 function rsq(data,slope,intercept){
   let mean = null;
   let mean_price = null;
@@ -176,6 +184,7 @@ function Charts(props) {
     link: null,
   });
   const [stats, setStats] = useState(null);
+  const [nft_description,setDescription] = useState(null)
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState();
@@ -198,6 +207,7 @@ function Charts(props) {
   const [r_sq_val,setRSQ] = useState();
   const [reg_chart_options, setRegChartOptions] = useState();
   const [fpp_chart_options, setChartOptionsFpp] = useState();
+  const [expanded,setExpanded]=useState(false);
   const get_stats = async (ab_alias) => {
     var collection_path = ab_alias || location.pathname.replace(
       "/collections/",
@@ -207,7 +217,7 @@ function Charts(props) {
     var collection_name = ab_alias || collection_path.split("/")[1].replace(":", "");
     // console.log("SENDING",collection_name)
     var url =
-      "https://api.opensea.io/api/v1/collection/" + collection_name + "/stats";
+      "https://api.opensea.io/api/v1/collection/" + collection_name;
     var headers = {
       Accept: "application/json",
       "X-API-KEY": "c38932a3b50647cbb30d2f5601e81850",
@@ -215,17 +225,20 @@ function Charts(props) {
     const resp = await fetch(url, { headers });
     // console.log("COLLECTION STATS");
     var data = await resp.json();
-    // console.log(data);
-    if (data.stats!= undefined){
+    console.log(data);
+    data = data.collection
+    let description = data.description
+    setDescription(description)
+    if (data!= undefined){
       setStats({
-        "1d Volume": numberWithCommas(data.stats.one_day_volume.toFixed(2)),
-        "1d Volume Change %": data.stats.one_day_change.toFixed(2),
-        "7d Volume": numberWithCommas(data.stats.seven_day_volume.toFixed(2)),
-        "7d Volume Change %": data.stats.seven_day_change.toFixed(2),
-        "30d Volume": numberWithCommas(data.stats.thirty_day_volume.toFixed(2)),
-        "30d Volume Change %": data.stats.thirty_day_change.toFixed(2),
-        "1d Sales": numberWithCommas(data.stats.one_day_sales),
-        "# Owners": numberWithCommas(data.stats.num_owners),
+        "1d Volume: ": "Ξ"+ numberWithCommas(data.stats.one_day_volume.toFixed(2)),
+        "1d Volume Change %:": data.stats.one_day_change.toFixed(2) + "%",
+        "7d Volume:": "Ξ"+ numberWithCommas(data.stats.seven_day_volume.toFixed(2)),
+        "7d Volume Change %:": data.stats.seven_day_change.toFixed(2) + "%",
+        "30d Volume:": "Ξ"+ numberWithCommas(data.stats.thirty_day_volume.toFixed(2)),
+        "30d Volume Change %:": data.stats.thirty_day_change.toFixed(2) + "%",
+        "1d Sales (Units):": numberWithCommas(data.stats.one_day_sales),
+        "# Owners:": numberWithCommas(data.stats.num_owners),
       });
     }
     
@@ -233,6 +246,14 @@ function Charts(props) {
   // useEffect(() => {
   //   get_stats();
   // }, []);
+  const show_less = function (){
+    setExpanded(false)
+  
+  }
+  const read_more = function(){
+    setExpanded(true)
+  
+  }
   const loadAsyncData = async () => {
     // console.log("PROPS" + JSON.stringify(location.pathname));
     setLoading(true);
@@ -371,6 +392,11 @@ function Charts(props) {
       // console.log("pushing data");
       if (series_volume.length>1) {
         setVolumeChartOptions({
+          chart:{
+            backgroundColor: 'rgba(0,0,0,0)',
+          },
+
+
           title: {
             text: "Volume History",
           },
@@ -384,6 +410,9 @@ function Charts(props) {
       }
       if (series_owners.length>1) {
         setOwnersChartOptions({
+          chart:{
+            backgroundColor: 'rgba(0,0,0,0)',
+          },
           title: {
             text: "Owner History",
           },
@@ -400,14 +429,25 @@ function Charts(props) {
         title: {
           text: "Supply History",
         },
+        chart: {
+          backgroundColor: 'rgba(0,0,0,0)',
+          
+       },
         series: [
           {
             name: " Supply",
             data: series_tfs,
+            
           },
         ],
       });
       setChartOptionsFpp({
+        chart: {
+          backgroundColor: 'rgba(0,0,0,0)',
+          
+       },
+
+      
         title: {
           text: "Floor  Price History",
         },
@@ -436,6 +476,7 @@ function Charts(props) {
             type: 'column',
             name: 'Volume',
             // id: 'volume',
+
             data: series_volume,
             yAxis: 1,
             dataGrouping: {
@@ -446,8 +487,12 @@ function Charts(props) {
       });
       if (reg_dataset) {
         setRegChartOptions({
+          
           chart: {
             type: "scatter",
+            backgroundColor: 'rgba(0,0,0,0)',
+            
+
           },
           title: {
             text: "Linear Regression Floor Price vs. Supply",
@@ -580,6 +625,14 @@ function Charts(props) {
                               title="NFT COLLECTION IMAGE"
                             />
                           </Grid>
+                          {nft_description?(<>
+                            <Grid container justifyContent = "center">
+                          <Grid item xs={8}> <div  class = "description-container"><Typography    align="left">Description: {expanded?nft_description:nft_description.slice(0,70)+"..."}<a class="expander" href="#" onClick={expanded?show_less:read_more}>
+                      
+                      {expanded?"Show Less":"Read More"}</a></Typography></div></Grid>
+
+                          </Grid></>):(<></>)}
+                          
                         </Grid>
                       </Card>
                     </Grid>
@@ -603,7 +656,7 @@ function Charts(props) {
                               component="h6"
                               align="left"
                             >
-                              floor price (ETH):{" "}
+                              Floor price:{" "}
                             </Typography>
                             <Typography
                               inline
@@ -611,7 +664,7 @@ function Charts(props) {
                               component="h6"
                               align="right"
                             >
-                              {collection_info.floor_price}
+                              Ξ{collection_info.floor_price}
                             </Typography>
                           </Grid>
                           <Grid container justifyContent="space-between">
@@ -644,7 +697,7 @@ function Charts(props) {
                               component="h6"
                               align="left"
                             >
-                              floor cap (ETH):
+                              floor cap:
                             </Typography>
                             <Typography
                               inline
@@ -652,7 +705,7 @@ function Charts(props) {
                               component="h6"
                               align="right"
                             >
-                              {numberWithCommas(
+                              Ξ{numberWithCommas(
                                 (
                                   collection_info.floor_price *
                                   collection_info.total_avail

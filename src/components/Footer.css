@@ -9,7 +9,7 @@
   width: 100%;
 }
 #twitter {
-  background-image: url("static/images/twitter.png");
+  background-image: url("../static/images/twitter.png");
   display: block;
   background-repeat: no-repeat;
   background-size: contain;
@@ -17,7 +17,7 @@
   height: 40px;
 }
 #discord {
-  background-image: url("static/images/discord.png");
+  background-image: url("../static/images/discord.png");
   display: block;
   background-repeat: no-repeat;
   background-size: contain;

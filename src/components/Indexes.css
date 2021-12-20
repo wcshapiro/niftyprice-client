@@ -29,7 +29,7 @@
     .opensea-link2 {
       float: left;
       margin-left: 2rem;
-      background-image: url("static/images/opensea.png");
+      background-image: url("../static/images/opensea.png");
       width: 30px;
       height: 30px;
       margin-top: 0.5rem;
