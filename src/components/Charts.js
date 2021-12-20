@@ -627,7 +627,7 @@ function Charts(props) {
                           </Grid>
                           {nft_description?(<>
                             <Grid container justifyContent = "center">
-                          <Grid item xs={8}> <div  class = "description-container"><Typography    align="left">Description: {expanded?nft_description:nft_description.slice(0,70)+"..."}<a class="expander" href="#" onClick={expanded?show_less:read_more}>
+                          <Grid item xs={8}> <div  class = "description-container"><Typography    align="left">Description: {expanded?nft_description:nft_description.slice(0,40)+"..."}{" "}<a class="expander" href="#" onClick={expanded?show_less:read_more}>
                       
                       {expanded?"Show Less":"Read More"}</a></Typography></div></Grid>
 
