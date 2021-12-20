@@ -1,0 +1,57 @@
+.trait-table th {
+  border-bottom: 1px solid black;
+  text-align: left;
+}
+.trait-table td {
+  border: none;
+}
+.trait-table td:nth-child(1),
+td:nth-child(2),
+td:nth-child(3) {
+    white-space: nowrap;
+
+  text-align: left;
+}
+.trait-table td:nth-child(2) {
+  text-align: left;
+  float: left;
+
+}
+.trait-table td:nth-child(3) .barchart .barfill {
+  text-align: left;
+  vertical-align: middle;
+  /* border: 1px solid black; */
+}
+.trait-percent {
+  display: inline;
+  font-size: x-small;
+}
+.trait-value {
+  display: inline;
+  font-size: small;
+}
+.trait-info {
+  float: left;
+  margin-left: 10px;
+}
+.trait-block {
+  width: 100%;
+}
+.barchart {
+  width: 100px;
+  border-left: 1px solid black;
+}
+.total-barchart {
+  width: 100%;
+  border-left: 1px solid black;
+}
+
+.bar-fill {
+  background-color: rgba(123, 229, 255, 0.589);
+}
+.total-bar-fill {
+  background-color: rgba(123, 229, 255, 0.589);
+}
+.total-bar-footer {
+  border-top: 1px solid black;
+}

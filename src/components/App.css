@@ -6,7 +6,7 @@
   background-color: #ffffff;
 }
 #niftyprice {
-  background-image: url('static/images/niftyprice.png');
+  background-image: url('../static/images/niftyprice.png');
   display: block;
   background-repeat: no-repeat;
   background-size: contain;

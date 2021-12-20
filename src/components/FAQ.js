@@ -157,7 +157,7 @@ function FAQ() {
 
               <Typography gutterBottom = "true" variant="h6" align="center">
                 If you have other questions, please reach out either by filling
-                out the form on the <a href="/demo">feedback page</a> or shooting us a note
+                out the form on the <a href="/purchase">feedback page</a> or shooting us a note
                 directly at team@niftyprice.io
               </Typography>
             </Typography>

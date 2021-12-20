@@ -21,7 +21,7 @@ import { Connectors } from 'web3-react'
 import { ethers } from "ethers";
 
 
-import connectors from "./connectors";
+import connectors from "../connectors";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function App() {
