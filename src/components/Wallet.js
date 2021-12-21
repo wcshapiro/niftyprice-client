@@ -26,6 +26,7 @@ import abi from "../contracts/np_abi.json";
 import { Table } from "@material-ui/core";
 import { isBoolean, isInteger } from "lodash";
 import UserTable from "./UserTable.js";
+import Portfolio from "./Portfolio";
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] });
 
@@ -108,34 +109,35 @@ function Wallet() {
   const [num_nft, setNumNFT] = useState();
   const [traits, setTraits] = useState({});
   const [profit, setProfit] = useState();
-  const [triggerLoad,setTrigger]=useState(false)
+  const [triggerLoad, setTrigger] = useState(false);
   const [floor_map, setFloorMap] = useState({});
   const [rarity, setRarity] = useState();
   const [gwei_price, setGwei] = useState();
+  const [user_data, setUser] = useState();
   const [fpp_chart_options, setChartOptionsFpp] = useState();
   const [table_options, setTableOptions] = useState();
   const [fpp_chart, setFloorChartOptionsFpp] = useState();
   const [final_portfolio_values, setFinalPortfolio] = useState({});
-  const [portfolio_loading,setPortfolioLoading]=useState(false)
+  const [portfolio_loading, setPortfolioLoading] = useState(false);
   const get_events = async () => {
-    setPortfolioLoading(true)
+    setPortfolioLoading(true);
     console.log("grabbing wallet_data");
     var saved_table = JSON.parse(window.localStorage.getItem("wallet_data"));
     var saved_portfolio = JSON.parse(
       window.localStorage.getItem("final_portfolio")
     );
-    console.log("saved data", saved_table);
-    console.log("saved_portfolio", saved_portfolio);
-    if ((!saved_table)||(!saved_portfolio)) {
+    // console.log("saved data", saved_table);
+    // console.log("saved_portfolio", saved_portfolio);
+    if (!saved_table || !saved_portfolio) {
       return new Promise((resolve, reject) => {
-        let url ="https://niftyprice.herokuapp.com/wallet/:" + addr; // "http://localhost:8080/wallet/:" + addr; //
+        let url = "https://niftyprice.herokuapp.com/wallet/:" + addr; // "http://localhost:8080/wallet/:" + addr; //
         const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
           .then((resp) => resp.json())
           .then((data) => {
             setEth(data.message.eth);
             setClientData(data.message.info);
             resolve(data.message.info);
-            console.log("client data", data.message.info);
+            // console.log("client data", data.message.info);
           })
           .catch((e) => {
             console.log(e);
@@ -146,8 +148,7 @@ function Wallet() {
     } else {
       setWalletData(saved_table);
       setFinalPortfolio(saved_portfolio);
-      setPortfolioLoading(false)
-
+      setPortfolioLoading(false);
     }
   };
 
@@ -182,7 +183,7 @@ function Wallet() {
         .then((value) => {
           let check = isBoolean(value);
           check && setAuth(value);
-          console.log("AUTH",value)
+          console.log("AUTH", value);
         });
     }
   };
@@ -194,12 +195,6 @@ function Wallet() {
       setEthProvider(provider);
     }
   };
-  const [userTable, setUserTable] = useState(() => {
-    // getting stored value
-    const saved = JSON.parse(window.localStorage.getItem("userTable"));
-    const initialValue = saved;
-    return initialValue || {};
-  });
 
   const gwei = async () => {
     var url =
@@ -218,17 +213,16 @@ function Wallet() {
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
     // setAddr("0x13d33c9f2F3E7F8f14B1ee0988F4DC929Ee87a92"); // brojack
 
-    setTrigger(true)
+    setTrigger(true);
   };
   const refresh_data = async () => {
-    window.localStorage.setItem("wallet_data", JSON.stringify(null));
-    window.localStorage.setItem("final_portfolio", JSON.stringify(null));
-    setWalletData([])
+    console.log("REFRESHING");
+    window.localStorage.removeItem("wallet_data");
+    window.localStorage.removeItem("final_portfolio");
+    setWalletData([]);
     setFinalPortfolio({});
     setClientData(null);
-    setTrigger(true)
-
-
+    setTrigger(true);
   };
 
   const disconnect_metamask = async () => {
@@ -255,6 +249,11 @@ function Wallet() {
     if (client_data && client_data.data) {
       var data = client_data.data.asset_events;
       let full_portfolio = { current: {}, past: {} };
+      let user_info = {
+        addr: null,
+        img: null,
+        username: null,
+      };
       for (const element of data) {
         let asset = element.asset;
         if (element.transaction) {
@@ -266,17 +265,29 @@ function Wallet() {
           var trans_hash_data = await transaction_data;
           element["transaction_info"] = trans_hash_data;
 
-          if (Object.keys(full_portfolio.current).includes(asset.id.toString())) {
+          if (
+            Object.keys(full_portfolio.current).includes(asset.id.toString())
+          ) {
             full_portfolio.past[asset.id] = [
               full_portfolio.current[asset.id],
               asset,
             ];
-            delete full_portfolio.current[asset.id]
+            delete full_portfolio.current[asset.id];
           } else {
             full_portfolio.current[asset.id] = element;
           }
+
+          setPortfolioLoading(true);
+          console.log("ELEMENT",element)
+          if (element.to_account.address == addr) {
+            console.log("found user");
+            user_info.img = element.to_account.profile_img_url;
+
+            user_info.username = element.to_account.user.username;
+          }
         }
       }
+      user_info.addr = addr;
       let temp_wallet = [];
       let collection_map = {};
       for (const nft of Object.values(full_portfolio.current)) {
@@ -308,13 +319,13 @@ function Wallet() {
           parseFloat(Number(nft.transaction_info.gasPrice, 16)) *
           0.000000001;
         temp_wallet.push([
-          nft.asset.name ||nft.asset.collection.name|| 0,
+          nft.asset.name || nft.asset.collection.name || 0,
           nft.asset.token_id || 0,
           nft.transaction.timestamp || 0,
           paid_price || 0,
           gas_fee || 0,
           gas_fee + paid_price || 0,
-          gas_fee + paid_price * eth_price || 0,
+          (gas_fee + paid_price) * eth_price || 0,
           collection_map[slug].floor || 0,
           collection_map[slug].change || 0,
           "Coming Soon" || 8,
@@ -341,7 +352,6 @@ function Wallet() {
       window.localStorage.setItem("wallet_data", JSON.stringify(temp_wallet));
       let summation_map = {};
       let numeric_columns = [3, 4, 5, 6, 7, 11, 13];
-
       for (let i = 0; i < numeric_columns.length; i++) {
         summation_map[numeric_columns[i]] = temp_wallet.reduce(
           (price, item) => {
@@ -350,23 +360,23 @@ function Wallet() {
           0
         );
       }
+      console.log("MAP", summation_map);
       let final_portfolio = {
-        "Value (USD)": summation_map[7] * eth_price,
-        "Value (ETH)": summation_map[7],
-        "# NFTs": temp_wallet.length,
-        "Total Cost (USD)": summation_map[6],
-        "Gain (ETH)": summation_map[7],
-        "Gain (USD)": summation_map[13],
-        "%Gain": summation_map[11],
+        data: temp_wallet,
+        user: user_info,
+        value: { usd: summation_map[7] * eth_price, eth: summation_map[7] },
+        nft_count: temp_wallet.length,
+        total_cost: { eth: summation_map[5], usd: summation_map[6] },
+        gain: { eth: summation_map[11], usd: summation_map[13] },
+        gain_percent: (summation_map[11] / summation_map[5]) * 100,
       };
       window.localStorage.setItem(
         "final_portfolio",
         JSON.stringify(final_portfolio)
       );
-      setPortfolioLoading(false)
       setFinalPortfolio(final_portfolio);
 
-
+      setPortfolioLoading(false);
     }
     // if (false) {
     //   if (addr != null && data != undefined && data.data) {
@@ -557,7 +567,6 @@ function Wallet() {
     //   });
     // }
   };
-
   const options = {
     customTableBodyFooterRender: function (opts) {
       let numeric_columns = [3, 4, 5, 6, 7, 11, 13];
@@ -611,7 +620,7 @@ function Wallet() {
                       align="right"
                       className={classes.stickyFooterCell}
                     >
-                      <p>{numberWithCommas(summation_map[i].toFixed(3))}</p>
+                      {numberWithCommas(summation_map[i].toFixed(3))}
                     </TableCell>
                   </>
                 );
@@ -675,9 +684,9 @@ function Wallet() {
   useEffect(() => {
     if (addr && triggerLoad && auth) {
       get_events();
-      setTrigger(false)
+      setTrigger(false);
     }
-  }, [auth,addr,triggerLoad]);
+  }, [auth, addr, triggerLoad]);
 
   // useEffect(() => {
   //   get_assets();
@@ -1029,8 +1038,8 @@ function Wallet() {
         <Grid container justifyContent="space-evenly">
           <div class="wallet-content">
             <div class="wallet-cards">
-              <Grid container justifyContent="center">
-                <Grid item xs={4}>
+              <Grid container justifyContent="space-evenly">
+                <Grid item xs={12} align="right">
                   {!addr && is_provider ? (
                     <Button
                       variant="contained"
@@ -1054,185 +1063,171 @@ function Wallet() {
                 </Grid>
               </Grid>
               <Grid container justifyContent="space-evenly" spacing={4}>
-                <Grid item xs={12} lg={5}>
-                  <Card className={classes.root} elevation={5}>
-                    <CardContent>
-                      <Grid container justifyContent="space-between">
-                        <Grid item xs={12} className={classes.items}>
-                          <Typography variant="h4" align="center">
-                            Portfolio Stats
-                          </Typography>
-                          <hr></hr>
+                <Grid item xs={12}>
+                  <Grid container justifyContent="space-evenly" spacing={2}>
+                    {!is_provider ? (
+                      <>
+                        <Grid item xs={12} align="right">
+                          <Button
+                            variant="contained"
+                            style={{
+                              backgroundColor: "#1C72D9",
+                              color: "#FFFFFF",
+                            }}
+                            id="menu-button"
+                            href="https://metamask.io/download"
+                          >
+                            Download metaMask Extension
+                          </Button>
                         </Grid>
-                        {!is_provider ? (
-                          <>
-                            <Grid
-                              container
-                              justifyContent="space-evenly"
-                              spacing={4}
-                            >
-                              <Grid item xs={12}>
-                                Please download metamask extension to enable
-                                this feature!
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Button
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: "#1C72D9",
-                                    color: "#FFFFFF",
-                                  }}
-                                  id="menu-button"
-                                  href="https://metamask.io/download"
-                                >
-                                  Download metaMask Extension
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </>
-                        ) : (!auth && addr) ? (
-                          <>
-                            <Grid
-                              container
-                              justifyContent="space-evenly"
-                              spacing={4}
-                            >
-                              <Grid item>
-                                <Button
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: "#1C72D9",
-                                    color: "#FFFFFF",
-                                  }}
-                                  id="menu-button"
-                                  onClick={purchase_premium}
-                                >
-                                  Get Premium for .05 ETH
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </>
-                        ) : auth && !wallet_data ? (
-                          <>
-                            <Grid container justifyContent="space-between">
-                              <Grid item xs={12} className={classes.items}>
-                                <CircularProgress />
-                              </Grid>
-                            </Grid>
-                          </>
-                        ) : !auth ? (
-                          <>
-                            
-                          </>
-                        ) : (
-                          <>
-                            <Grid container justifyContent="space-between">
-                              <Grid item xs={12} className={classes.items}>
-                                <Typography
-                                  inline
-                                  variant="subtitle1"
-                                  align="center"
-                                >
-                                  Wallet Address
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={12} className={classes.items}>
-                                <Typography
-                                  inline
-                                  variant="subtitle2"
-                                  align="center"
-                                >
-                                  {addr || "---"}
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                            {portfolio_loading?(<>
-                              <Grid container justifyContent="space-between">
-                              <Grid item xs={12} className={classes.items}>
-                                <CircularProgress />
-                              </Grid>
-                            </Grid>
-                            </>)
-                            :(<>
-                            <Grid item xs={12}>
-                            <Button
-                              variant="contained"
-                              style={{
-                                backgroundColor: "#1C72D9",
-                                color: "#FFFFFF",
-                              }}
-                              onClick={refresh_data}
-                              id="menu-button"
-                            >
-                              Refresh Data
-                            </Button>
-                            </Grid>
-                            {Object.keys(final_portfolio_values).map(
-                              (object, index) => {
-                                return (
-                                  <>
-                                    <Grid
+                      </>
+                    ) : !auth && addr ? (
+                      <>
+                        <Grid item xs={12} align="right">
+                          <Button
+                            variant="contained"
+                            style={{
+                              backgroundColor: "#1C72D9",
+                              color: "#FFFFFF",
+                            }}
+                            id="menu-button"
+                            onClick={purchase_premium}
+                          >
+                            Get Premium for .05 ETH
+                          </Button>
+                        </Grid>
+                      </>
+                    ) : auth && !wallet_data ? (
+                      <>
+                        <Grid container justifyContent="space-between">
+                          <Grid item xs={12} className={classes.items}>
+                            <CircularProgress />
+                          </Grid>
+                        </Grid>
+                      </>
+                    ) : !auth ? (
+                      <></>
+                    ) : (
+                      <>
+                        {/* <Grid
                                       container
                                       justifyContent="space-between"
                                     >
                                       <Grid
                                         item
-                                        xs={6}
+                                        xs={12}
                                         className={classes.items}
                                       >
                                         <Typography
                                           inline
                                           variant="subtitle1"
-                                          align="left"
+                                          align="center"
                                         >
-                                          {object}
+                                          Wallet Address
                                         </Typography>
                                       </Grid>
                                       <Grid
                                         item
-                                        xs={6}
+                                        xs={12}
                                         className={classes.items}
                                       >
                                         <Typography
                                           inline
-                                          variant="subtitle1"
-                                          align="right"
+                                          variant="subtitle2"
+                                          align="center"
                                         >
-                                          {isInteger(
-                                            final_portfolio_values[object]
-                                          )
-                                            ? numberWithCommas(
-                                                final_portfolio_values[object]
-                                              )
-                                            : numberWithCommas(
-                                                final_portfolio_values[
-                                                  object
-                                                ].toFixed(3)
-                                              )}
+                                          {addr || "---"}
                                         </Typography>
                                       </Grid>
-                                    </Grid>
-                                  </>
-                                );
-                              }
-                            )}
-                            </>)
-                            }
-                            
+                                    </Grid> */}
+                        {/* {final_portfolio_values.size?:""} */}
+
+                        {portfolio_loading ? (
+                          <>
+                            <Grid container justifyContent="space-between">
+                              <Grid item xs={12} className={classes.items}>
+                                <CircularProgress />
+                              </Grid>
+                            </Grid>
+                          </>
+                        ) : (
+                          <>
+                            <Grid item xs={12} align="right">
+                              <Button
+                                variant="contained"
+                                style={{
+                                  backgroundColor: "#1C72D9",
+                                  color: "#FFFFFF",
+                                }}
+                                onClick={refresh_data}
+                                id="menu-button"
+                              >
+                                Refresh Data
+                              </Button>
+                            </Grid>
+                            <Portfolio
+                              portfolio_metrics={final_portfolio_values}
+                            />
+                            {/* {Object.keys(
+                                          final_portfolio_values
+                                        ).map((object, index) => {
+                                          return (
+                                            <>
+                                              <Grid
+                                                container
+                                                justifyContent="space-between"
+                                              >
+                                                <Grid
+                                                  item
+                                                  xs={6}
+                                                  className={classes.items}
+                                                >
+                                                  <Typography
+                                                    inline
+                                                    variant="subtitle1"
+                                                    align="left"
+                                                  >
+                                                    {object}
+                                                  </Typography>
+                                                </Grid>
+                                                <Grid
+                                                  item
+                                                  xs={6}
+                                                  className={classes.items}
+                                                >
+                                                  <Typography
+                                                    inline
+                                                    variant="subtitle1"
+                                                    align="right"
+                                                  >
+                                                    {isInteger(
+                                                      final_portfolio_values[
+                                                        object
+                                                      ]
+                                                    )
+                                                      ? numberWithCommas(
+                                                          final_portfolio_values[
+                                                            object
+                                                          ]
+                                                        )
+                                                      : numberWithCommas(
+                                                          final_portfolio_values[
+                                                            object
+                                                          ].toFixed(3)
+                                                        )}
+                                                  </Typography>
+                                                </Grid>
+                                              </Grid>
+                                            </>
+                                          );
+                                        })} */}
                           </>
                         )}
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} lg={5}>
-                  <HighchartsReact
-                    class="chart"
-                    containerProps={{ style: { width: "100%" } }}
-                    highcharts={HighStock}
-                    constructorType={"stockChart"}
-                    options={fpp_chart_options}
-                  />
+                      </>
+                    )}
+                  </Grid>
+                  {/* </CardContent>
+                          </Card> */}
                 </Grid>
               </Grid>
             </div>
