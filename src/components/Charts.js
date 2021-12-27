@@ -11,8 +11,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import Watermark from "../static/images/watermark.png"
-
+import Watermark from "../static/images/watermark.png";
 
 import "./Charts.css";
 import { Button } from "@material-ui/core";
@@ -20,11 +19,10 @@ import { Button } from "@material-ui/core";
 const useStyles = makeStyles({
   root: {
     minHeight: 280,
-    maxHeight:280,
-    overflow:"scroll"
-
+    maxHeight: 280,
+    overflow: "scroll",
   },
-  
+
   details_card: {
     minHeight: 280,
   },
@@ -50,52 +48,52 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function rsq(data,slope,intercept){
+function rsq(data, slope, intercept) {
   let mean = null;
   let mean_price = null;
   let sum_y = null;
   let sum_x = null;
-  for (let i = 0; i < data.length-1; i++) {
+  for (let i = 0; i < data.length - 1; i++) {
     let y = Number(data[i][1]);
     let x = Number(data[i][0]);
-    sum_y += y
-    sum_x += x
+    sum_y += y;
+    sum_x += x;
   }
-  mean = sum_y/(data.length-1)
-  mean_price = sum_x/(data.length-1)
+  mean = sum_y / (data.length - 1);
+  mean_price = sum_x / (data.length - 1);
   let difference_actual = null;
   let difference_estimated = null;
-  for (let i = 0; i < data.length-1; i++) {
+  for (let i = 0; i < data.length - 1; i++) {
     let y_actual = Number(data[i][1]);
-    let y_estimated = (Number(data[i][0])*slope + intercept);
-    difference_actual += (y_actual - mean )**2
-    difference_estimated += (y_estimated - mean )**2
+    let y_estimated = Number(data[i][0]) * slope + intercept;
+    difference_actual += (y_actual - mean) ** 2;
+    difference_estimated += (y_estimated - mean) ** 2;
   }
-  let r_squared = difference_estimated/difference_actual
-  return [r_squared,mean]
-
-
+  let r_squared = difference_estimated / difference_actual;
+  return [r_squared, mean];
 }
 function get_variance(data) {
   var array = [];
-  for (let i = 0; i < data.length-1; i++) {
-array.push(data[i][1] )
+  for (let i = 0; i < data.length - 1; i++) {
+    array.push(data[i][1]);
   }
-  const n = array.length
-  const mean = array.reduce((a, b) => a + b) / n
-  return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+  const n = array.length;
+  const mean = array.reduce((a, b) => a + b) / n;
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  );
 }
 // function get_variance(data,mean){
 //   let variance = null;
 //   var diffs = [];
 //   let diffs_sum = null;
 //   for (let i = 0; i < data.length-1; i++) {
-//     let x = data[i][0] 
+//     let x = data[i][0]
 //     console.log(x)
 //     let diff = x - mean
 //     let diff_sq = diff ** 2
 //     diffs_sum += diff_sq
-//     diffs.push(diff_sq) 
+//     diffs.push(diff_sq)
 //     let diff_mean = diffs_sum/diffs.length
 //     console.log("mean",diff_mean)
 //     variance = Math.sqrt(diff_mean)
@@ -110,7 +108,7 @@ function regression(data) {
   let sum_xy = 0;
   let max_x = 0;
   let min_x = 99999999;
-  for (let i = 0; i < data.length-1; i++) {
+  for (let i = 0; i < data.length - 1; i++) {
     if (data[i][0] < min_x) {
       min_x = data[i][0];
     }
@@ -132,13 +130,9 @@ function regression(data) {
   let intercept = (sum_y - slope * sum_x) / data.length;
   let y_start_coord = slope * min_x + intercept;
   let y_end_coord = slope * max_x + intercept;
-  let r_squared = rsq(data,slope,intercept)
+  let r_squared = rsq(data, slope, intercept);
   // console.log("RSQ",r_squared)
-  return [
-    [min_x, y_start_coord],
-    [max_x, y_end_coord],
-    [r_squared]
-  ];
+  return [[min_x, y_start_coord], [max_x, y_end_coord], [r_squared]];
 }
 
 function combine_data(X, Y) {
@@ -161,11 +155,10 @@ function combine_data(X, Y) {
   }
   // console.log("REMOVING",full_combo)
   for (const element in full_combo) {
-    let coords = full_combo[element]
+    let coords = full_combo[element];
     if (!(coords[1] && coords[0])) {
-      delete full_combo[element]
+      delete full_combo[element];
       // console.log("removed" + full_combo[i]);
-      
     }
   }
   // console.log("REMOVED")
@@ -184,7 +177,7 @@ function Charts(props) {
     link: null,
   });
   const [stats, setStats] = useState(null);
-  const [nft_description,setDescription] = useState(null)
+  const [nft_description, setDescription] = useState(null);
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState();
@@ -204,20 +197,18 @@ function Charts(props) {
   });
   const [owners_chart_options, setOwnersChartOptions] = useState();
   const [volume_chart_options, setVolumeChartOptions] = useState();
-  const [r_sq_val,setRSQ] = useState();
+  const [r_sq_val, setRSQ] = useState();
   const [reg_chart_options, setRegChartOptions] = useState();
   const [fpp_chart_options, setChartOptionsFpp] = useState();
-  const [expanded,setExpanded]=useState(false);
+  const [expanded, setExpanded] = useState(false);
   const get_stats = async (ab_alias) => {
-    var collection_path = ab_alias || location.pathname.replace(
-      "/collections/",
-      "collections/:"
-    );
-// console.log("PATH",collection_path)
-    var collection_name = ab_alias || collection_path.split("/")[1].replace(":", "");
+    var collection_path =
+      ab_alias || location.pathname.replace("/collections/", "collections/:");
+    // console.log("PATH",collection_path)
+    var collection_name =
+      ab_alias || collection_path.split("/")[1].replace(":", "");
     // console.log("SENDING",collection_name)
-    var url =
-      "https://api.opensea.io/api/v1/collection/" + collection_name;
+    var url = "https://api.opensea.io/api/v1/collection/" + collection_name;
     var headers = {
       Accept: "application/json",
       "X-API-KEY": "c38932a3b50647cbb30d2f5601e81850",
@@ -226,34 +217,34 @@ function Charts(props) {
     // console.log("COLLECTION STATS");
     var data = await resp.json();
     console.log(data);
-    data = data.collection
-    let description = data.description
-    setDescription(description)
-    if (data!= undefined){
+    data = data.collection;
+    let description = data.description;
+    setDescription(description);
+    if (data != undefined) {
       setStats({
-        "1d Volume: ": "Ξ"+ numberWithCommas(data.stats.one_day_volume.toFixed(2)),
+        "1d Volume: ":
+          "Ξ" + numberWithCommas(data.stats.one_day_volume.toFixed(2)),
         "1d Volume Change %:": data.stats.one_day_change.toFixed(2) + "%",
-        "7d Volume:": "Ξ"+ numberWithCommas(data.stats.seven_day_volume.toFixed(2)),
+        "7d Volume:":
+          "Ξ" + numberWithCommas(data.stats.seven_day_volume.toFixed(2)),
         "7d Volume Change %:": data.stats.seven_day_change.toFixed(2) + "%",
-        "30d Volume:": "Ξ"+ numberWithCommas(data.stats.thirty_day_volume.toFixed(2)),
+        "30d Volume:":
+          "Ξ" + numberWithCommas(data.stats.thirty_day_volume.toFixed(2)),
         "30d Volume Change %:": data.stats.thirty_day_change.toFixed(2) + "%",
         "1d Sales (Units):": numberWithCommas(data.stats.one_day_sales),
         "# Owners:": numberWithCommas(data.stats.num_owners),
       });
     }
-    
   };
   // useEffect(() => {
   //   get_stats();
   // }, []);
-  const show_less = function (){
-    setExpanded(false)
-  
-  }
-  const read_more = function(){
-    setExpanded(true)
-  
-  }
+  const show_less = function () {
+    setExpanded(false);
+  };
+  const read_more = function () {
+    setExpanded(true);
+  };
   const loadAsyncData = async () => {
     // console.log("PROPS" + JSON.stringify(location.pathname));
     setLoading(true);
@@ -267,7 +258,7 @@ function Charts(props) {
       let collection_name = collection_path.split("/")[1].replace(":", "");
       // console.log("NAME" + collection_name);
       // console.log("PATH" + collection_path);
-      const url = "https://niftyprice.herokuapp.com/"+collection_path;//"http://localhost:8080/" + collection_path; //"https://niftyprice.herokuapp.com/"+collection_path; //
+      const url = "https://niftyprice.herokuapp.com/" + collection_path; //"http://localhost:8080/" + collection_path; //"https://niftyprice.herokuapp.com/"+collection_path; //
       const response = await fetch(
         url
         // +
@@ -316,7 +307,7 @@ function Charts(props) {
         if (element["Collection Name"] == collection_name) {
           var type = element["Category"];
           // console.log("matched");
-          get_stats(data.ab_alias[collection_name] || null)
+          get_stats(data.ab_alias[collection_name] || null);
           setInfo({
             name: element["Collection Name"],
             type: type,
@@ -375,27 +366,35 @@ function Charts(props) {
           series_tfs.push(element_tfs);
         }
         series_fpp.push(element_fpp);
-        if(element_owners.length>1){series_owners.push(element_owners);}
-        
-        if(element_volume.length>1){series_volume.push(element_volume);}
-        
-      }
-      var reg_dataset = combine_data( series_tfs,series_fpp);
-      var regression_data = regression(reg_dataset);
-      var regression_line = [regression_data[0],regression_data[1]]
-      var r_squared = regression_data[2][0][0]
-      
-      var mean = regression_data[2][0][1]
-      var variance = get_variance(reg_dataset)
-      // console.log(variance,mean)
-      setRSQ({"rsq":r_squared,"slope":regression_data[0],"intercept":regression_data[1],"mean":mean,"variance":variance})
-      // console.log("pushing data");
-      if (series_volume.length>1) {
-        setVolumeChartOptions({
-          chart:{
-            backgroundColor: 'rgba(0,0,0,0)',
-          },
+        if (element_owners.length > 1) {
+          series_owners.push(element_owners);
+        }
 
+        if (element_volume.length > 1) {
+          series_volume.push(element_volume);
+        }
+      }
+      var reg_dataset = combine_data(series_tfs, series_fpp);
+      var regression_data = regression(reg_dataset);
+      var regression_line = [regression_data[0], regression_data[1]];
+      var r_squared = regression_data[2][0][0];
+
+      var mean = regression_data[2][0][1];
+      var variance = get_variance(reg_dataset);
+      // console.log(variance,mean)
+      setRSQ({
+        rsq: r_squared,
+        slope: regression_data[0],
+        intercept: regression_data[1],
+        mean: mean,
+        variance: variance,
+      });
+      // console.log("pushing data");
+      if (series_volume.length > 1) {
+        setVolumeChartOptions({
+          chart: {
+            backgroundColor: "rgba(0,0,0,0)",
+          },
 
           title: {
             text: "Volume History",
@@ -408,10 +407,10 @@ function Charts(props) {
           ],
         });
       }
-      if (series_owners.length>1) {
+      if (series_owners.length > 1) {
         setOwnersChartOptions({
-          chart:{
-            backgroundColor: 'rgba(0,0,0,0)',
+          chart: {
+            backgroundColor: "rgba(0,0,0,0)",
           },
           title: {
             text: "Owner History",
@@ -430,69 +429,65 @@ function Charts(props) {
           text: "Supply History",
         },
         chart: {
-          backgroundColor: 'rgba(0,0,0,0)',
-          
-       },
+          backgroundColor: "rgba(0,0,0,0)",
+        },
         series: [
           {
             name: " Supply",
             data: series_tfs,
-            
           },
         ],
       });
       setChartOptionsFpp({
         chart: {
-          backgroundColor: 'rgba(0,0,0,0)',
-          
-       },
+          backgroundColor: "rgba(0,0,0,0)",
+        },
 
-      
         title: {
           text: "Floor  Price History",
         },
-        yAxis: [{
-          labels: {
-              align: 'left'
+        yAxis: [
+          {
+            labels: {
+              align: "left",
+            },
+            height: "80%",
+            resize: {
+              enabled: true,
+            },
           },
-          height: '80%',
-          resize: {
-              enabled: true
-          }
-      }, {
-          labels: {
-              align: 'left'
+          {
+            labels: {
+              align: "left",
+            },
+            top: "80%",
+            height: "20%",
+            offset: 0,
           },
-          top: '80%',
-          height: '20%',
-          offset: 0
-      }],
+        ],
         series: [
           {
             name: "Floor Price (ETH)",
             data: series_fpp,
           },
           {
-            type: 'column',
-            name: 'Volume',
+            type: "column",
+            name: "Volume",
             // id: 'volume',
 
             data: series_volume,
             yAxis: 1,
             dataGrouping: {
-              approximation: "average"
-            }
-        }
+              approximation: "average",
+            },
+          },
         ],
       });
       if (reg_dataset) {
         setRegChartOptions({
-          
           chart: {
             type: "scatter",
-            backgroundColor: 'rgba(0,0,0,0)',
-            
-
+            backgroundColor: "rgba(0,0,0,0)",
           },
           title: {
             text: "Linear Regression Floor Price vs. Supply",
@@ -625,14 +620,35 @@ function Charts(props) {
                               title="NFT COLLECTION IMAGE"
                             />
                           </Grid>
-                          {nft_description?(<>
-                            <Grid container justifyContent = "center">
-                          <Grid item xs={8}> <div  class = "description-container"><Typography    align="left">Description: {expanded?nft_description:nft_description.slice(0,40)+"..."}{" "}<a class="expander" href="#" onClick={expanded?show_less:read_more}>
-                      
-                      {expanded?"Show Less":"Read More"}</a></Typography></div></Grid>
-
-                          </Grid></>):(<></>)}
-                          
+                          {nft_description ? (
+                            <>
+                              <Grid container justifyContent="center">
+                                <Grid item xs={8}>
+                                  {" "}
+                                  <div class="description-container">
+                                    <Typography align="left">
+                                      Description:{" "}
+                                      {expanded
+                                        ? nft_description
+                                        : nft_description.slice(0, 40) +
+                                          "..."}{" "}
+                                      <a
+                                        class="expander"
+                                        href="#"
+                                        onClick={
+                                          expanded ? show_less : read_more
+                                        }
+                                      >
+                                        {expanded ? "Show Less" : "Read More"}
+                                      </a>
+                                    </Typography>
+                                  </div>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : (
+                            <></>
+                          )}
                         </Grid>
                       </Card>
                     </Grid>
@@ -705,7 +721,8 @@ function Charts(props) {
                               component="h6"
                               align="right"
                             >
-                              Ξ{numberWithCommas(
+                              Ξ
+                              {numberWithCommas(
                                 (
                                   collection_info.floor_price *
                                   collection_info.total_avail
@@ -809,8 +826,7 @@ function Charts(props) {
                                       align="left"
                                       style={
                                         object.includes("%")
-                                          ? parseFloat(stats[object]) >
-                                            0
+                                          ? parseFloat(stats[object]) > 0
                                             ? { color: "#26ad3f" }
                                             : { color: "#e04343" }
                                           : { color: "#000000" }
@@ -831,19 +847,18 @@ function Charts(props) {
                   </Grid>
                 </div>
               </Grid>
-              
 
               <Grid item xs={12}>
                 <p> </p>
               </Grid>
               <Grid item xs={12}>
-                  <Tabs>
-                    <TabList>
-                      <Tab>Historical Charts</Tab>
-                      <Tab>Data Analysis</Tab>
-                    </TabList>
-                    <TabPanel>
-                      <Grid container justifyContent="space-evenly" spacing={5}>
+                <Tabs>
+                  <TabList>
+                    <Tab>Historical Charts</Tab>
+                    <Tab>Data Analysis</Tab>
+                  </TabList>
+                  <TabPanel>
+                    <Grid container justifyContent="space-evenly" spacing={5}>
                       <Grid item xs={12} lg={6}>
                         <HighchartsReact
                           class="chart"
@@ -863,42 +878,40 @@ function Charts(props) {
                           options={chart_options}
                         />
                       </Grid>
-                      {volume_chart_options?(
+                      {volume_chart_options ? (
                         <Grid item xs={12} lg={6}>
-                        <HighchartsReact
-                          class="chart"
-                          containerProps={{ style: { width: "100%" } }}
-                          highcharts={HighStock}
-                          constructorType={"stockChart"}
-                          options={volume_chart_options}
-                        />
-                      </Grid>
-                      ):(
-                        <>
-                        </>
+                          <HighchartsReact
+                            class="chart"
+                            containerProps={{ style: { width: "100%" } }}
+                            highcharts={HighStock}
+                            constructorType={"stockChart"}
+                            options={volume_chart_options}
+                          />
+                        </Grid>
+                      ) : (
+                        <></>
                       )}
-                      
-                      {owners_chart_options?(
-                      <Grid item xs={12} lg={6}>
-                        <HighchartsReact
-                          class="chart"
-                          containerProps={{ style: { width: "100%" } }}
-                          highcharts={HighStock}
-                          constructorType={"stockChart"}
-                          options={owners_chart_options}
-                        />
-                      </Grid>
-                      ):(
-                        <>
-                        </>
+
+                      {owners_chart_options ? (
+                        <Grid item xs={12} lg={6}>
+                          <HighchartsReact
+                            class="chart"
+                            containerProps={{ style: { width: "100%" } }}
+                            highcharts={HighStock}
+                            constructorType={"stockChart"}
+                            options={owners_chart_options}
+                          />
+                        </Grid>
+                      ) : (
+                        <></>
                       )}
                       {/* <Grid item lg={6}>
                         <hr></hr>
                       </Grid> */}
-                      </Grid>
-                    </TabPanel>
-                    <TabPanel>
-                      <Grid container justifyContent="space-evenly">
+                    </Grid>
+                  </TabPanel>
+                  <TabPanel>
+                    <Grid container justifyContent="space-evenly">
                       <Grid item xs={8}>
                         <HighchartsReact
                           class="chart"
@@ -907,13 +920,15 @@ function Charts(props) {
                         />
                       </Grid>
                       <Grid item xs={3}>
-                        <Card id="prices" className={classes.root} elevation={5}>
+                        <Card
+                          id="prices"
+                          className={classes.root}
+                          elevation={5}
+                        >
                           <CardContent>
                             <Grid container justifyContent="space-evenly">
-                            <Grid item xs={6}>
-                                <Typography align="left">
-                                  R^2
-                                </Typography>
+                              <Grid item xs={6}>
+                                <Typography align="left">R^2</Typography>
                               </Grid>
                               <Grid item xs={6}>
                                 <Typography align="right">
@@ -921,9 +936,7 @@ function Charts(props) {
                                 </Typography>
                               </Grid>
                               <Grid item xs={6}>
-                                <Typography align="left">
-                              Slope
-                                </Typography>
+                                <Typography align="left">Slope</Typography>
                               </Grid>
                               <Grid item xs={6}>
                                 <Typography align="right">
@@ -931,9 +944,7 @@ function Charts(props) {
                                 </Typography>
                               </Grid>
                               <Grid item xs={6}>
-                                <Typography align="left">
-                                  Intercept
-                                </Typography>
+                                <Typography align="left">Intercept</Typography>
                               </Grid>
                               <Grid item xs={6}>
                                 <Typography align="right">
@@ -941,9 +952,7 @@ function Charts(props) {
                                 </Typography>
                               </Grid>
                               <Grid item xs={6}>
-                                <Typography align="left">
-                                  Mean
-                                </Typography>
+                                <Typography align="left">Mean</Typography>
                               </Grid>
                               <Grid item xs={6}>
                                 <Typography align="right">
@@ -964,18 +973,17 @@ function Charts(props) {
                           </CardContent>
                         </Card>
                       </Grid>
-                        </Grid>
-                      
-                      {/* <Grid item xs={12}>
+                    </Grid>
+
+                    {/* <Grid item xs={12}>
                         <HighchartsReact
                           class="chart"
                           containerProps={{ style: { width: "100%" } }}
                           options={reg_chart_options}
                         />
                       </Grid> */}
-                    </TabPanel>
-                  </Tabs>
-                
+                  </TabPanel>
+                </Tabs>
               </Grid>
             </Grid>
 
