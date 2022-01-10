@@ -20,6 +20,11 @@ import Fuse from 'fuse.js'
 
 
 const useStyles = makeStyles({
+  centeredTableHead: {
+    '& > span': {
+      justifyContent: 'right',
+    }
+  },
   alert: {
     minHeight: 50,
   },
@@ -342,12 +347,16 @@ function Table() {
           // hint: 'Floor price multiplied by the total supply',
           filter: true,
           sort: true,
-
+          setCellHeaderProps: () => {
+            return {
+              className: classes.centeredTableHead
+            }
+          },
           setCellProps: () => ({ align: "right" }), // setCellHeaderProps: () => ({ style: { padding: '0px' } }),
           customBodyRender: (value) => {
             return (
               <>
-                <p>{numberWithCommas(value)} </p>{" "}
+                <p>{numberWithCommas(parseInt(value))} </p>{" "}
               </>
             );
           },
@@ -369,7 +378,7 @@ function Table() {
           customBodyRender: (value) => {
             return (
               <>
-                <p>{isNaN(value) || value == null ? "---" : value}</p>
+                <p>{isNaN(value) || value == null ? "---" : numberWithCommas(value.toFixed(2))}</p>
               </>
             );
           },
@@ -390,7 +399,7 @@ function Table() {
           customBodyRender: (value) => {
             return (
               <>
-                <p>{isNaN(value) || value == null ? "---" : value + "%"}</p>
+                <p>{isNaN(value) || numberWithCommas(value.toFixed(2)) == null ? "---" : value + "%"}</p>
               </>
             );
           },
@@ -412,7 +421,7 @@ function Table() {
           customBodyRender: (value) => {
             return (
               <>
-                <p>{isNaN(value) || value == null ? "---" : value}</p>
+                <p>{isNaN(value) || numberWithCommas(parseInt(value)) == null ? "---" : value}</p>
               </>
             );
           },
@@ -664,7 +673,7 @@ function Table() {
         <div class="content-wrap">
           <div class="welcome-container">
             <Grid container justifyContent="space-evenly">
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <Typography align="left" variant="h5">
                   Today’s NFT Floor Prices by Floor Cap
                 </Typography>
@@ -673,7 +682,7 @@ function Table() {
                   clicking on individual collections
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 {searchOptions ? (
                   <SelectSearch
                     options={searchOptions}
@@ -698,7 +707,7 @@ function Table() {
                 ) : (
                   <></>
                 )}
-              </Grid>
+              </Grid> */}
             </Grid>
             {/* <Grid item xs={12} > */}
             <Grid container justifyContent="space-evenly">

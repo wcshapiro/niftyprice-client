@@ -6,6 +6,10 @@
 .background-container {
     background-color: rgb(190, 190, 190);
 }
+th{
+    padding: 0;
+    text-align: right;
+}
 .welcome-container {
     /* align-content: center; */
     margin-top: 2rem;
