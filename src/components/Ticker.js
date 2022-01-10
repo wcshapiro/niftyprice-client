@@ -14,7 +14,7 @@ function Ticker() {
   const [prices, setPrices] = useState();
   const [refresh, setRefresh] = useState(0);
   const loadAsyncData = async () => {
-    const url = "https://niftyprice.herokuapp.com/stream";
+    const url = "https://niftyprice.herokuapp.com/stream"; //"http://localhost:8080/stream"; //
     const response = await fetch(url).then(res=>res.json()).then(data=>{
       console.log("DATA",data)
       if (data) {
@@ -41,7 +41,20 @@ function Ticker() {
             {prices.BTC.data ? (
               <Grid item xs={4}>
                 <img class="icon-image" src={btc_image}></img>
-                {prices.BTC.name}: ${numberWithCommas(prices.BTC.data)}
+                {prices.BTC.name}: ${numberWithCommas(prices.BTC.data)} <a style={(prices.BTC.change>0)? {
+                                          color: "#065f46",
+                                          borderRadius: 12,
+                                          width:"80px",
+                                          textAlign: "center",
+                                          display:"inline-block"
+                                        }
+                                      : {
+                                          color: "#981b1b",
+                                          borderRadius: 12,
+                                          textAlign: "center",
+                                          width:"80px",
+                                          display:"inline-block"
+                                        }}>{prices.BTC.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.BTC.change))}%</a>
               </Grid>
             ) : (
               <></>
@@ -49,7 +62,20 @@ function Ticker() {
             {prices.GWEI.data ? (
               <Grid item xs={4}>
                 <img class="icon-image" src={gas_image}></img>GAS:{" "}
-                {prices.GWEI.data} {prices.GWEI.name}
+                {prices.GWEI.data} {prices.GWEI.name} <a style={(prices.GWEI.change<0)? {
+                                          color: "#065f46",
+                                          borderRadius: 12,
+                                          width:"80px",
+                                          textAlign: "center",
+                                          display:"inline-block"
+                                        }
+                                      : {
+                                          color: "#981b1b",
+                                          borderRadius: 12,
+                                          textAlign: "center",
+                                          width:"80px",
+                                          display:"inline-block"
+                                        }}>{prices.GWEI.change>0?"+":"-"}{numberWithCommas(prices.GWEI.change)}%</a>
               </Grid>
             ) : (
               <></>
@@ -57,7 +83,20 @@ function Ticker() {
             {prices.ETH.data ? (
               <Grid item xs={4}>
                 <img class="icon-image" src={eth_image}></img>
-                {prices.ETH.name}: ${numberWithCommas(prices.ETH.data)}
+                {prices.ETH.name}: ${numberWithCommas(prices.ETH.data)} <a style={(prices.ETH.change>0)? {
+                                          color: "#065f46",
+                                          borderRadius: 12,
+                                          width:"80px",
+                                          textAlign: "center",
+                                          display:"inline-block"
+                                        }
+                                      : {
+                                          color: "#981b1b",
+                                          borderRadius: 12,
+                                          textAlign: "center",
+                                          width:"80px",
+                                          display:"inline-block"
+                                        }}>{prices.ETH.change>0?"+":"-"}{numberWithCommas(prices.ETH.change)}%</a>
               </Grid>
             ) : (
               <></>
