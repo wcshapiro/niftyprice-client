@@ -75,7 +75,7 @@ function Ticker() {
                                           textAlign: "center",
                                           width:"80px",
                                           display:"inline-block"
-                                        }}>{prices.GWEI.change>0?"+":"-"}{numberWithCommas(prices.GWEI.change)}%</a>
+                                        }}>{prices.GWEI.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.GWEI.change))}%</a>
               </Grid>
             ) : (
               <></>
@@ -96,7 +96,7 @@ function Ticker() {
                                           textAlign: "center",
                                           width:"80px",
                                           display:"inline-block"
-                                        }}>{prices.ETH.change>0?"+":"-"}{numberWithCommas(prices.ETH.change)}%</a>
+                                        }}>{prices.ETH.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.ETH.change))}%</a>
               </Grid>
             ) : (
               <></>
