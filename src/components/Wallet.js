@@ -145,7 +145,7 @@ function Wallet() {
     );
     if (!saved_table || !saved_portfolio || expired) {
       return new Promise((resolve, reject) => {
-        let url = "http://localhost:8080/wallet/:" + addr;  //"https://niftyprice.herokuapp.com/wallet/:" + addr;//
+        let url ="https://niftyprice.herokuapp.com/wallet/:" + addr;// "http://localhost:8080/wallet/:" + addr;  //
         const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
           .then((resp) => resp.json())
           .then((data) => {
