@@ -145,7 +145,7 @@ function Wallet() {
     );
     if (!saved_table || !saved_portfolio || expired) {
       return new Promise((resolve, reject) => {
-        let url = "https://niftyprice.herokuapp.com/wallet/:" + addr;//"http://localhost:8080/wallet/:" + addr;  //
+        let url = "http://localhost:8080/wallet/:" + addr;  //"https://niftyprice.herokuapp.com/wallet/:" + addr;//
         const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
           .then((resp) => resp.json())
           .then((data) => {
@@ -202,9 +202,9 @@ function Wallet() {
 
   const connect_metamask = async () => {
     const accounts = await ethereum.send("eth_requestAccounts");
-    // setAddr(accounts.result[0]);
+    setAddr(accounts.result[0]);
     // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
-    setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01") // me
+    // setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01") // me
     // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
     // setAddr("0x13d33c9f2F3E7F8f14B1ee0988F4DC929Ee87a92"); // brojack
