@@ -26,7 +26,7 @@ function TraitChart({ data }) {
     setRowData(data.rowData);
     // setTraitFloors(JSON.parse(data.rowData[9]).trait_types)
     let temp_trait_floors = data.trait_data[data.id]
-    let url = `http://localhost:8080/traits/${data.address}/${data.token}`;//`https://niftyprice.herokuapp.com/traits/${data.address}/${data.token}`//
+    let url = `https://niftyprice.herokuapp.com/traits/${data.address}/${data.token}`//`http://localhost:8080/traits/${data.address}/${data.token}`;//
     const trait = await fetch(url)
       .then((res) => res.json())
       .then((data) => {
