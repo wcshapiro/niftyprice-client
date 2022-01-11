@@ -1,0 +1,6 @@
+.verticalLine {
+    background-color: grey;
+    width: 1px;
+    height: 100%;
+    margin-left: 50%;
+}

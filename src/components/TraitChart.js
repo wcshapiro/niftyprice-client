@@ -16,26 +16,26 @@ const useStyles = makeStyles({
 });
 function TraitChart({ data }) {
   const classes = useStyles();
-
+  const [trait_floors,setTraitFloors] = useState(null)
+  const [max_floor,setMaxFloor] = useState(null)
   const [trait_data, setTraitData] = useState(null);
   const [rowData, setRowData] = useState();
   const [supply, setSupply] = useState();
   const [total_rarity, setTotalRarity] = useState();
   const get_trait = async () => {
     setRowData(data.rowData);
-    // console.log("TRAIT ROWDATA", data.rowData);
-    let url = `https://niftyprice.herokuapp.com/traits/${data.address}/${data.token}`//`http://localhost:8080/traits/${data.address}/${data.token}`;
+    // setTraitFloors(JSON.parse(data.rowData[9]).trait_types)
+    let temp_trait_floors = data.trait_data[data.id]
+    let url = `https://niftyprice.herokuapp.com/traits/${data.address}/${data.token}`//`http://localhost:8080/traits/${data.address}/${data.token}`;//
     const trait = await fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        // console.log("data", data);
         setSupply(data.message.collection.stats.total_supply);
-        setTraitData(data.message.traits);
         let rarities = 0;
-        for (const element of data.message.traits) {
-        //   console.log("element", element.trait_count);
-          rarities += element.trait_count;
+        for (const trait of data.message.traits ){
+          rarities += trait.trait_count
         }
+        setTraitData(temp_trait_floors);
         setTotalRarity(
           rarities /
             (data.message.collection.stats.total_supply *
@@ -45,7 +45,8 @@ function TraitChart({ data }) {
       .catch((e) => console.log("error ", e));
   };
   useEffect(() => {
-    get_trait();
+    get_trait().catch(e=>{console.log("e")})
+    
   }, []);
   return (
     <>
@@ -62,6 +63,7 @@ function TraitChart({ data }) {
                       <th>Trait Name</th>
                       <th>Trait Value</th>
                       <th>Rarity Meter</th>
+                      <th>Floor</th>
                     </tr>
 
                     {Object.values(trait_data).map(function (object, i) {
@@ -81,6 +83,7 @@ function TraitChart({ data }) {
                                 <div
                                   class="bar-fill"
                                   style={{
+                                    textAlign:"left",
                                     width:
                                       ((object.trait_count / supply) * 100)
                                         .toFixed(2)
@@ -95,6 +98,7 @@ function TraitChart({ data }) {
                                 </div>
                               </div>
                             </td>
+                            <td>{((object.trait_count>0)&&(object.floor != undefined))?object.floor.toFixed(3):"---"}</td>
                           </tr>
                         </>
                       );

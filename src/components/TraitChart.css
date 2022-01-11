@@ -5,9 +5,7 @@
 .trait-table td {
   border: none;
 }
-.trait-table td:nth-child(1),
-td:nth-child(2),
-td:nth-child(3) {
+.trait-table td:nth-child(1), .trait-table td:nth-child(2) {
     white-space: nowrap;
 
   text-align: left;
