@@ -16,7 +16,6 @@ function Ticker() {
   const loadAsyncData = async () => {
     const url = "https://niftyprice.herokuapp.com/stream"; //"http://localhost:8080/stream"; //
     const response = await fetch(url).then(res=>res.json()).then(data=>{
-      console.log("DATA",data)
       if (data) {
 
         setPrices(data.message);
@@ -54,7 +53,7 @@ function Ticker() {
                                           textAlign: "center",
                                           width:"80px",
                                           display:"inline-block"
-                                        }}>{prices.BTC.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.BTC.change))}%</a>
+                                        }}>{prices.BTC.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.BTC.change).toFixed(2))}%</a>
               </Grid>
             ) : (
               <></>
@@ -62,20 +61,7 @@ function Ticker() {
             {prices.GWEI.data ? (
               <Grid item xs={4}>
                 <img class="icon-image" src={gas_image}></img>GAS:{" "}
-                {prices.GWEI.data} {prices.GWEI.name} <a style={(prices.GWEI.change<0)? {
-                                          color: "#065f46",
-                                          borderRadius: 12,
-                                          width:"80px",
-                                          textAlign: "center",
-                                          display:"inline-block"
-                                        }
-                                      : {
-                                          color: "#981b1b",
-                                          borderRadius: 12,
-                                          textAlign: "center",
-                                          width:"80px",
-                                          display:"inline-block"
-                                        }}>{prices.GWEI.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.GWEI.change))}%</a>
+                {prices.GWEI.data} {prices.GWEI.name} 
               </Grid>
             ) : (
               <></>
@@ -96,7 +82,7 @@ function Ticker() {
                                           textAlign: "center",
                                           width:"80px",
                                           display:"inline-block"
-                                        }}>{prices.ETH.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.ETH.change))}%</a>
+                                        }}>{prices.ETH.change>0?"+":"-"}{numberWithCommas(Math.abs(prices.ETH.change).toFixed(2))}%</a>
               </Grid>
             ) : (
               <></>

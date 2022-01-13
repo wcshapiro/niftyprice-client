@@ -145,7 +145,7 @@ function Wallet() {
     );
     if (!saved_table || !saved_portfolio || expired) {
       return new Promise((resolve, reject) => {
-        let url ="https://niftyprice.herokuapp.com/wallet/:" + addr;// "http://localhost:8080/wallet/:" + addr;  //
+        let url = "https://niftyprice.herokuapp.com/wallet/:" + addr;//"http://localhost:8080/wallet/:" + addr; //
         const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
           .then((resp) => resp.json())
           .then((data) => {
@@ -207,12 +207,13 @@ function Wallet() {
     // setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01") // me
     // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
+    // setAddr("0x01DDE370Fee9118D49b78b561C0606A0069A21Db"); //new member
     // setAddr("0x13d33c9f2F3E7F8f14B1ee0988F4DC929Ee87a92"); // brojack
 
     setTrigger(true);
   };
   const refresh_data = async () => {
-    console.log("REFRESHING");
+    // console.log("REFRESHING");
     window.localStorage.removeItem("wallet_data");
     window.localStorage.removeItem("final_portfolio");
     window.localStorage.removeItem("time");
@@ -319,14 +320,14 @@ function Wallet() {
           parseFloat(Number(nft.transaction_info.gasPrice, 16)) *
           0.000000001;
         let max_trait = null;
-        let url = `https://niftyprice.herokuapp.com/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //`http://localhost:8080/traits/${data.address}/${data.token}`;
+        let url = `https://niftyprice.herokuapp.com/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //`http://localhost:8080/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //
         const trait = await fetch(url)
           .then((res) => res.json())
           .then((data) => {
             let temp_traits = traits;
             temp_traits[nft.asset.id] = data.message.traits;
             setTraits(temp_traits);
-            nft["trait_floors"] = temp_traits;
+            nft["trait_floors"] = temp_traits[nft.asset.id];
             let rarities = 0;
             let max_floor = 0;
             for (const element of data.message.traits) {
@@ -354,7 +355,7 @@ function Wallet() {
           collection_map[slug].floor || 0,
           collection_map[slug].change || 0,
           max_trait || "---",
-          traits || null,
+          null || null,
           collection_map[slug].floor - (paid_price + gas_fee) || 10,
           ((collection_map[slug].floor - (paid_price + gas_fee)) /
             (paid_price + gas_fee)) *
@@ -373,7 +374,13 @@ function Wallet() {
         ]);
       }
       setWalletData(temp_wallet);
-      window.localStorage.setItem("wallet_data", JSON.stringify(temp_wallet));
+      try{
+        window.localStorage.setItem("wallet_data", JSON.stringify(temp_wallet));
+      }
+      catch(e){
+        console.log(e)
+      }
+      
       window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
       let summation_map = {};
       let numeric_columns = [3, 4, 5, 6, 7, 9, 11, 13];
@@ -404,11 +411,13 @@ function Wallet() {
         gain_percent: (summation_map[11] / summation_map[5]) * 100,
         trait_gain_percent: (summation_map[9] / summation_map[5]) * 100,
       };
-      window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
-      window.localStorage.setItem(
-        "final_portfolio",
-        JSON.stringify(final_portfolio)
-      );
+try{window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
+window.localStorage.setItem(
+  "final_portfolio",
+  JSON.stringify(final_portfolio)
+);}catch(e){console.log(e)}
+      
+
       setFinalPortfolio(final_portfolio);
 
       setPortfolioLoading(false);
@@ -605,7 +614,7 @@ function Wallet() {
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value, tableMeta) => {
             let day = new Date(value).getUTCDate();
-            let month = new Date(value).getUTCMonth();
+            let month = new Date(value).getUTCMonth() + 1;
             let year = new Date(value).getUTCFullYear();
 
             return <>{month + "/" + day + "/" + year}</>;

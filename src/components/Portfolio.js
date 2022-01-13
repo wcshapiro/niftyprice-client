@@ -81,6 +81,7 @@ function Portfolio({ portfolio_metrics }) {
     setchartLoading(true);
     let totalvals = [];
     let portfolio_val = 0;
+    // console.log("METRICS",portfolio_metrics)
     for (const element of portfolio_metrics.data) {
       let entry_date = new Date(element[2]);
       let price = Number(element[7]);
@@ -124,7 +125,6 @@ function Portfolio({ portfolio_metrics }) {
     if (data) {
       setLoading(false);
     }
-
     if (fpp_chart_options) {
       setchartLoading(false);
     }
@@ -216,13 +216,16 @@ function Portfolio({ portfolio_metrics }) {
                                       variant="subtitle"
                                       align="right"
                                       className={classes.portfolioTextRight}
-                                      style={ 
-                                        parseFloat(data.gain_percent) > 0
+                                      style={ toggle?
+                                        (parseFloat(data.gain_percent) > 0
                                           ? { color: "#065f46" }
-                                          : { color: "#e04343" }
+                                          : { color: "#e04343" }):
+                                          (parseFloat(data.trait_gain_percent) > 0
+                                          ? { color: "#065f46" }
+                                          : { color: "#e04343" })
                                       }
                                     >
-                                      {data.gain.usd > 0 ? "" : "-"}$
+                                      {(toggle)?(data.gain.usd > 0 ? "+" : "-"):(data.trait_gain.usd > 0 ? "+" : "-")}$
                                       {toggle?numberWithCommas(
                                         Math.abs(data.gain.usd.toFixed(2))
                                       ):numberWithCommas(
@@ -266,17 +269,21 @@ function Portfolio({ portfolio_metrics }) {
                                 <Typography
                                   variant="subtitle"
                                   className={classes.portfolioTextRight}
-                                  style={
-                                    parseFloat(data.gain_percent) > 0
+                                  style={ toggle?
+                                    (parseFloat(data.gain_percent) > 0
                                       ? { color: "#065f46" }
-                                      : { color: "#e04343" }
+                                      : { color: "#e04343" }):
+                                      (parseFloat(data.trait_gain_percent) > 0
+                                      ? { color: "#065f46" }
+                                      : { color: "#e04343" })
                                   }
                                 >
-                                  {toggle?numberWithCommas(
+                                  {(toggle)?(data.gain.eth > 0 ? "+" : "-"):(data.trait_gain.eth > 0 ? "+" : "-")}
+                                      {toggle?numberWithCommas(
                                         Math.abs(data.gain.eth.toFixed(2))
                                       ):numberWithCommas(
                                         Math.abs(data.trait_gain.eth.toFixed(2))
-                                      )}
+                                      )}ETH
                                       (
                                       {numberWithCommas(
                                         toggle?data.gain_percent.toFixed(2):data.trait_gain_percent.toFixed(2)

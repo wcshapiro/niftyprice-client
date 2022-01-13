@@ -15,6 +15,7 @@ const useStyles = makeStyles({
   },
 });
 function TraitChart({ data }) {
+  console.log("SHIPPED DATA",data)
   const classes = useStyles();
   const [trait_floors,setTraitFloors] = useState(null)
   const [max_floor,setMaxFloor] = useState(null)
@@ -25,7 +26,7 @@ function TraitChart({ data }) {
   const get_trait = async () => {
     setRowData(data.rowData);
     // setTraitFloors(JSON.parse(data.rowData[9]).trait_types)
-    let temp_trait_floors = data.trait_data[data.id]
+    let temp_trait_floors = data.trait_data
     let url = `https://niftyprice.herokuapp.com/traits/${data.address}/${data.token}`//`http://localhost:8080/traits/${data.address}/${data.token}`;//
     const trait = await fetch(url)
       .then((res) => res.json())
