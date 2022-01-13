@@ -1,65 +1,65 @@
-import detectEthereumProvider from "@metamask/detect-provider";
-import React, { useEffect, useState } from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import MUIDataTable from "mui-datatables";
-import "./Wallet.css";
-import TraitChart from "./TraitChart";
-import { Helmet } from "react-helmet";
-import HighchartsReact from "highcharts-react-official";
-import HighStock from "highcharts/highstock";
-import { Connectors } from "web3-react";
-import { useWeb3Context, Web3Consumer } from "web3-react";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableFooter from "@material-ui/core/TableFooter";
-import Web3Provider from "web3-react";
-import Web3 from "web3";
-import { ethers } from "ethers";
-import { useContractCall } from "@usedapp/core";
-import abi from "../contracts/np_abi.json";
-import { Table } from "@material-ui/core";
-import { isBoolean, isInteger } from "lodash";
-import UserTable from "./UserTable.js";
-import Portfolio from "./Portfolio";
+import detectEthereumProvider from '@metamask/detect-provider';
+import React, { useEffect, useState } from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import MUIDataTable from 'mui-datatables';
+import './Wallet.css';
+import TraitChart from './TraitChart';
+import { Helmet } from 'react-helmet';
+import HighchartsReact from 'highcharts-react-official';
+import HighStock from 'highcharts/highstock';
+import { Connectors } from 'web3-react';
+import { useWeb3Context, Web3Consumer } from 'web3-react';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableFooter from '@material-ui/core/TableFooter';
+import Web3Provider from 'web3-react';
+import Web3 from 'web3';
+import { ethers } from 'ethers';
+import { useContractCall } from '@usedapp/core';
+import abi from '../contracts/np_abi.json';
+import { Table } from '@material-ui/core';
+import { isBoolean, isInteger } from 'lodash';
+import UserTable from './UserTable.js';
+import Portfolio from './Portfolio';
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] });
 
 const Infura = new NetworkOnlyConnector({
-  providerURL: "https://mainnet.infura.io/v3/...",
+  providerURL: 'https://mainnet.infura.io/v3/...',
 });
 const connectors = { MetaMask, Infura };
-const etherscan_api_token = "VED3AM1CEXYQVZ2RYD3N6J5TPWNNUK6VT1";
+const etherscan_api_token = 'VED3AM1CEXYQVZ2RYD3N6J5TPWNNUK6VT1';
 
 const useStyles = makeStyles({
   footerCell: {
-    borderBottom: "none",
+    borderBottom: 'none',
   },
   stickyFooterCell: {
-    borderTop: "2px solid black",
-    position: "sticky",
+    borderTop: '2px solid black',
+    position: 'sticky',
     bottom: 0,
     zIndex: 100,
-    color: "black",
-    fontWeight: "bold",
+    color: 'black',
+    fontWeight: 'bold',
     fontSize: 15,
-    align: "right",
+    align: 'right',
   },
   alert: {
     minHeight: 50,
   },
   cell: {
-    position: "relative",
+    position: 'relative',
     height: 160,
   },
   row: {
     maxWidth: 50,
-    overflow: "auto",
+    overflow: 'auto',
   },
   root: {
     flexgrow: 1,
@@ -67,8 +67,8 @@ const useStyles = makeStyles({
   },
   paper: {
     padding: 2,
-    textAlign: "center",
-    color: "white",
+    textAlign: 'center',
+    color: 'white',
   },
 
   title: {
@@ -83,15 +83,15 @@ const useStyles = makeStyles({
 });
 
 function numberWithCommas(x) {
-  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "---";
+  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '---';
 }
 function Wallet() {
-  const opensea_api_token = "c38932a3b50647cbb30d2f5601e81850";
+  const opensea_api_token = 'c38932a3b50647cbb30d2f5601e81850';
   const ethereum = window.ethereum;
   const [addr, setAddr] = useState(null);
   const context = useWeb3Context();
   if (context.error) {
-    console.error("Error!");
+    console.error('Error!');
   }
   const [user_portfolio, setUserPortfolio] = useState({});
   var token_to_asset = {};
@@ -137,11 +137,11 @@ function Wallet() {
   };
   const get_events = async () => {
     setPortfolioLoading(true);
-    var saved_table = JSON.parse(window.localStorage.getItem("wallet_data"));
-    var last_saved = JSON.parse(window.localStorage.getItem("time"));
+    var saved_table = JSON.parse(window.localStorage.getItem('wallet_data'));
+    var last_saved = JSON.parse(window.localStorage.getItem('time'));
     let expired = check_expiry(last_saved);
     var saved_portfolio = JSON.parse(
-      window.localStorage.getItem("final_portfolio")
+      window.localStorage.getItem('final_portfolio')
     );
     if (!saved_table || !saved_portfolio || expired) {
       return new Promise((resolve, reject) => {
@@ -168,8 +168,8 @@ function Wallet() {
 
   const authenticate = async () => {
     var provider = await detectEthereumProvider();
-    var address = "0x4ba0fC55646f6c82134CE3dc19aC64d02176e47c";
-    var Contract = require("web3-eth-contract");
+    var address = '0x4ba0fC55646f6c82134CE3dc19aC64d02176e47c';
+    var Contract = require('web3-eth-contract');
     Contract.setProvider(provider);
     var contract = new Contract(abi, address);
     if (addr) {
@@ -193,7 +193,7 @@ function Wallet() {
 
   const gwei = async () => {
     var url =
-      "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=" +
+      'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=' +
       etherscan_api_token;
     const gwei_data = await fetch(url);
     const gwei_price = await gwei_data.json();
@@ -201,7 +201,7 @@ function Wallet() {
   };
 
   const connect_metamask = async () => {
-    const accounts = await ethereum.send("eth_requestAccounts");
+    const accounts = await ethereum.send('eth_requestAccounts');
     setAddr(accounts.result[0]);
     // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
     // setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01") // me
@@ -231,14 +231,14 @@ function Wallet() {
   const purchase_premium = async () => {
     var provider = await detectEthereumProvider();
     var web3 = new Web3(provider);
-    var address = "0x4ba0fC55646f6c82134CE3dc19aC64d02176e47c";
-    var Contract = require("web3-eth-contract");
+    var address = '0x4ba0fC55646f6c82134CE3dc19aC64d02176e47c';
+    var Contract = require('web3-eth-contract');
     Contract.setProvider(provider);
     var contract = new Contract(abi, address);
     if (addr) {
       contract.methods
         .register()
-        .send({ from: addr, gas: 100000, value: web3.toWei(0.05, "ether") })
+        .send({ from: addr, gas: 100000, value: web3.toWei(0.05, 'ether') })
         .then((value) => {});
     }
   };
@@ -262,11 +262,11 @@ function Wallet() {
         if (element.transaction) {
           var params = [element.transaction.transaction_hash];
           const transaction_data = await ethereum.request({
-            method: "eth_getTransactionByHash",
+            method: 'eth_getTransactionByHash',
             params: params,
           });
           var trans_hash_data = await transaction_data;
-          element["transaction_info"] = trans_hash_data;
+          element['transaction_info'] = trans_hash_data;
 
           if (
             Object.keys(full_portfolio.current).includes(asset.id.toString())
@@ -296,7 +296,7 @@ function Wallet() {
         let change = null;
         let slug = nft.asset.collection.slug;
         let collection_url =
-          "https://api.opensea.io/api/v1/collection/" + slug + "/stats";
+          'https://api.opensea.io/api/v1/collection/' + slug + '/stats';
         if (collection_map[slug]) {
           floor = collection_map[slug].floor;
           change = collection_map[slug].change;
@@ -309,7 +309,7 @@ function Wallet() {
                 change: data.stats.one_day_change,
               };
             })
-            .catch((e) => console.log("error", e));
+            .catch((e) => console.log('error', e));
         }
         let paid_price =
           parseFloat(Number(nft.transaction_info.value), 16) /
@@ -333,16 +333,16 @@ function Wallet() {
             for (const element of data.message.traits) {
               rarities += element.trait_count;
               let asset_traits = null;
-              element["floor"] = JSON.parse(asset_trait_list[slug]).trait_types[
+              element['floor'] = JSON.parse(asset_trait_list[slug]).trait_types[
                 element.trait_type
               ].values[element.value];
-              if (element["floor"] > max_floor && element.trait_count > 0) {
-                max_floor = element["floor"];
+              if (element['floor'] > max_floor && element.trait_count > 0) {
+                max_floor = element['floor'];
               }
             }
             max_trait = max_floor;
           })
-          .catch((e) => console.log("error ", e));
+          .catch((e) => console.log('error ', e));
 
         temp_wallet.push([
           nft.asset.name || nft.asset.collection.name || 0,
@@ -366,10 +366,10 @@ function Wallet() {
             (paid_price + gas_fee)) *
             100 || 13,
           nft || null,
-          "etherscan" || 15,
+          'etherscan' || 15,
           200 || 16, //total
           nft.asset.image_thumbnail_url || 17,
-          "clean name" || 18,
+          'clean name' || 18,
           200 || 19, //rarity
         ]);
       }
@@ -521,12 +521,12 @@ window.localStorage.setItem(
     //   : { name: "Floor Cap (ETH)", direction: "desc" },
     setTableProps: () => {
       return {
-        size: "small",
+        size: 'small',
       };
     },
     download: false,
     selectableRowsHideCheckboxes: true,
-    responsive: "standard",
+    responsive: 'standard',
   };
   useEffect(() => {
     authenticate();
@@ -565,7 +565,7 @@ window.localStorage.setItem(
   } else {
     var wallet_cols = [
       {
-        name: "NFT",
+        name: 'NFT',
         options: {
           customBodyRender: (value, tableMeta, updateValue) => {
             var img = tableMeta.rowData[18];
@@ -585,9 +585,9 @@ window.localStorage.setItem(
                       <Grid item xs={12}>
                         <Typography
                           style={{
-                            color: "#787878",
+                            color: '#787878',
 
-                            maxWidth: "40",
+                            maxWidth: '40',
                           }}
                           variant="subtitle2"
                           align="left"
@@ -604,53 +604,53 @@ window.localStorage.setItem(
         },
       },
       {
-        name: "Token ID",
+        name: 'Token ID',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Date Purchased",
+        name: 'Date Purchased',
 
         options: {
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ align: 'right' }),
           customBodyRender: (value, tableMeta) => {
             let day = new Date(value).getUTCDate();
             let month = new Date(value).getUTCMonth() + 1;
             let year = new Date(value).getUTCFullYear();
 
-            return <>{month + "/" + day + "/" + year}</>;
+            return <>{month + '/' + day + '/' + year}</>;
           },
         },
       },
       {
-        name: "Purchase Price (ETH)",
+        name: 'Purchase Price (ETH)',
         options: {
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ align: 'right' }),
           customBodyRender: (value) => value.toFixed(3),
         },
       },
       {
-        name: "Gas Fee (ETH)",
+        name: 'Gas Fee (ETH)',
         options: {
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ align: 'right' }),
           customBodyRender: (value) => value.toFixed(3),
         },
       },
       {
-        name: "Total Cost (ETH)",
+        name: 'Total Cost (ETH)',
         options: {
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ align: 'right' }),
           customBodyRender: (value) => value.toFixed(3),
         },
       },
       {
-        name: "Total Cost (USD)",
+        name: 'Total Cost (USD)',
         options: {
-          setCellProps: () => ({ align: "right" }),
+          setCellProps: () => ({ align: 'right' }),
           customBodyRender: (value) => value.toFixed(2),
         },
       },
       {
-        name: "Collection Floor (ETH)",
+        name: 'Collection Floor (ETH)',
         options: {
           customBodyRender: (value, tableMeta) => {
             var floor_change = tableMeta.rowData[8];
@@ -667,18 +667,18 @@ window.localStorage.setItem(
                       style={
                         parseFloat(floor_change) > 0
                           ? {
-                              color: "#065f46",
-                              textAlign: "right",
-                              float: "right",
+                              color: '#065f46',
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                               minHeight: 25,
                             }
                           : {
-                              color: "#981b1b",
+                              color: '#981b1b',
                               minHeight: 25,
-                              textAlign: "right",
-                              float: "right",
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                             }
@@ -696,20 +696,20 @@ window.localStorage.setItem(
         },
       },
       {
-        name: "24H%",
+        name: '24H%',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Top Trait Floor (ETH)",
-        options: { setCellProps: () => ({ align: "right" }) },
+        name: 'Top Trait Floor (ETH)',
+        options: { setCellProps: () => ({ align: 'right' }) },
       },
       {
-        name: "24H%",
+        name: '24H%',
         options: { display: false, viewColumns: false, filter: false },
       },
 
       {
-        name: "Total Gain (ETH)",
+        name: 'Total Gain (ETH)',
         options: {
           customBodyRender: (value, tableMeta) => {
             var gain_percent_eth = tableMeta.rowData[12];
@@ -723,18 +723,18 @@ window.localStorage.setItem(
                       style={
                         parseFloat(value) > 0
                           ? {
-                              color: "#065f46",
-                              textAlign: "right",
-                              float: "right",
+                              color: '#065f46',
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                               minHeight: 25,
                             }
                           : {
-                              color: "#981b1b",
+                              color: '#981b1b',
                               minHeight: 25,
-                              textAlign: "right",
-                              float: "right",
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                             }
@@ -748,18 +748,18 @@ window.localStorage.setItem(
                       style={
                         parseFloat(gain_percent_eth) > 0
                           ? {
-                              color: "#065f46",
-                              textAlign: "right",
-                              float: "right",
+                              color: '#065f46',
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                               minHeight: 25,
                             }
                           : {
-                              color: "#981b1b",
+                              color: '#981b1b',
                               minHeight: 25,
-                              textAlign: "right",
-                              float: "right",
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                             }
@@ -777,11 +777,11 @@ window.localStorage.setItem(
         },
       },
       {
-        name: "%Gain (ETH)",
+        name: '%Gain (ETH)',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Total Gain (USD)",
+        name: 'Total Gain (USD)',
         options: {
           customBodyRender: (value, tableMeta) => {
             var gain_percent_usd = tableMeta.rowData[14];
@@ -795,18 +795,18 @@ window.localStorage.setItem(
                       style={
                         parseFloat(value) > 0
                           ? {
-                              color: "#065f46",
-                              textAlign: "right",
-                              float: "right",
+                              color: '#065f46',
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                               minHeight: 25,
                             }
                           : {
-                              color: "#981b1b",
+                              color: '#981b1b',
                               minHeight: 25,
-                              textAlign: "right",
-                              float: "right",
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                             }
@@ -820,18 +820,18 @@ window.localStorage.setItem(
                       style={
                         parseFloat(value) > 0
                           ? {
-                              color: "#065f46",
-                              textAlign: "right",
-                              float: "right",
+                              color: '#065f46',
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                               minHeight: 25,
                             }
                           : {
-                              color: "#981b1b",
+                              color: '#981b1b',
                               minHeight: 25,
-                              textAlign: "right",
-                              float: "right",
+                              textAlign: 'right',
+                              float: 'right',
                               maxWidth: 80,
                               minWidth: 80,
                             }
@@ -849,31 +849,31 @@ window.localStorage.setItem(
         },
       },
       {
-        name: "%Gain (USD)",
+        name: '%Gain (USD)',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Traits",
+        name: 'Traits',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Etherscan Link",
+        name: 'Etherscan Link',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Total",
+        name: 'Total',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Image",
+        name: 'Image',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Clean Name",
+        name: 'Clean Name',
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Rarity",
+        name: 'Rarity',
         options: { display: false, viewColumns: false, filter: false },
       },
     ];
@@ -885,11 +885,11 @@ window.localStorage.setItem(
           <meta
             name="description"
             content={
-              "NiftyPrice’s portfolio tracker allows you to track the profit and loss of your NFT portfolio in real-time. View value by collection floor, trait floor, average, or custom."
+              'NiftyPrice’s NFT portfolio tracker allows you to track the profit and loss of your NFT portfolio in real-time. View NFT portfolio value based on collection floor, trait floor, average, or custom. Manage and evaluate your NFT portfolio live.'
             }
           />
         </Helmet>
-        <Grid item xs={12} style={{ backgroundColor: "#d6ceb6" }}>
+        <Grid item xs={12} style={{ backgroundColor: '#d6ceb6' }}>
           <Typography
             variant="subtitle1"
             style={{
@@ -897,7 +897,7 @@ window.localStorage.setItem(
               paddingBottom: 10,
             }}
           >
-            {" "}
+            {' '}
             Beta Product! We are working quickly to include many new features.
             Just added: rarity tracking, floor price analysis, historical
             portfolio performance and more!
@@ -911,14 +911,14 @@ window.localStorage.setItem(
                   {!addr && is_provider ? (
                     <Button
                       variant="contained"
-                      style={{ backgroundColor: "#1C72D9", color: "#FFFFFF" }}
+                      style={{ backgroundColor: '#1C72D9', color: '#FFFFFF' }}
                       onClick={connect_metamask}
                       id="menu-button"
                     >
                       Connect to Metamask
                     </Button>
                   ) : (
-                    ""
+                    ''
                     // <Button
                     //   variant="contained"
                     //   style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}
@@ -939,8 +939,8 @@ window.localStorage.setItem(
                           <Button
                             variant="contained"
                             style={{
-                              backgroundColor: "#1C72D9",
-                              color: "#FFFFFF",
+                              backgroundColor: '#1C72D9',
+                              color: '#FFFFFF',
                             }}
                             id="menu-button"
                             href="https://metamask.io/download"
@@ -955,8 +955,8 @@ window.localStorage.setItem(
                           <Button
                             variant="contained"
                             style={{
-                              backgroundColor: "#1C72D9",
-                              color: "#FFFFFF",
+                              backgroundColor: '#1C72D9',
+                              color: '#FFFFFF',
                             }}
                             id="menu-button"
                             onClick={purchase_premium}
@@ -1024,8 +1024,8 @@ window.localStorage.setItem(
                               <Button
                                 variant="contained"
                                 style={{
-                                  backgroundColor: "#1C72D9",
-                                  color: "#FFFFFF",
+                                  backgroundColor: '#1C72D9',
+                                  color: '#FFFFFF',
                                 }}
                                 onClick={refresh_data}
                                 id="menu-button"
@@ -1102,7 +1102,7 @@ window.localStorage.setItem(
             <Grid item xs={12}>
               <div class="wallet-table">
                 <MUIDataTable
-                  title={"Wallet"}
+                  title={'Wallet'}
                   data={wallet_data}
                   columns={wallet_cols}
                   options={options}
