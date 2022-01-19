@@ -8,6 +8,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
+import { compress, decompress } from 'compress-json'
+import { stringify, parse } from 'zipson';
+
 import './Wallet.css';
 import TraitChart from './TraitChart';
 import { Helmet } from 'react-helmet';
@@ -115,6 +118,7 @@ function Wallet() {
   const [triggerLoad, setTrigger] = useState(false);
   const [floor_map, setFloorMap] = useState({});
   const [rarity, setRarity] = useState();
+  const [refresh_date,setRefreshDate]=useState(null)
   const [gwei_price, setGwei] = useState();
   const [user_data, setUser] = useState();
   const [fpp_chart_options, setChartOptionsFpp] = useState();
@@ -135,15 +139,38 @@ function Wallet() {
       return true;
     }
   };
-  const get_events = async () => {
+  const pull_from_gcloud = async () => {
     setPortfolioLoading(true);
-    var saved_table = JSON.parse(window.localStorage.getItem('wallet_data'));
-    var last_saved = JSON.parse(window.localStorage.getItem('time'));
-    let expired = check_expiry(last_saved);
-    var saved_portfolio = JSON.parse(
-      window.localStorage.getItem('final_portfolio')
-    );
-    if (!saved_table || !saved_portfolio || expired) {
+    let url = "https://niftyprice.herokuapp.com/load/:"+addr//"http://localhost:8080/load/:" + addr; //
+    const result = await fetch(url).then((resp) => resp.json())
+    .then((data) => {
+      console.log(data.status,triggerLoad)
+      if ((data.status == 200)){
+        setWalletData(parse(data.message.account_portfolio));
+      setFinalPortfolio(parse(data.message.account_data));
+      console.log("DATA",data.message.created)
+      let refresh_date_resp = new Date(data.message.created).toLocaleString()
+      setRefreshDate(refresh_date_resp)
+      console.log("DATA2",parse(data.message.account_portfolio))
+
+      setPortfolioLoading(false);
+      
+      console.log("setfalse")
+
+      }
+      else{
+        console.log("ERROR",data.status)
+        get_events()
+      }
+      
+      
+    }).catch((e)=>{
+      console.log(e);
+      
+    })
+  }
+  const get_events = async () => {
+    
       return new Promise((resolve, reject) => {
         let url = "https://niftyprice.herokuapp.com/wallet/:" + addr;//"http://localhost:8080/wallet/:" + addr; //
         const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
@@ -152,6 +179,7 @@ function Wallet() {
             setEth(data.message.eth);
             setClientData(data.message.info);
             resolve(data.message.info);
+            setTrigger(false)
           })
           .catch((e) => {
             console.log(e);
@@ -159,11 +187,7 @@ function Wallet() {
             reject(e);
           });
       });
-    } else {
-      setWalletData(saved_table);
-      setFinalPortfolio(saved_portfolio);
-      setPortfolioLoading(false);
-    }
+    
   };
 
   const authenticate = async () => {
@@ -204,18 +228,18 @@ function Wallet() {
     const accounts = await ethereum.send('eth_requestAccounts');
     setAddr(accounts.result[0]);
     // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
-    // setAddr("0x52e14e8dfc87e8875ce5e9a94019f497b82b3e01") // me
+    // setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601") // me
     // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
     // setAddr("0x01DDE370Fee9118D49b78b561C0606A0069A21Db"); //new member
     // setAddr("0x13d33c9f2F3E7F8f14B1ee0988F4DC929Ee87a92"); // brojack
+    // setAddr("0x01a47d02a50f3e633232483c8af8ee0da6b260dd")//
+    // setAddr("0x540615aCe7036247Dc4c4B221384E09aD0229D1f")
+    // setAddr("0x98C2AAcc9fCACFCb69314fFDFF243f8396644520")
 
-    setTrigger(true);
   };
   const refresh_data = async () => {
-    // console.log("REFRESHING");
-    window.localStorage.removeItem("wallet_data");
-    window.localStorage.removeItem("final_portfolio");
+    console.log("REFRESHING",triggerLoad);
     window.localStorage.removeItem("time");
     setWalletData([]);
     setFinalPortfolio({});
@@ -374,12 +398,7 @@ function Wallet() {
         ]);
       }
       setWalletData(temp_wallet);
-      try{
-        window.localStorage.setItem("wallet_data", JSON.stringify(temp_wallet));
-      }
-      catch(e){
-        console.log(e)
-      }
+      
       
       window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
       let summation_map = {};
@@ -392,6 +411,7 @@ function Wallet() {
           0
         );
       }
+      console.log("summation map",summation_map)
       let final_portfolio = {
         data: temp_wallet,
         user: user_info,
@@ -408,19 +428,33 @@ function Wallet() {
           eth: summation_map[9] - summation_map[5],
           usd: summation_map[9] * eth_price - summation_map[6],
         },
-        gain_percent: (summation_map[11] / summation_map[5]) * 100,
-        trait_gain_percent: (summation_map[9] / summation_map[5]) * 100,
+        gain_percent: ((summation_map[7]-summation_map[5]) / summation_map[5]) * 100,
+        trait_gain_percent: ((summation_map[9]-summation_map[5]) / summation_map[5]) * 100,
       };
-try{window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
-window.localStorage.setItem(
-  "final_portfolio",
-  JSON.stringify(final_portfolio)
-);}catch(e){console.log(e)}
+      setFinalPortfolio(final_portfolio);
+      setPortfolioLoading(false);
+try{window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));}catch(e){console.log(e)}
+try{
+  console.log("posting")
+  let post_url = "https://niftyprice.herokuapp.com/save"//"http://localhost:8080/save" //
+  const response = await fetch(post_url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({portfolio:temp_wallet,addr:addr,data:final_portfolio}) // body data type must match "Content-Type" header
+  }).then(res=>{console.log(res)}).catch(e=>{console.log(e)});
+  
+
+
+}
+catch(e){
+  console.log(e)
+}
       
 
-      setFinalPortfolio(final_portfolio);
-
-      setPortfolioLoading(false);
+      
     }
   };
   const options = {
@@ -539,9 +573,14 @@ window.localStorage.setItem(
     gwei();
   }, []);
   useEffect(() => {
-    if (addr && triggerLoad && auth) {
-      get_events();
-      setTrigger(false);
+    console.log("triggered",triggerLoad)
+    if (addr && auth) {
+      if(triggerLoad){
+        get_events();
+      }
+      else{
+        pull_from_gcloud();
+      }
     }
   }, [auth, addr, triggerLoad]);
 
@@ -1021,6 +1060,10 @@ window.localStorage.setItem(
                         ) : (
                           <>
                             <Grid item xs={12} align="right">
+                              {refresh_date?<Typography>
+                                Last Refreshed: {refresh_date}
+                              </Typography>:<></>}
+                              
                               <Button
                                 variant="contained"
                                 style={{

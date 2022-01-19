@@ -39,7 +39,7 @@ const useStyles = makeStyles({
   },
   portfolioTextRight: {
     float: "right",
-    fontSize: 18,
+    fontSize: "90%",
   },
   portfolioTextRightBold: {
     float: "right",
@@ -208,7 +208,7 @@ function Portfolio({ portfolio_metrics }) {
                                       align="left"
                                       className={classes.portfolioText}
                                     >
-                                       Gain:
+                                       Total Gain:
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
@@ -216,13 +216,10 @@ function Portfolio({ portfolio_metrics }) {
                                       variant="subtitle"
                                       align="right"
                                       className={classes.portfolioTextRight}
-                                      style={ toggle?
-                                        (parseFloat(data.gain_percent) > 0
-                                          ? { color: "#065f46" }
-                                          : { color: "#e04343" }):
-                                          (parseFloat(data.trait_gain_percent) > 0
-                                          ? { color: "#065f46" }
-                                          : { color: "#e04343" })
+                                      style={
+                                        (toggle)
+                                        ?((parseFloat(data.gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" }):
+                                        ((parseFloat(data.trait_gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" })
                                       }
                                     >
                                       {(toggle)?(data.gain.usd > 0 ? "+" : "-"):(data.trait_gain.usd > 0 ? "+" : "-")}$
@@ -269,13 +266,9 @@ function Portfolio({ portfolio_metrics }) {
                                 <Typography
                                   variant="subtitle"
                                   className={classes.portfolioTextRight}
-                                  style={ toggle?
-                                    (parseFloat(data.gain_percent) > 0
-                                      ? { color: "#065f46" }
-                                      : { color: "#e04343" }):
-                                      (parseFloat(data.trait_gain_percent) > 0
-                                      ? { color: "#065f46" }
-                                      : { color: "#e04343" })
+                                  style={ (toggle)?
+                                    ((parseFloat(data.gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" }):
+                                    ((parseFloat(data.trait_gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" })
                                   }
                                 >
                                   {(toggle)?(data.gain.eth > 0 ? "+" : "-"):(data.trait_gain.eth > 0 ? "+" : "-")}

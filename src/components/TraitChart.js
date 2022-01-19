@@ -112,10 +112,10 @@ function TraitChart({ data }) {
                           <div
                             class="total-bar-fill"
                             style={{
-                              width: (total_rarity * 100).toFixed(2) + "%",
+                              width: (total_rarity)?(total_rarity * 100).toFixed(2) + "%":"0%",
                             }}
                           >
-                            {(total_rarity * 100).toFixed(2)}%
+                            {(total_rarity)?(total_rarity * 100).toFixed(2):0.00}%
                           </div>
                         </div>
                       </td>
