@@ -18,7 +18,7 @@ import SelectSearch from "react-select-search";
 import "./Search.css"
 import Fuse from 'fuse.js'
 
-
+let debug = false
 const useStyles = makeStyles({
   centeredTableHead: {
     '& > span': {
@@ -206,10 +206,11 @@ function Table() {
           name = element;
         }
       }
-      // window.open('https://niftyprice.io/collections/' + name)
-      history.push({
-        pathname: "/collections/" + name,
-      });
+      let url = debug?'http://localhost:3000/collections/' + name:'https://niftyprice.io/collections/' + name
+      window.open(url)
+      // history.push({
+      //   pathname: "/collections/" + name,
+      // });
     },
   };
   useEffect(() => {
