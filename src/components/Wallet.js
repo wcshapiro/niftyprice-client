@@ -97,6 +97,7 @@ function Wallet() {
   if (context.error) {
     console.error("Error!");
   }
+  const [refresh_enable,setRefreshEnable] = useState(true)
   const [user_portfolio, setUserPortfolio] = useState({});
   var token_to_asset = {};
   var asset_to_token = {};
@@ -267,13 +268,25 @@ function Wallet() {
     // setAddr("0x98C2AAcc9fCACFCb69314fFDFF243f8396644520");
   };
   const refresh_data = async () => {
-    window.localStorage.removeItem("time");
-    refresh_events().then(data=>{
-    pull_from_gcloud()}).catch((e)=>{console.log("error refreshing",e)})
-    // setWalletData([]);
-    // setFinalPortfolio({});
-    // setClientData(null);
-    // setTrigger(true);
+    setRefreshEnable(false)
+    let url = debug
+        ? "http://localhost:8080/refresh/:" + addr
+        : "https://niftyprice.herokuapp.com/refresh/:" + addr;
+        const refreshed_status = await fetch(url)
+        .then(res=>res.json())
+        .then((data)=>{
+          console.log("REFRESH STATUS",data);
+          if (data.message.info.status == 200){
+            pull_from_gcloud()}
+          
+        }).then(()=>{
+          setRefreshEnable(true)
+        })
+    
+    // window.localStorage.removeItem("time");
+    // refresh_events().then(data=>{
+    // pull_from_gcloud()}).catch((e)=>{console.log("error refreshing",e)})
+
   };
 
   const disconnect_metamask = async () => {
@@ -516,6 +529,7 @@ function Wallet() {
     }
   };
   const options = {
+    fixedHeader:true,
     customTableBodyFooterRender: function (opts) {
       let numeric_columns = [3, 4, 5, 6, 7, 9, 11, 13];
       let summation_map = {};
@@ -644,22 +658,24 @@ function Wallet() {
   useEffect(() => {
     gwei();
   }, []);
-  useEffect(() => {
-    if (addr && auth) {
-      if (triggerLoad) {
-        get_events();
-      } else {
-        pull_from_gcloud();
-      }
-    }
-  }, [auth, addr, triggerLoad]);
+  // useEffect(() => {
+  //   if (addr && auth) {
+  //     //pull_from_gcloud();
+  //     // if (triggerLoad) {
+  //     //   get_events();
+  //     // } else {
+  //     //   pull_from_gcloud();
+  //     // }
+  //   }
+  // }, [auth, addr, triggerLoad]);
 
   // useEffect(() => {
   //   get_assets();
   // }, []);
   useEffect(() => {
     if (addr && auth) {
-      load_wallet().then(res=>pull_from_gcloud());
+      pull_from_gcloud()
+      // load_wallet().then(res=>pull_from_gcloud());
     }
   }, [addr, auth, client_data]);
 
@@ -768,7 +784,7 @@ function Wallet() {
                 <Grid container>
                   <Grid item xs={12}>
                     <Typography variant="subtitle2" align="right">
-                      {value.toFixed(3)}
+                      {value?value.toFixed(3):0.00}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -1086,38 +1102,7 @@ function Wallet() {
                       <></>
                     ) : (
                       <>
-                        {/* <Grid
-                                      container
-                                      justifyContent="space-between"
-                                    >
-                                      <Grid
-                                        item
-                                        xs={12}
-                                        className={classes.items}
-                                      >
-                                        <Typography
-                                          inline
-                                          variant="subtitle1"
-                                          align="center"
-                                        >
-                                          Wallet Address
-                                        </Typography>
-                                      </Grid>
-                                      <Grid
-                                        item
-                                        xs={12}
-                                        className={classes.items}
-                                      >
-                                        <Typography
-                                          inline
-                                          variant="subtitle2"
-                                          align="center"
-                                        >
-                                          {addr || "---"}
-                                        </Typography>
-                                      </Grid>
-                                    </Grid> */}
-                        {/* {final_portfolio_values.size?:""} */}
+                        
 
                         {portfolio_loading ? (
                           <>
@@ -1153,6 +1138,7 @@ function Wallet() {
                                 }}
                                 onClick={refresh_data}
                                 id="menu-button"
+                                disabled={!refresh_enable}
                               >
                                 Refresh Data
                               </Button>

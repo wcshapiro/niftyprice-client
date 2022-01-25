@@ -67,7 +67,7 @@ const useStyles = makeStyles({
   },
 });
 function numberWithCommas(x) {
-  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "---";
+  return ( x || x==0) ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "---";
 }
 function Portfolio({ portfolio_metrics }) {
   const [toggle, setToggle] = useState(true);
@@ -87,51 +87,117 @@ function Portfolio({ portfolio_metrics }) {
       let vals = [entry_date.getTime(), price];
       totalvals.push(vals);
     }
-    let sortedVals = []
+    let sortedVals = [];
     totalvals.sort(function (a, b) {
       return a[0] - b[0];
-    })
-    for (const val in totalvals){
-      portfolio_val +=totalvals[val][1]
-      let sortedVal = [totalvals[val][0],portfolio_val]
-      sortedVals.push(sortedVal)
+    });
+    for (const val in totalvals) {
+      portfolio_val += totalvals[val][1];
+      let sortedVal = [totalvals[val][0], portfolio_val];
+      sortedVals.push(sortedVal);
     }
 
     setChartOptionsFpp({
+      tooltip: {
+        shared: true,
+        pointFormat:
+          " {series.options.custom.prefix}{point.y}{series.options.custom.suffix} {series.options.custom.legendName} ",
+      },
+      legend: {
+        enabled: true,
+        labelFormatter: function () {
+          return this.name + " (click to show)";
+        },
+      },
       title: {
         text: "Portfolio Value",
       },
-      yAxis: [{
-        title: {
-            text: 'Value (ETH)'
-        },
-        height:'50%',
-        lineWidth: 1,
-        
-    }, {
-        title: {
-            text: 'Value (USD)'
-        },
-        offset:0,
-        top:'50%',
-        height:'50%',
-        lineWidth: 1,
-        
-    }],
-      series: [
+      yAxis: [
         {
-          name: "Value (ETH)",
-          data: portfolio_metrics.historical_perf?portfolio_metrics.historical_perf.eth : [],
-          yAxis:0,
-          color:"#1974D2",
-        },
-        {
-          name: "Value (USD)",
-          data: portfolio_metrics.historical_perf?portfolio_metrics.historical_perf.usd : [],
-          yAxis:1,
-          color:"#3819D2"
+          // title: {
+          //     text: 'Value (USD)'
+          // },
+          offset: 0,
+
+          lineWidth: 1,
         },
       ],
+      series: [
+        {
+          id: "EF",
+          linkedTo: "ET",
+          name: "Portfolio Value (ETH)",
+          data: portfolio_metrics.historical_perf
+            ? portfolio_metrics.historical_perf.eth
+            : [],
+          color: "#3819D2",
+          visible: false,
+          custom: {
+            prefix: null,
+            legendName: "Collection Floor Value",
+            suffix: "ETH",
+          },
+        },
+        {
+          id: "ET",
+          custom: {
+            legendName: "Trait Floor Value",
+            prefix: null,
+            suffix: "ETH",
+          },
+          // showInLegend:false,
+
+          name: "Portfolio Value (ETH)",
+          data: portfolio_metrics.historical_perf
+            ? portfolio_metrics.historical_perf.trait.eth
+            : [],
+          color: "#1974D2",
+
+          visible: false,
+        },
+        {
+          custom: {
+            legendName: "Collection Floor Value",
+            prefix: "$",
+            suffix: null,
+          },
+          id: "UC",
+          linkedTo: "UT",
+          name: "Portfolio Value (USD)",
+          data: portfolio_metrics.historical_perf
+            ? portfolio_metrics.historical_perf.usd
+            : [],
+          color: "#3819D2",
+        },
+        {
+          custom: {
+            legendName: "Trait Floor Value",
+            prefix: "$",
+            suffix: null,
+          },
+          id: "UT",
+          name: "Portfolio Value (USD)",
+          data: portfolio_metrics.historical_perf
+            ? portfolio_metrics.historical_perf.trait.usd
+            : [],
+          color: "#1974D2",
+        },
+      ],
+      plotOptions: {
+        series: {
+          events: {
+            legendItemClick: function () {
+              this.chart.series.forEach(function (s) {
+                if (s !== this && s.visible) {
+                  s.hide();
+                }
+              });
+
+              return !this.visible ? true : false;
+            },
+          },
+        },
+      },
     });
   };
   const load_metrics = async () => {
@@ -224,14 +290,14 @@ function Portfolio({ portfolio_metrics }) {
                               </Grid>
 
                               <Grid item xs={12}>
-                                <Grid container justifyContent="space-between" >
+                                <Grid container justifyContent="space-between">
                                   <Grid item xs={6}>
                                     <Typography
                                       variant="subtitle"
                                       align="left"
                                       className={classes.portfolioText}
                                     >
-                                       Total Gain:
+                                      Total Gain:
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
@@ -240,20 +306,39 @@ function Portfolio({ portfolio_metrics }) {
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
-                                        (toggle)
-                                        ?((parseFloat(data.gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" }):
-                                        ((parseFloat(data.trait_gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" })
+                                        toggle
+                                          ? parseFloat(data.gain_percent) > 0
+                                            ? { color: "#065f46" }
+                                            : { color: "#e04343" }
+                                          : parseFloat(
+                                              data.trait_gain_percent
+                                            ) > 0
+                                          ? { color: "#065f46" }
+                                          : { color: "#e04343" }
                                       }
                                     >
-                                      {(toggle)?(data.gain.usd > 0 ? "+" : "-"):(data.trait_gain.usd > 0 ? "+" : "-")}$
-                                      {toggle?numberWithCommas(
-                                        Math.abs(data.gain.usd.toFixed(2))
-                                      ):numberWithCommas(
-                                        Math.abs(data.trait_gain.usd.toFixed(2))
-                                      )}
+                                      {toggle
+                                        ? data.gain.usd > 0
+                                          ? "+"
+                                          : "-"
+                                        : data.trait_gain.usd > 0
+                                        ? "+"
+                                        : "-"}
+                                      $
+                                      {toggle
+                                        ? numberWithCommas(
+                                            Math.abs(data.gain.usd.toFixed(2))
+                                          )
+                                        : numberWithCommas(
+                                            Math.abs(
+                                              data.trait_gain.usd.toFixed(2)
+                                            )
+                                          )}
                                       (
                                       {numberWithCommas(
-                                        toggle?data.gain_percent.toFixed(2):data.trait_gain_percent.toFixed(2)
+                                        toggle
+                                          ? data.gain_percent.toFixed(2)
+                                          : data.trait_gain_percent.toFixed(2)
                                       )}
                                       %)
                                     </Typography>
@@ -261,14 +346,14 @@ function Portfolio({ portfolio_metrics }) {
                                 </Grid>
                               </Grid>
                               <Grid item xs={12}>
-                                <Grid container justifyContent="space-between" >
+                                <Grid container justifyContent="space-between">
                                   <Grid item xs={6}>
                                     <Typography
                                       variant="subtitle"
                                       align="left"
                                       className={classes.portfolioText}
                                     >
-                                       24h Gain:
+                                      24h Gain:
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
@@ -277,17 +362,33 @@ function Portfolio({ portfolio_metrics }) {
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
-                                        
-                                        ((parseFloat(data.day_change.gain_usd) > 0)? { color: "#065f46" }: { color: "#e04343" })
+                                        parseFloat(data.day_change.gain_usd) > 0
+                                          ? { color: "#065f46" }
+                                          : { color: "#e04343" }
                                       }
                                     >
-                                      {(data.day_change.gain_usd > 0 ? "+" : "-")}$
+                                      {data.day_change.gain_usd > 0 ? "+" : "-"}
+                                      $
                                       {numberWithCommas(
-                                        Math.abs(data.day_change.gain_usd.toFixed(2))
+                                        Math.abs(
+                                          toggle
+                                            ? data.day_change.gain_usd.toFixed(
+                                                2
+                                              )
+                                            : data.day_change.trait_gain_usd.toFixed(
+                                                2
+                                              )
+                                        )
                                       )}
                                       (
                                       {numberWithCommas(
-                                        data.day_change.percent_gain_usd.toFixed(2)
+                                        toggle
+                                          ? data.day_change.percent_gain_usd.toFixed(
+                                              2
+                                            )
+                                          : data.day_change.trait_percent_gain_usd.toFixed(
+                                              2
+                                            )
                                       )}
                                       %)
                                     </Typography>
@@ -297,7 +398,6 @@ function Portfolio({ portfolio_metrics }) {
                             </Grid>
                           </Grid>
                           <Grid item xs={2}>
-                            
                             <div class="verticalLine"></div>
                           </Grid>
                           <Grid item xs={5}>
@@ -313,9 +413,7 @@ function Portfolio({ portfolio_metrics }) {
                                 >
                                   {toggle
                                     ? data.value.eth.toFixed(2)
-                                    : numberWithCommas(
-                                        data.trait_floor_value.eth.toFixed(2)
-                                      )}
+                                    : data.trait_floor_value.eth.toFixed(2)}
                                   ETH
                                 </Typography>
                               </Grid>
@@ -323,45 +421,75 @@ function Portfolio({ portfolio_metrics }) {
                                 <Typography
                                   variant="subtitle"
                                   className={classes.portfolioTextRight}
-                                  style={ (toggle)?
-                                    ((parseFloat(data.gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" }):
-                                    ((parseFloat(data.trait_gain_percent) > 0)? { color: "#065f46" }: { color: "#e04343" })
+                                  style={
+                                    toggle
+                                      ? parseFloat(data.gain_percent) > 0
+                                        ? { color: "#065f46" }
+                                        : { color: "#e04343" }
+                                      : parseFloat(data.trait_gain_percent) > 0
+                                      ? { color: "#065f46" }
+                                      : { color: "#e04343" }
                                   }
                                 >
-                                  {(toggle)?(data.gain.eth >= 0 ? "+" : "-"):(data.trait_gain.eth > 0 ? "+" : "-")}
-                                      {toggle?numberWithCommas(
+                                  {toggle
+                                    ? data.gain.eth >= 0
+                                      ? "+"
+                                      : "-"
+                                    : data.trait_gain.eth > 0
+                                    ? "+"
+                                    : "-"}
+                                  {toggle
+                                    ? numberWithCommas(
                                         Math.abs(data.gain.eth.toFixed(2))
-                                      ):numberWithCommas(
+                                      )
+                                    : numberWithCommas(
                                         Math.abs(data.trait_gain.eth.toFixed(2))
-                                      )}ETH
-                                      (
-                                      {numberWithCommas(
-                                        toggle?data.gain_percent.toFixed(2):data.trait_gain_percent.toFixed(2)
                                       )}
-                                      %)
+                                  ETH (
+                                  {numberWithCommas(
+                                    toggle
+                                      ? data.gain_percent.toFixed(2)
+                                      : data.trait_gain_percent.toFixed(2)
+                                  )}
+                                  %)
                                 </Typography>
                               </Grid>
                               <Grid item xs={12}>
-                                    <Typography
-                                      variant="subtitle"
-                                      align="right"
-                                      className={classes.portfolioTextRight}
-                                      style={
-                                        
-                                        ((parseFloat(data.day_change.gain_eth) > 0)? { color: "#065f46" }: { color: "#e04343" })
-                                      }
-                                    >
-                                      {(data.day_change.gain_eth >= 0 ? "+" : "-")}
-                                      {numberWithCommas(
-                                        Math.abs(data.day_change.gain_eth.toFixed(2))
-                                      )}ETH
-                                      (
-                                      {numberWithCommas(
-                                        data.day_change.percent_gain_eth.toFixed(2)
-                                      )}
-                                      %)
-                                    </Typography>
-                                  </Grid>
+                                <Typography
+                                  variant="subtitle"
+                                  align="right"
+                                  className={classes.portfolioTextRight}
+                                  style={
+                                    parseFloat(toggle?data.day_change.gain_eth:data.day_change.trait_gain_eth) > 0
+                                      ? { color: "#065f46" }
+                                      : { color: "#e04343" }
+                                  }
+                                >
+                                  {toggle?(data.day_change.gain_eth >= 0 ? "+" : "-"):(data.day_change.trait_gain_eth >= 0 ? "+" : "-")}
+                                  {numberWithCommas(
+                                    Math.abs(
+                                      toggle
+                                          ? data.day_change.gain_eth.toFixed(
+                                              2
+                                            )
+                                          : data.day_change.trait_gain_eth.toFixed(
+                                              2
+                                            )
+                                    )
+                                  )}
+                                  ETH (
+                                  {numberWithCommas(
+                                    toggle
+                                    ? data.day_change.percent_gain_eth.toFixed(
+                                        2
+                                      )
+                                    : data.day_change.trait_percent_gain_eth.toFixed(
+                                        2
+                                      )
+                                  )}
+                                  %)
+                                </Typography>
+                              </Grid>
                               <Grid item xs={10}></Grid>
                             </Grid>
                           </Grid>
@@ -386,7 +514,7 @@ function Portfolio({ portfolio_metrics }) {
                                 Total NFTs Owned:
                               </Typography>
                             </Grid>
-                            
+
                             <Grid item xs={12}>
                               <Typography
                                 variant="subtitle"
@@ -421,7 +549,7 @@ function Portfolio({ portfolio_metrics }) {
                                 {data.nft_count}
                               </Typography>
                             </Grid>
-                            
+
                             <Grid item xs={12}>
                               <Typography
                                 variant="subtitle"
