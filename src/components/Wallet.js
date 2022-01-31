@@ -267,9 +267,9 @@ function Wallet() {
           const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
           // console.log("ACCOUNTS",accounts)
     // const accounts = await ethereum.send("eth_requestAccounts");
-    // setAddr(accounts[0]);
+    setAddr(accounts[0]);
     // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
-    setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601"); // me
+    // setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601"); // me
     // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
     // setAddr("0x01DDE370Fee9118D49b78b561C0606A0069A21Db"); //new member
