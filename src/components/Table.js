@@ -243,6 +243,7 @@ function Table() {
 
           customBodyRender: (value, tableMeta, updateValue) => {
             var img = tableMeta.rowData[tableMeta.rowData.length - 1];
+            console.log(tableMeta.rowData);
 
             return (
               <>
@@ -253,11 +254,12 @@ function Table() {
                   <Grid item xs={8}>
                     <Grid container>
                       <Grid item xs={12}>
+                        <a href={"https://niftyprice.io/collections/"+tableMeta.rowData[1]}>
                         <Typography variant="subtitle3" align="right">
                           {alias[tableMeta.rowData[1]]
                             ? alias[tableMeta.rowData[1]]
                             : tableMeta.rowData[1]}
-                        </Typography>
+                        </Typography></a>
                       </Grid>
                       <Grid item xs={12}>
                         <Typography
