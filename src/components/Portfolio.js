@@ -39,7 +39,7 @@ const useStyles = makeStyles({
   },
   portfolioTextRight: {
     float: "right",
-    fontSize: "90%",
+    fontSize: "80%",
   },
   portfolioTextRightBold: {
     float: "right",
@@ -281,10 +281,10 @@ function Portfolio({ portfolio_metrics }) {
                                   $
                                   {toggle
                                     ? numberWithCommas(
-                                        data.value.usd.toFixed(2)
+                                        Number(data.value.usd).toFixed(2)
                                       )
                                     : numberWithCommas(
-                                        data.trait_floor_value.usd.toFixed(2)
+                                      Number(data.trait_floor_value.usd).toFixed(2)
                                       )}
                                 </Typography>
                               </Grid>
@@ -327,18 +327,16 @@ function Portfolio({ portfolio_metrics }) {
                                       $
                                       {toggle
                                         ? numberWithCommas(
-                                            Math.abs(data.gain.usd.toFixed(2))
+                                            Math.abs(data.gain.usd).toFixed(2)
                                           )
                                         : numberWithCommas(
-                                            Math.abs(
-                                              data.trait_gain.usd.toFixed(2)
-                                            )
+                                            Math.abs(data.trait_gain.usd).toFixed(2)
                                           )}
                                       (
                                       {numberWithCommas(
                                         toggle
-                                          ? data.gain_percent.toFixed(2)
-                                          : data.trait_gain_percent.toFixed(2)
+                                          ? Number(data.gain_percent).toFixed(2)
+                                          : Number(data.trait_gain_percent).toFixed(2)
                                       )}
                                       %)
                                     </Typography>
@@ -362,33 +360,25 @@ function Portfolio({ portfolio_metrics }) {
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
-                                        parseFloat(data.day_change.gain_usd) > 0
+                                        parseFloat(toggle?data.day_change.gain_usd:data.day_change.trait_gain_usd) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
                                       }
                                     >
-                                      {data.day_change.gain_usd > 0 ? "+" : "-"}
+                                                                        {toggle?(data.day_change.gain_usd >= 0 ? "+" : "-"):(data.day_change.trait_gain_usd >= 0 ? "+" : "-")}
                                       $
                                       {numberWithCommas(
                                         Math.abs(
                                           toggle
-                                            ? data.day_change.gain_usd.toFixed(
-                                                2
-                                              )
-                                            : data.day_change.trait_gain_usd.toFixed(
-                                                2
-                                              )
+                                            ? Number(data.day_change.gain_usd).toFixed(2)
+                                            : Number(data.day_change.trait_gain_usd).toFixed(2)
                                         )
                                       )}
                                       (
                                       {numberWithCommas(
                                         toggle
-                                          ? data.day_change.percent_gain_usd.toFixed(
-                                              2
-                                            )
-                                          : data.day_change.trait_percent_gain_usd.toFixed(
-                                              2
-                                            )
+                                          ? Number(data.day_change.percent_gain_usd).toFixed(2)
+                                          : Number(data.day_change.trait_percent_gain_usd).toFixed(2)
                                       )}
                                       %)
                                     </Typography>
@@ -412,8 +402,8 @@ function Portfolio({ portfolio_metrics }) {
                                   className={classes.portfolioStatRight}
                                 >
                                   {toggle
-                                    ? data.value.eth.toFixed(2)
-                                    : data.trait_floor_value.eth.toFixed(2)}
+                                    ? Number(data.value.eth).toFixed(2)
+                                    : Number(data.trait_floor_value.eth).toFixed(2)}
                                   ETH
                                 </Typography>
                               </Grid>
@@ -440,16 +430,16 @@ function Portfolio({ portfolio_metrics }) {
                                     : "-"}
                                   {toggle
                                     ? numberWithCommas(
-                                        Math.abs(data.gain.eth.toFixed(2))
+                                        Math.abs(data.gain.eth).toFixed(2)
                                       )
                                     : numberWithCommas(
-                                        Math.abs(data.trait_gain.eth.toFixed(2))
+                                        Math.abs(data.trait_gain.eth).toFixed(2)
                                       )}
                                   ETH (
                                   {numberWithCommas(
                                     toggle
-                                      ? data.gain_percent.toFixed(2)
-                                      : data.trait_gain_percent.toFixed(2)
+                                      ? Number(data.gain_percent).toFixed(2)
+                                      : Number(data.trait_gain_percent).toFixed(2)
                                   )}
                                   %)
                                 </Typography>

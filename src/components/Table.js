@@ -206,11 +206,11 @@ function Table() {
           name = element;
         }
       }
-      let url = debug?'http://localhost:3000/collections/' + name:'https://niftyprice.io/collections/' + name
-      window.open(url)
-      // history.push({
-      //   pathname: "/collections/" + name,
-      // });
+      // let url = debug?'http://localhost:3000/collections/' + name:'https://niftyprice.io/collections/' + name
+      // window.open(url)
+      history.push({
+        pathname: "/collections/" + name,
+      });
     },
   };
   useEffect(() => {

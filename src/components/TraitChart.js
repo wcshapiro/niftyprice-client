@@ -6,7 +6,7 @@ import HighchartsReact from "highcharts-react-official";
 import "./TraitChart.css";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
+let debug = false;
 const useStyles = makeStyles({
   root: {
     flexgrow: 1,
@@ -15,10 +15,9 @@ const useStyles = makeStyles({
   },
 });
 function TraitChart({ data }) {
-  console.log("SHIPPED DATA",data)
   const classes = useStyles();
-  const [trait_floors,setTraitFloors] = useState(null)
-  const [max_floor,setMaxFloor] = useState(null)
+  const [trait_floors, setTraitFloors] = useState(null);
+  const [max_floor, setMaxFloor] = useState(null);
   const [trait_data, setTraitData] = useState(null);
   const [rowData, setRowData] = useState();
   const [supply, setSupply] = useState();
@@ -26,28 +25,51 @@ function TraitChart({ data }) {
   const get_trait = async () => {
     setRowData(data.rowData);
     // setTraitFloors(JSON.parse(data.rowData[9]).trait_types)
-    let temp_trait_floors = data.trait_data
-    let url = `https://niftyprice.herokuapp.com/traits/${data.address}/${data.token}`//`http://localhost:8080/traits/${data.address}/${data.token}`;//
+    let temp_trait_floors = data.trait_data;
+    // setTraitData(temp_trait_floors);
+    let nft_address = null;
+    let nft_token_id = null;
+    if(data.address && data.token){
+      nft_address  = data.address
+      nft_token_id = data.token
+    }else{
+      nft_address = data.rowData[15].contract_address
+      nft_token_id = data.rowData[15].asset.token_id
+
+    }
+    let url = debug
+      ? `http://localhost:8080/traits/${nft_address}/${nft_token_id}`
+      : `https://niftyprice.herokuapp.com/traits/${nft_address}/${nft_token_id}`; //;//
     const trait = await fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        setSupply(data.message.collection.stats.total_supply);
+        setSupply(data.message.traits.collection.stats.total_supply);
         let rarities = 0;
-        for (const trait of data.message.traits ){
-          rarities += trait.trait_count
+        for (const trait of data.message.traits.traits) {
+          try{
+            trait["floor"] = data.message.floors.trait_types[trait.trait_type].values[trait.value]
+
+          }
+          catch{trait["floor"]=0}
+          rarities += trait.trait_count;
         }
-        setTraitData(temp_trait_floors);
+        
+          setTraitData(data.message.traits.traits);
+        
+        // setTraitData(temp_trait_floors);
+
         setTotalRarity(
           rarities /
-            (data.message.collection.stats.total_supply *
-              data.message.traits.length)
+            (data.message.traits.collection.stats.total_supply *
+              data.message.traits.traits.length)
         );
       })
       .catch((e) => console.log("error ", e));
   };
   useEffect(() => {
-    get_trait().catch(e=>{console.log("e")})
-    
+    get_trait().catch((e) => {
+      console.log("e");
+    });
   }, []);
   return (
     <>
@@ -55,8 +77,10 @@ function TraitChart({ data }) {
         <td colSpan={2}>
           <Card elevation={5} className={classes.root}>
             <CardContent>
-                <Typography variant="h5" align="center">Rarity Info</Typography>
-                <hr></hr>
+              <Typography variant="h5" align="center">
+                Rarity Info
+              </Typography>
+              <hr></hr>
               {trait_data ? (
                 <>
                   <table class="trait-table" cellspacing="0" cellpadding="0">
@@ -84,7 +108,7 @@ function TraitChart({ data }) {
                                 <div
                                   class="bar-fill"
                                   style={{
-                                    textAlign:"left",
+                                    textAlign: "left",
                                     width:
                                       ((object.trait_count / supply) * 100)
                                         .toFixed(2)
@@ -99,7 +123,12 @@ function TraitChart({ data }) {
                                 </div>
                               </div>
                             </td>
-                            <td>{((object.trait_count>0)&&(object.floor != undefined))?object.floor.toFixed(3):"---"}</td>
+                            <td>
+                              {object.trait_count > 0 &&
+                              object.floor != undefined
+                                ? object.floor.toFixed(3)
+                                : "---"}
+                            </td>
                           </tr>
                         </>
                       );
@@ -112,10 +141,15 @@ function TraitChart({ data }) {
                           <div
                             class="total-bar-fill"
                             style={{
-                              width: (total_rarity)?(total_rarity * 100).toFixed(2) + "%":"0%",
+                              width: total_rarity
+                                ? (total_rarity * 100).toFixed(2) + "%"
+                                : "0%",
                             }}
                           >
-                            {(total_rarity)?(total_rarity * 100).toFixed(2):0.00}%
+                            {total_rarity
+                              ? (total_rarity * 100).toFixed(2)
+                              : 0.0}
+                            %
                           </div>
                         </div>
                       </td>

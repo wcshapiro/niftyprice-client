@@ -169,10 +169,12 @@ function Wallet() {
           setPortfolioLoadingVal(70);
 
           setPortfolioLoading(false);
+          
 
         } else {
-          console.log("ERROR", data.status);
-          get_events();
+          get_events()
+
+          
         }
       })
       .catch((e) => {
@@ -185,12 +187,20 @@ function Wallet() {
         ? "http://localhost:8080/wallet/:" + addr
         : "https://niftyprice.herokuapp.com/wallet/:" + addr; //"http://localhost:8080/wallet/:" + addr; //
       const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
-        .then((resp) => resp.json())
+        .then((resp) => {return resp.json()})
         .then((data) => {
-          setEth(data.message.eth);
-          setClientData(data.message.info);
-          resolve(data.message.info);
-          setTrigger(false);
+          console.log("RECEIVED",data);
+          if (data.status == 200){
+            pull_from_gcloud()
+          }
+          // setEth(data.message.eth);
+          // setClientData(data.message.info);
+          // console.log("DATA",data);
+          // setWalletData(data.portfolio.data);
+          setTrigger(true);
+          resolve(true)
+          // resolve(data.message.info);
+          
         })
         .catch((e) => {
           console.log(e);
@@ -257,15 +267,17 @@ function Wallet() {
           const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
           // console.log("ACCOUNTS",accounts)
     // const accounts = await ethereum.send("eth_requestAccounts");
-    setAddr(accounts[0]);
+    // setAddr(accounts[0]);
     // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
-    // setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601"); // me
+    setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601"); // me
     // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
     // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
     // setAddr("0x01DDE370Fee9118D49b78b561C0606A0069A21Db"); //new member
     // setAddr("0x13d33c9f2F3E7F8f14B1ee0988F4DC929Ee87a92"); // brojack
     // setAddr("0x01a47d02a50f3e633232483c8af8ee0da6b260dd")//
     // setAddr("0x98C2AAcc9fCACFCb69314fFDFF243f8396644520");
+    // setAddr('0x8bFCE5381189Daf80ED6141C758dAf8cd1aFE804')
+    // setAddr("0x42e8668aFfa4F50209C6841109D4357668268c7a")
   };
   const refresh_data = async () => {
     setRefreshEnable(false)
@@ -282,10 +294,6 @@ function Wallet() {
         }).then(()=>{
           setRefreshEnable(true)
         })
-    
-    // window.localStorage.removeItem("time");
-    // refresh_events().then(data=>{
-    // pull_from_gcloud()}).catch((e)=>{console.log("error refreshing",e)})
 
   };
 
@@ -615,10 +623,11 @@ function Wallet() {
     expandableRowsHeader: false,
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
+      console.log("ROWDATA",rowData[15]);
       let data = {
-        address: rowData[15].asset.asset_contract.address,
-        id: rowData[15].asset.id,
-        token: rowData[15].asset.token_id,
+        address: rowData[15].token_address,
+        id: rowData[15].token_id,
+        token: rowData[15].token_id,
         rowData: rowData,
         trait_data: rowData[15].trait_floors,
       };
@@ -658,16 +667,7 @@ function Wallet() {
   useEffect(() => {
     gwei();
   }, []);
-  // useEffect(() => {
-  //   if (addr && auth) {
-  //     //pull_from_gcloud();
-  //     // if (triggerLoad) {
-  //     //   get_events();
-  //     // } else {
-  //     //   pull_from_gcloud();
-  //     // }
-  //   }
-  // }, [auth, addr, triggerLoad]);
+
 
   // useEffect(() => {
   //   get_assets();
@@ -675,9 +675,14 @@ function Wallet() {
   useEffect(() => {
     if (addr && auth) {
       pull_from_gcloud()
-      // load_wallet().then(res=>pull_from_gcloud());
+      
     }
-  }, [addr, auth, client_data]);
+  }, [addr, auth]);
+  // useEffect(() => {
+  //   if (addr && auth) {
+  //     load_wallet().then(res=>pull_from_gcloud());
+  //   }
+  // }, [addr, auth,client_data]);
 
   if (loading) {
     return (
@@ -784,7 +789,7 @@ function Wallet() {
                 <Grid container>
                   <Grid item xs={12}>
                     <Typography variant="subtitle2" align="right">
-                      {value?value.toFixed(3):0.00}
+                      {value?Number(value).toFixed(3):0.00}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
