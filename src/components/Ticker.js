@@ -17,6 +17,7 @@ function Ticker() {
     const url = "https://niftyprice.herokuapp.com/stream"; //"http://localhost:8080/stream"; //
     const response = await fetch(url).then(res=>res.json()).then(data=>{
       if (data) {
+        console.log("DATA",data);
 
         setPrices(data.message);
       }
@@ -37,7 +38,7 @@ function Ticker() {
       <>
         <div class="ticker-container">
           <Grid container justifyContent="space-evenly" spacing={4}>
-            {prices.BTC.data ? (
+            {prices.BTC ? (
               <Grid item xs={4}>
                 <img class="icon-image" src={btc_image}></img>
                 {prices.BTC.name}: ${numberWithCommas(prices.BTC.data)} <a style={(prices.BTC.change>0)? {

@@ -278,6 +278,7 @@ function Wallet() {
     // setAddr("0x98C2AAcc9fCACFCb69314fFDFF243f8396644520");
     // setAddr('0x8bFCE5381189Daf80ED6141C758dAf8cd1aFE804')
     // setAddr("0x42e8668aFfa4F50209C6841109D4357668268c7a")
+    // setAddr("0x7ffd980b72F21E7A63a3A55b36fFc724B77152a0")
   };
   const refresh_data = async () => {
     setRefreshEnable(false)
@@ -1137,7 +1138,12 @@ function Wallet() {
 
                               <Button
                                 variant="contained"
-                                style={{
+                                style={
+                                  !refresh_enable?
+                                  {
+                                  backgroundColor: "#D3D3D3",
+                                color: "#FFFFFF",}:
+                                {
                                   backgroundColor: "#1C72D9",
                                   color: "#FFFFFF",
                                 }}
@@ -1145,7 +1151,7 @@ function Wallet() {
                                 id="menu-button"
                                 disabled={!refresh_enable}
                               >
-                                Refresh Data
+                                {refresh_enable?"REFRESH DATA":"REFRESHING"}
                               </Button>
                             </Grid>
                             <Portfolio
