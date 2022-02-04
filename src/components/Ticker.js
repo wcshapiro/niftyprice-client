@@ -11,10 +11,11 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 function Ticker() {
+  let debug = false
   const [prices, setPrices] = useState();
   const [refresh, setRefresh] = useState(0);
   const loadAsyncData = async () => {
-    const url = "https://niftyprice.herokuapp.com/stream"; //"http://localhost:8080/stream"; //
+    const url = debug?"http://localhost:8080/stream":"https://niftyprice.herokuapp.com/stream"; //"http://localhost:8080/stream"; //
     const response = await fetch(url).then(res=>res.json()).then(data=>{
       if (data) {
         console.log("DATA",data);
@@ -31,7 +32,7 @@ function Ticker() {
     let refresh_interval = setTimeout(() => {
       let curr_refresh = refresh;
       setRefresh(curr_refresh + 1);
-    }, 25000);
+    }, 60*1000);
   }, [refresh]);
   if (prices) {
     return (
