@@ -158,8 +158,10 @@ function Wallet() {
           setWalletData(parse(data.message.account_portfolio));
           let loaded_portfolio = parse(data.message.account_data);
           let historical_perf = data.message.historical_perf;
+          let last_refresh = data.message.last_refresh;
           loaded_portfolio["day_change"] = data.message.day_change;
           loaded_portfolio["historical_perf"] = historical_perf;
+          loaded_portfolio["last_refresh"] = last_refresh;
           setFinalPortfolio(loaded_portfolio);
           setDayChange(data.message.day_change);
           let refresh_date_resp = new Date(
@@ -279,6 +281,8 @@ function Wallet() {
     // setAddr('0x8bFCE5381189Daf80ED6141C758dAf8cd1aFE804')
     // setAddr("0x42e8668aFfa4F50209C6841109D4357668268c7a")
     // setAddr("0x7ffd980b72F21E7A63a3A55b36fFc724B77152a0")
+    // setAddr("0x17D369A86cdFa617C8d3B4Bf487335DaE4CfE9D4") //aseponde’s
+    // setAddr("0x14bd7c12c6bc459961c7b974f5c4016fcde48587")
   };
   const refresh_data = async () => {
     setRefreshEnable(false)
@@ -317,229 +321,230 @@ function Wallet() {
         .then((value) => {});
     }
   };
-  const load_wallet = async () => {
-    if (client_data && client_data.data) {
-      var data = client_data.data.asset_events;
-      var trait_info = client_data.data.trait_info;
-      let asset_trait_list = {};
-      trait_info.forEach((asset) => {
-        asset_trait_list[asset.asset_name] = asset.data;
-      });
-      setTraitFloors(asset_trait_list);
-      let full_portfolio = { current: {}, past: {} };
-      let user_info = {
-        addr: null,
-        img: null,
-        username: null,
-      };
-      for (const element of data) {
-        let asset = element.asset;
-        if (element.transaction) {
-          var params = [element.transaction.transaction_hash];
-          const transaction_data = await ethereum.request({
-            method: "eth_getTransactionByHash",
-            params: params,
-          });
-          var trans_hash_data = await transaction_data;
-          element["transaction_info"] = trans_hash_data;
+  // const load_wallet = async () => {
+  //   if (client_data && client_data.data) {
+  //     var data = client_data.data.asset_events;
+  //     var trait_info = client_data.data.trait_info;
+  //     let asset_trait_list = {};
+  //     trait_info.forEach((asset) => {
+  //       asset_trait_list[asset.asset_name] = asset.data;
+  //     });
+  //     setTraitFloors(asset_trait_list);
+  //     let full_portfolio = { current: {}, past: {} };
+  //     let user_info = {
+  //       addr: null,
+  //       img: null,
+  //       username: null,
+  //     };
+  //     for (const element of data) {
+  //       let asset = element.asset;
+  //       if (element.transaction) {
+  //         var params = [element.transaction.transaction_hash];
+  //         const transaction_data = await ethereum.request({
+  //           method: "eth_getTransactionByHash",
+  //           params: params,
+  //         });
+  //         var trans_hash_data = await transaction_data;
+  //         element["transaction_info"] = trans_hash_data;
 
-          if (
-            Object.keys(full_portfolio.current).includes(asset.id.toString())
-          ) {
-            full_portfolio.past[asset.id] = [
-              full_portfolio.current[asset.id],
-              asset,
-            ];
-            delete full_portfolio.current[asset.id];
-          } else {
-            full_portfolio.current[asset.id] = element;
-          }
+  //         if (
+  //           Object.keys(full_portfolio.current).includes(asset.id.toString())
+  //         ) {
+  //           full_portfolio.past[asset.id] = [
+  //             full_portfolio.current[asset.id],
+  //             asset,
+  //           ];
+  //           delete full_portfolio.current[asset.id];
+  //         } else {
+  //           full_portfolio.current[asset.id] = element;
+  //         }
 
-          setPortfolioLoading(true);
-          if (element.to_account.address == addr) {
-            user_info.img = element.to_account.profile_img_url;
+  //         setPortfolioLoading(true);
+  //         if (element.to_account.address == addr) {
+  //           user_info.img = element.to_account.profile_img_url;
 
-            user_info.username = element.to_account.user.username;
-          }
-        }
-      }
-      user_info.addr = addr;
-      let temp_wallet = [];
-      let collection_map = {};
-      let nft_index = 0;
-      setPortfolioLoading(true);
-      setPortfolioLoadingVal(0);
-      for (const nft of Object.values(full_portfolio.current)) {
-        setPortfolioLoadingVal(
-          parseInt((nft_index / Object.values(full_portfolio.current).length)*100)
-        );
-        nft_index++;
-        let floor = null;
-        let change = null;
-        let slug = nft.asset.collection.slug;
-        let collection_url =
-          "https://api.opensea.io/api/v1/collection/" + slug + "/stats";
-        if (collection_map[slug]) {
-          floor = collection_map[slug].floor;
-          change = collection_map[slug].change;
-        } else {
-          floor = await fetch(collection_url)
-            .then((resp) => resp.json())
-            .then((data) => {
-              collection_map[slug] = {
-                floor: data.stats.floor_price,
-                change: data.stats.one_day_change,
-              };
-            })
-            .catch((e) => console.log("error", e));
-        }
-        let paid_price =
-          parseFloat(Number(nft.transaction_info.value), 16) /
-          1000000000000000000;
-        let gas_fee =
-          parseFloat(Number(nft.transaction_info.gas, 16)) *
-          0.000000001 *
-          parseFloat(Number(nft.transaction_info.gasPrice, 16)) *
-          0.000000001;
-        let max_trait = null;
-        let url = debug
-          ? `http://localhost:8080/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`
-          : `https://niftyprice.herokuapp.com/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //`http://localhost:8080/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //
-        const trait = await fetch(url)
-          .then((res) => res.json())
-          .then((data) => {
-            let temp_traits = traits;
-            temp_traits[nft.asset.id] = data.message.traits;
-            setTraits(temp_traits);
-            nft["trait_floors"] = temp_traits[nft.asset.id];
-            let rarities = 0;
-            let max_floor = 0;
-            for (const element of data.message.traits) {
-              rarities += element.trait_count;
-              let asset_traits = null;
-              element["floor"] = JSON.parse(asset_trait_list[slug]).trait_types[
-                element.trait_type
-              ].values[element.value];
-              if (element["floor"] > max_floor && element.trait_count > 0) {
-                max_floor = element["floor"];
-              }
-            }
-            max_trait = max_floor;
-          })
-          .catch((e) => console.log("error ", e));
-        temp_wallet.push([
-          nft.asset.name || nft.asset.collection.name || 0,
-          nft.asset.token_id || 0,
-          nft.transaction.timestamp || 0,
-          paid_price || 0,
-          gas_fee || 0,
-          gas_fee + paid_price || 0,
-          (gas_fee + paid_price) * eth_price || 0,
-          collection_map[slug].floor || 0,
-          collection_map[slug].change || 0,
-          max_trait || "---",
-          null || null,
-          collection_map[slug].floor - (paid_price + gas_fee) || 10,
-          ((collection_map[slug].floor - (paid_price + gas_fee)) /
-            (paid_price + gas_fee)) *
-            100 || 11,
-          (collection_map[slug].floor - (paid_price + gas_fee)) * eth_price ||
-            12,
-          ((collection_map[slug].floor - (paid_price + gas_fee)) /
-            (paid_price + gas_fee)) *
-            100 || 13,
-          nft || null,
-          "etherscan" || 15,
-          200 || 16, //total
-          nft.asset.image_thumbnail_url || 17,
-          "clean name" || 18,
-          200 || 19, //rarity
-        ]);
-      }
-      setWalletData(temp_wallet);
+  //           user_info.username = element.to_account.user.username;
+  //         }
+  //       }
+  //     }
+  //     user_info.addr = addr;
+  //     let temp_wallet = [];
+  //     let collection_map = {};
+  //     let nft_index = 0;
+  //     setPortfolioLoading(true);
+  //     setPortfolioLoadingVal(0);
+  //     for (const nft of Object.values(full_portfolio.current)) {
+  //       setPortfolioLoadingVal(
+  //         parseInt((nft_index / Object.values(full_portfolio.current).length)*100)
+  //       );
+  //       nft_index++;
+  //       let floor = null;
+  //       let change = null;
+  //       let slug = nft.asset.collection.slug;
+  //       let collection_url =
+  //         "https://api.opensea.io/api/v1/collection/" + slug + "/stats";
+  //       if (collection_map[slug]) {
+  //         floor = collection_map[slug].floor;
+  //         change = collection_map[slug].change;
+  //       } else {
+  //         floor = await fetch(collection_url)
+  //           .then((resp) => resp.json())
+  //           .then((data) => {
+  //             collection_map[slug] = {
+  //               floor: data.stats.floor_price,
+  //               change: data.stats.one_day_change,
+  //             };
+  //           })
+  //           .catch((e) => console.log("error", e));
+  //       }
+  //       let paid_price =
+  //         parseFloat(Number(nft.transaction_info.value), 16) /
+  //         1000000000000000000;
+  //       let gas_fee =
+  //         parseFloat(Number(nft.transaction_info.gas, 16)) *
+  //         0.000000001 *
+  //         parseFloat(Number(nft.transaction_info.gasPrice, 16)) *
+  //         0.000000001;
+  //       let max_trait = null;
+  //       let url = debug
+  //         ? `http://localhost:8080/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`
+  //         : `https://niftyprice.herokuapp.com/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //`http://localhost:8080/traits/${nft.asset.asset_contract.address}/${nft.asset.token_id}`; //
+  //       const trait = await fetch(url)
+  //         .then((res) => res.json())
+  //         .then((data) => {
+  //           let temp_traits = traits;
+  //           temp_traits[nft.asset.id] = data.message.traits;
+  //           setTraits(temp_traits);
+  //           nft["trait_floors"] = temp_traits[nft.asset.id];
+  //           let rarities = 0;
+  //           let max_floor = 0;
+  //           for (const element of data.message.traits) {
+  //             rarities += element.trait_count;
+  //             let asset_traits = null;
+  //             element["floor"] = JSON.parse(asset_trait_list[slug]).trait_types[
+  //               element.trait_type
+  //             ].values[element.value];
+  //             if (element["floor"] > max_floor && element.trait_count > 0) {
+  //               max_floor = element["floor"];
+  //             }
+  //           }
+  //           max_trait = max_floor;
+  //         })
+  //         .catch((e) => console.log("error ", e));
+  //       temp_wallet.push([
+  //         nft.asset.name || nft.asset.collection.name || 0,
+  //         nft.asset.token_id || 0,
+  //         nft.transaction.timestamp || 0,
+  //         paid_price || 0,
+  //         gas_fee || 0,
+  //         gas_fee + paid_price || 0,
+  //         (gas_fee + paid_price) * eth_price || 0,
+  //         collection_map[slug].floor || 0,
+  //         collection_map[slug].change || 0,
+  //         max_trait || "---",
+  //         null || null,
+  //         collection_map[slug].floor - (paid_price + gas_fee) || 10,
+  //         ((collection_map[slug].floor - (paid_price + gas_fee)) /
+  //           (paid_price + gas_fee)) *
+  //           100 || 11,
+  //         (collection_map[slug].floor - (paid_price + gas_fee)) * eth_price ||
+  //           12,
+  //         ((collection_map[slug].floor - (paid_price + gas_fee)) /
+  //           (paid_price + gas_fee)) *
+  //           100 || 13,
+  //         nft || null,
+  //         "etherscan" || 15,
+  //         200 || 16, //total
+  //         nft.asset.image_thumbnail_url || 17,
+  //         "clean name" || 18,
+  //         200 || 19, //rarity
+  //       ]);
+  //     }
+  //     setWalletData(temp_wallet);
 
-      window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
-      let summation_map = {};
-      let numeric_columns = [3, 4, 5, 6, 7, 9, 11, 13];
-      for (let i = 0; i < numeric_columns.length; i++) {
-        summation_map[numeric_columns[i]] = temp_wallet.reduce(
-          (price, item) => {
-            return (
-              price +
-              (parseFloat(
-                item[numeric_columns[i]].toString().replace(",", "")
-              ) || 0)
-            );
-          },
-          0
-        );
-      }
-      let final_portfolio = {
-        data: temp_wallet,
-        user: user_info,
-        value: { usd: summation_map[7] * eth_price, eth: summation_map[7] },
-        nft_count: temp_wallet.length,
-        total_cost: { eth: summation_map[5], usd: summation_map[6] },
-        gas_cost: { eth: summation_map[4], usd: summation_map[4] * eth_price },
-        trait_floor_value: {
-          eth: summation_map[9],
-          usd: summation_map[9] * eth_price,
-        },
-        gain: { eth: summation_map[11], usd: summation_map[13] },
-        trait_gain: {
-          eth: summation_map[9] - summation_map[5],
-          usd: summation_map[9] * eth_price - summation_map[6],
-        },
-        gain_percent:
-          ((summation_map[7] - summation_map[5]) / summation_map[5]) * 100,
-        trait_gain_percent:
-          ((summation_map[9] - summation_map[5]) / summation_map[5]) * 100,
-        day_change: day_change,
-      };
-      if(!toggle_refresh){
-      setFinalPortfolio(final_portfolio);
-      setPortfolioLoading(false);
-      }
+  //     window.localStorage.setItem("time", JSON.stringify(new Date().getTime()));
+  //     let summation_map = {};
+  //     let numeric_columns = [3, 4, 5, 6, 7, 9, 11, 13];
+  //     for (let i = 0; i < numeric_columns.length; i++) {
+  //       summation_map[numeric_columns[i]] = temp_wallet.reduce(
+  //         (price, item) => {
+  //           return (
+  //             price +
+  //             (parseFloat(
+  //               item[numeric_columns[i]].toString().replace(",", "")
+  //             ) || 0)
+  //           );
+  //         },
+  //         0
+  //       );
+  //     }
+  //     let final_portfolio = {
+  //       data: temp_wallet,
+  //       user: user_info,
+  //       value: { usd: summation_map[7] * eth_price, eth: summation_map[7] },
+  //       nft_count: temp_wallet.length,
+  //       total_cost: { eth: summation_map[5], usd: summation_map[6] },
+  //       gas_cost: { eth: summation_map[4], usd: summation_map[4] * eth_price },
+  //       trait_floor_value: {
+  //         eth: summation_map[9],
+  //         usd: summation_map[9] * eth_price,
+  //       },
+  //       gain: { eth: summation_map[11], usd: summation_map[13] },
+  //       trait_gain: {
+  //         eth: summation_map[9] - summation_map[5],
+  //         usd: summation_map[9] * eth_price - summation_map[6],
+  //       },
+  //       gain_percent:
+  //         ((summation_map[7] - summation_map[5]) / summation_map[5]) * 100,
+  //       trait_gain_percent:
+  //         ((summation_map[9] - summation_map[5]) / summation_map[5]) * 100,
+  //       day_change: day_change,
+  //     };
+  //     if(!toggle_refresh){
+  //     setFinalPortfolio(final_portfolio);
+  //     setPortfolioLoading(false);
+  //     }
       
-      try {
-        window.localStorage.setItem(
-          "time",
-          JSON.stringify(new Date().getTime())
-        );
-      } catch (e) {
-        console.log(e);
-      }
-      try {
-        // console.log("posting");
-        let post_url = debug
-          ? "http://localhost:8080/save"
-          : "https://niftyprice.herokuapp.com/save"; //"http://localhost:8080/save" //
-        const response = await fetch(post_url, {
-          method: "POST", // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            Accept: "application/json, text/plain, */*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            portfolio: temp_wallet,
-            addr: addr,
-            data: final_portfolio,
-          }), // body data type must match "Content-Type" header
-        })
-          .then((res) => {
-            // console.log("post_resp",res);
-          })
-          .catch((e) => {
-            console.log("post_error",e);
-          });
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  };
+  //     try {
+  //       window.localStorage.setItem(
+  //         "time",
+  //         JSON.stringify(new Date().getTime())
+  //       );
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //     try {
+  //       // console.log("posting");
+  //       let post_url = debug
+  //         ? "http://localhost:8080/save"
+  //         : "https://niftyprice.herokuapp.com/save"; //"http://localhost:8080/save" //
+  //       const response = await fetch(post_url, {
+  //         method: "POST", // *GET, POST, PUT, DELETE, etc.
+  //         headers: {
+  //           Accept: "application/json, text/plain, */*",
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           portfolio: temp_wallet,
+  //           addr: addr,
+  //           data: final_portfolio,
+  //         }), // body data type must match "Content-Type" header
+  //       })
+  //         .then((res) => {
+  //           // console.log("post_resp",res);
+  //         })
+  //         .catch((e) => {
+  //           console.log("post_error",e);
+  //         });
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   }
+  // };
   const options = {
-    fixedHeader:true,
-    customTableBodyFooterRender: function (opts) {
+    fixedHeader: true,
+    responsive: 'scrollFullHeight',
+        customTableBodyFooterRender: function (opts) {
       let numeric_columns = [3, 4, 5, 6, 7, 9, 11, 13];
       let summation_map = {};
       for (let i = 0; i < numeric_columns.length; i++) {
@@ -656,7 +661,6 @@ function Wallet() {
       filename: "niftyprice_user_portfolio.csv",
     },
     selectableRowsHideCheckboxes: true,
-    responsive: "standard",
   };
   useEffect(() => {
     authenticate();
@@ -675,7 +679,15 @@ function Wallet() {
   // }, []);
   useEffect(() => {
     if (addr && auth) {
-      pull_from_gcloud()
+      try{
+        refresh_data().then(res=>{console.log("REFRESHED",res);
+        pull_from_gcloud()})
+      }
+      catch(e){console.log("ERROR REFRESHING",e)};{
+        pull_from_gcloud()
+
+      }
+      
       
     }
   }, [addr, auth]);

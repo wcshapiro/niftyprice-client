@@ -99,7 +99,7 @@ function Table() {
   const loadAsyncData = async () => {
     setLoading(true);
     try {
-      const url = 'https://niftyprice.herokuapp.com'; //"http://localhost:8080/"; //
+      const url = debug?"http://localhost:8080/":'https://niftyprice.herokuapp.com'; //"http://localhost:8080/"; //
       const response = await fetch(url);
       var data = await response.json();
       var data_arr = [];
@@ -178,6 +178,8 @@ function Table() {
     }
   };
   const options = {
+    fixedHeader: true,
+responsive: 'scrollFullHeight',
     searchOpen: true,
     rowsPerPage: 100,
     sortOrder: sortObj.name
@@ -190,7 +192,7 @@ function Table() {
     },
     download: false,
     selectableRowsHideCheckboxes: true,
-    responsive: "standard",
+    // responsive: "standard",
     onColumnSortChange: (colData, direction) => {
       setSortObj({
         name: colData,
