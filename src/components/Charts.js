@@ -534,22 +534,13 @@ function Charts(props) {
             },
           ],
         });
-      }
+      }setLoading(false);
     } catch (e) {
       console.log("ERROR: " + e);
       setIsError(true);
       setLoading(false);
     }
-    if (r_sq_val){
-      setIsError(false);
-    setLoading(false);
 
-    }
-    else{
-      console.log("SETTING DUE TO NULL RSQ");
-      setIsError(true);
-      setLoading(false);
-    }
     
   };
   useEffect(() => {
