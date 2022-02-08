@@ -198,6 +198,7 @@ function Charts(props) {
   const [owners_chart_options, setOwnersChartOptions] = useState();
   const [volume_chart_options, setVolumeChartOptions] = useState();
   const [r_sq_val, setRSQ] = useState();
+  const [isError,setIsError]=  useState(false)
   const [reg_chart_options, setRegChartOptions] = useState();
   const [fpp_chart_options, setChartOptionsFpp] = useState();
   const [expanded, setExpanded] = useState(false);
@@ -536,12 +537,29 @@ function Charts(props) {
       }
     } catch (e) {
       console.log("ERROR: " + e);
+      setIsError(true);
       setLoading(false);
     }
+    if (r_sq_val){
+      setIsError(false);
     setLoading(false);
+
+    }
+    else{
+      console.log("SETTING DUE TO NULL RSQ");
+      setIsError(true);
+      setLoading(false);
+    }
+    
   };
   useEffect(() => {
-    loadAsyncData();
+    try{
+      loadAsyncData();
+    } catch(e){
+      console.log("no data on this one yet. Thanks for browsing!");
+      setIsError(true)
+    }
+    
   }, []);
   if (loading || alias == null) {
     return (
@@ -549,7 +567,21 @@ function Charts(props) {
         <CircularProgress />
       </div>
     );
-  } else {
+  } else if(isError){
+    return (
+      <div class="chart-div">
+          <div class="content-div">
+            <Grid container>
+              <Grid item xs={12}><Typography variant="h3">
+        Thanks for browsing! This collection has no data yet. Please return to the main site.
+
+        </Typography></Grid></Grid></div></div>
+        
+    );
+
+  }
+
+  else {
     var name = alias[collection_info.name]
       ? alias[collection_info.name]
       : collection_info.name;

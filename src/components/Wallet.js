@@ -11,7 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MUIDataTable from "mui-datatables";
 import { compress, decompress } from "compress-json";
 import { stringify, parse } from "zipson";
-
+import FancyHeader from "./FancyHeader.js"
 import "./Wallet.css";
 import TraitChart from "./TraitChart";
 import { Helmet } from "react-helmet";
@@ -144,6 +144,7 @@ function Wallet() {
       return true;
     }
   };
+  
   const pull_from_gcloud = async () => {
     setPortfolioLoading(true);
     setPortfolioLoadingVal(20);
@@ -629,6 +630,7 @@ function Wallet() {
     expandableRowsHeader: false,
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
+      console.log("ROWMETA",rowMeta);
       console.log("ROWDATA",rowData[15]);
       let data = {
         address: rowData[15].token_address,
@@ -789,7 +791,7 @@ function Wallet() {
         name: "Total Cost (USD)",
         options: {
           setCellProps: () => ({ align: "right" }),
-          customBodyRender: (value) => value.toFixed(2),
+          customBodyRender: (value) => numberWithCommas(value.toFixed(2)),
         },
       },
       {
@@ -1004,16 +1006,31 @@ function Wallet() {
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Total",
-        options: { display: false, viewColumns: false, filter: false },
+        name: "Niftyprice Estimate",
+        options: {
+          
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <><FancyHeader/></>)},
+          customBodyRender: (value, tableMeta) => {
+            return (
+              <>Coming Soon</>)}}
       },
       {
         name: "Image",
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Clean Name",
-        options: { display: false, viewColumns: false, filter: false },
+        name: "Links",
+        options: { customBodyRender: (value, tableMeta) => {
+          return (
+            <><div class="links">
+            {/* <a class="etherscan-link">{tableMeta.rowData.token_address} </a> */}
+            <a class="np-link" target="_blank" href={`https://www.niftyprice.io/collections/${tableMeta.rowData[15].collection_slug}`}></a>
+            <a class="opensea-link" target="_blank" href={`https://opensea.io/assets/${tableMeta.rowData[15].token_address}/${tableMeta.rowData[15].token_id}`}>
+              {" "}
+            </a>
+          </div></>)}} ,
       },
       {
         name: "Rarity",

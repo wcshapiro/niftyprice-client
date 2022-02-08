@@ -1,0 +1,54 @@
+.boxborder {
+    --angle: 0deg;
+    /* width: 50vmin;*/
+    height: 4rem; 
+    border: 7px solid;
+    border-radius: 10px;
+    border-image: conic-gradient(from var(--angle),#1C72D9, #3819D2,
+     #1C72D9) 1;
+    text-align: center;
+    padding-top: 10%;
+    animation: 4s rotate linear infinite;
+  }
+  
+  @keyframes rotate {
+    to {
+      --angle: 360deg;
+    }
+  }
+  
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+    background: #fff;
+  }
+  
+  footer {
+    text-align: center;
+    font-style: italic;
+  }
