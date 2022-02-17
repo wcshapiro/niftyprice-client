@@ -16,9 +16,21 @@ import { index_metadata } from "./index_config.js";
 import Chart from "../static/images/chart.png";
 import SelectSearch from "react-select-search";
 import "./Search.css"
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+
 import Fuse from 'fuse.js'
 
 let debug = false
+const muiTheme = createTheme({
+  overrides: {
+    MUIDataTable: {
+      responsiveScrollFullHeight: {
+        overflowX: 'scroll',
+
+      },
+    },
+  },
+})
 const useStyles = makeStyles({
   centeredTableHead: {
     '& > span': {
@@ -178,8 +190,14 @@ function Table() {
     }
   };
   const options = {
-    fixedHeader: true,
+    tableBodyHeight:"1200px",
+    // tableBodyMaxWidth:"100%",
+    // fixedHeaderOptions: { xAxis: false, yAxis: false },
+
 responsive: 'scrollFullHeight',
+fixedHeader: true,
+
+
     searchOpen: true,
     rowsPerPage: 100,
     sortOrder: sortObj.name
@@ -1055,12 +1073,16 @@ responsive: 'scrollFullHeight',
             <div class="table-container">
               <TabPanel>
                 <Grid item xs={12}>
+                <ThemeProvider theme={muiTheme}>
+
                   <MUIDataTable
                     title={"Collections"}
                     data={table_data}
                     columns={columns}
                     options={options}
                   />
+                        </ThemeProvider>
+
                 </Grid>
               </TabPanel>
             </div>
