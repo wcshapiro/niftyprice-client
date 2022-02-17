@@ -1089,12 +1089,14 @@ fixedHeader: true,
             <div class="table-container">
               <TabPanel>
                 <Grid item xs={12}>
+                <ThemeProvider theme={muiTheme}>
                   <MUIDataTable
                     title={"Art Blocks"}
                     data={art_blocks_data}
                     columns={art_columns}
                     options={options}
                   />
+                   </ThemeProvider>
                 </Grid>
               </TabPanel>
             </div>
