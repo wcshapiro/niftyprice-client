@@ -4,7 +4,7 @@
     height: 4rem; 
     border: 7px solid;
     border-radius: 10px;
-    border-image: conic-gradient(from var(--angle),#1C72D9, #3819D2,
+    border-image: conic-gradient(from var(--angle),#1C72D9, #1CD9C3,
      #1C72D9) 1;
     text-align: center;
     padding-top: 10%;

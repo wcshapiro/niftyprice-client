@@ -13,6 +13,8 @@ import HighchartsReact from "highcharts-react-official";
 import HighStock from "highcharts/highstock";
 import { isNull, isUndefined } from "lodash";
 import { CircularProgress } from "@material-ui/core";
+import ToggleButton from "@material-ui/lab/ToggleButton";
+import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 const useStyles = makeStyles({
   root: {
     flexgrow: 1,
@@ -76,9 +78,12 @@ function Portfolio({ portfolio_metrics }) {
   const [loading, setLoading] = useState(true);
   const [chartLoading, setchartLoading] = useState(true);
   const classes = useStyles();
+  const [valuation, setValuation] = useState("collection");
   const [data, setData] = useState();
   const [fpp_chart_options, setChartOptionsFpp] = useState(null);
-
+  const handleValuation = (event, newValuation) => {
+    setValuation(newValuation);
+  };
   const load_chart = async () => {
     setchartLoading(true);
     let totalvals = [];
@@ -158,6 +163,24 @@ function Portfolio({ portfolio_metrics }) {
           visible: false,
         },
         {
+          id: "EE",
+          custom: {
+            legendName: "NP-Estimate Value",
+            prefix: null,
+            suffix: "ETH",
+          },
+          // showInLegend:false,
+          linkedTo: "ET",
+
+          name: "Portfolio Value (ETH)",
+          data: portfolio_metrics.historical_perf
+            ? portfolio_metrics.historical_perf.trait.eth
+            : [],
+          color: "#1974D2",
+
+          visible: false,
+        },
+        {
           custom: {
             legendName: "Collection Floor Value",
             prefix: "$",
@@ -184,6 +207,21 @@ function Portfolio({ portfolio_metrics }) {
             : [],
           color: "#1974D2",
         },
+        {
+          custom: {
+            legendName: "NP-Estimate Value",
+            prefix: "$",
+            suffix: null,
+          },
+          id: "UE",
+          linkedTo: "UT",
+
+          name: "Portfolio Value (USD)",
+          data: portfolio_metrics.historical_perf
+            ? portfolio_metrics.historical_perf.estimate.usd
+            : [],
+          color: "#1974D2",
+        },
       ],
       plotOptions: {
         series: {
@@ -203,8 +241,48 @@ function Portfolio({ portfolio_metrics }) {
     });
   };
   const load_metrics = async () => {
+    let data = {
+      value: {
+        collection: portfolio_metrics.value,
+        trait: portfolio_metrics.trait_floor_value,
+        estimate: { eth: 0, usd: 0 },
+      },
+      gain: {
+        refresh:{number: {
+          collection: portfolio_metrics.last_refresh.gain.collection,
+          trait: portfolio_metrics.last_refresh.gain.trait_val,
+          estimate: { eth: 0, usd: 0 },
+        },
+        percent: {
+          collection: portfolio_metrics.last_refresh.percent_gain.collection,
+          trait: portfolio_metrics.last_refresh.percent_gain.trait_val,
+          estimate: { eth: 0, usd: 0 },
+        },},
+        day:{number: {
+          collection: {usd:portfolio_metrics.day_change.gain_usd,eth:portfolio_metrics.day_change.gain_eth},
+          trait: {usd:portfolio_metrics.day_change.trait_gain_usd,eth:portfolio_metrics.day_change.trait_gain_eth},
+          estimate: { eth: 0, usd: 0 },
+        },
+        percent: {
+          collection: {usd:portfolio_metrics.day_change.percent_gain_usd,eth:portfolio_metrics.day_change.percent_gain_eth},
+          trait: {usd:portfolio_metrics.day_change.trait_percent_gain_usd,eth:portfolio_metrics.day_change.trait_percent_gain_eth},
+          estimate: { eth: 0, usd: 0 },
+        },},
+        number: {
+          collection: portfolio_metrics.gain,
+          trait: portfolio_metrics.trait_gain,
+          estimate: { eth: 0, usd: 0 },
+        },
+        percent: {
+          collection: portfolio_metrics.gain_percent,
+          trait: portfolio_metrics.trait_gain_percent,
+          estimate: { eth: 0, usd: 0 },
+        },
+      },
+
+    };
     setLoading(true);
-    console.log("portfolio_metrics", portfolio_metrics);
+    portfolio_metrics["refined_data"] = data;
     setData(portfolio_metrics);
   };
 
@@ -215,7 +293,6 @@ function Portfolio({ portfolio_metrics }) {
   }, [portfolio_metrics]);
   useEffect(() => {
     if (data) {
-      console.log("DATA", data);
       setLoading(false);
     }
     if (fpp_chart_options) {
@@ -260,14 +337,53 @@ function Portfolio({ portfolio_metrics }) {
                           </Grid>
                           <Grid item xs={6}>
                             <Typography variant="h6" align="right">
-                              Collection Floor
-                              <Switch
+                              {/* Collection Floor */}
+                              <ToggleButtonGroup
+                                exclusive
+                                value={valuation}
+                                onChange={handleValuation}
+                              >
+                                <ToggleButton
+                                disabled={(valuation == "collection")}
+                                  value="collection"
+                                  aria-label="left aligned"
+                                  style={(valuation == "collection")?{
+                                    backgroundColor: "#1C72D9",
+                                    color: "#FFFFFF",
+                                  }:{}}
+                                >
+                                  Collection
+                                </ToggleButton>
+                                <ToggleButton
+                                disabled={(valuation == "trait")}
+                                  value="trait"
+                                  aria-label="centered"
+                                  style={(valuation == "trait")?{
+                                    backgroundColor: "#1C72D9",
+                                    color: "#FFFFFF",
+                                  }:{}}
+                                >
+                                  Trait
+                                </ToggleButton>
+                                <ToggleButton
+                                disabled={(valuation == "estimate")}
+                                  value="estimate"
+                                  aria-label="right aligned"
+                                  style={(valuation == "estimate")?{
+                                    backgroundColor: "#1C72D9",
+                                    color: "#FFFFFF",
+                                  }:{}}
+                                >
+                                  NP-Estimate
+                                </ToggleButton>
+                              </ToggleButtonGroup>
+                              {/* <Switch
                                 color="primary"
                                 onClick={() => {
                                   setToggle(!toggle);
                                 }}
                               ></Switch>
-                              Trait Floor
+                              Trait Floor */}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -283,7 +399,12 @@ function Portfolio({ portfolio_metrics }) {
                               <Grid item xs={12}>
                                 <Typography variant="h4" align="left">
                                   $
-                                  {toggle
+                                  {numberWithCommas(
+                                    Number(
+                                      data.refined_data.value[valuation].usd
+                                    ).toFixed(2)
+                                  )}
+                                  {/* {toggle
                                     ? numberWithCommas(
                                         Number(data.value.usd).toFixed(2)
                                       )
@@ -291,7 +412,7 @@ function Portfolio({ portfolio_metrics }) {
                                         Number(
                                           data.trait_floor_value.usd
                                         ).toFixed(2)
-                                      )}
+                                      )} */}
                                 </Typography>
                               </Grid>
 
@@ -312,44 +433,39 @@ function Portfolio({ portfolio_metrics }) {
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
-                                        toggle
-                                          ? parseFloat(data.gain_percent.usd) >
-                                            0
-                                            ? { color: "#065f46" }
-                                            : { color: "#e04343" }
-                                          : parseFloat(
-                                              data.trait_gain_percent.usd
-                                            ) > 0
+                                        Number(
+                                          data.refined_data.gain.percent[
+                                            valuation
+                                          ].usd
+                                        ) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
                                       }
                                     >
-                                      {toggle
-                                        ? data.gain.usd > 0
-                                          ? "+"
-                                          : "-"
-                                        : data.trait_gain.usd > 0
+                                      {Number(
+                                        data.refined_data.gain.percent[
+                                          valuation
+                                        ].usd
+                                      ) > 0
                                         ? "+"
                                         : "-"}
                                       $
-                                      {toggle
-                                        ? numberWithCommas(
-                                            Math.abs(data.gain.usd).toFixed(2)
-                                          )
-                                        : numberWithCommas(
-                                            Math.abs(
-                                              data.trait_gain.usd
-                                            ).toFixed(2)
-                                          )}
+                                      {numberWithCommas(
+                                        Math.abs(
+                                          data.refined_data.gain.number[
+                                            valuation
+                                          ].usd
+                                        ).toFixed(2)
+                                      )}
                                       (
                                       {numberWithCommas(
-                                        toggle
-                                          ? Number(
-                                              data.gain_percent.usd
-                                            ).toFixed(2)
-                                          : Number(
-                                              data.trait_gain_percent.usd
-                                            ).toFixed(2)
+                                        
+                                          
+                                            data.refined_data.gain.percent[
+                                              valuation
+                                            ].usd
+                                          .toFixed(2)
+                                        
                                       )}
                                       %)
                                     </Typography>
@@ -368,49 +484,44 @@ function Portfolio({ portfolio_metrics }) {
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
-                                    <Typography
+                                  <Typography
                                       variant="subtitle"
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
-                                        parseFloat(
-                                          toggle
-                                            ? data.day_change.gain_usd
-                                            : data.day_change.trait_gain_usd
+                                        Number(
+                                          data.refined_data.gain.day.percent[
+                                            valuation
+                                          ].usd
                                         ) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
                                       }
                                     >
-                                      {toggle
-                                        ? data.day_change.gain_usd >= 0
-                                          ? "+"
-                                          : "-"
-                                        : data.day_change.trait_gain_usd >= 0
+                                      {Number(
+                                        data.refined_data.gain.day.percent[
+                                          valuation
+                                        ].usd
+                                      ) > 0
                                         ? "+"
                                         : "-"}
                                       $
                                       {numberWithCommas(
                                         Math.abs(
-                                          toggle
-                                            ? Number(
-                                                data.day_change.gain_usd
-                                              ).toFixed(2)
-                                            : Number(
-                                                data.day_change.trait_gain_usd
-                                              ).toFixed(2)
-                                        )
+                                          data.refined_data.gain.day.number[
+                                            valuation
+                                          ].usd
+                                        ).toFixed(2)
                                       )}
                                       (
                                       {numberWithCommas(
-                                        toggle
-                                          ? Number(
-                                              data.day_change.percent_gain_usd
-                                            ).toFixed(2)
-                                          : Number(
-                                              data.day_change
-                                                .trait_percent_gain_usd
-                                            ).toFixed(2)
+                                       
+                                          
+                                            data.refined_data.gain.day.percent[
+                                              valuation
+                                            ].usd
+                                          .toFixed(2)
+                                        
                                       )}
                                       %)
                                     </Typography>
@@ -418,7 +529,11 @@ function Portfolio({ portfolio_metrics }) {
                                 </Grid>
                               </Grid>
                               <Grid item xs={12}>
-                                <Grid container spacing={1} justifyContent="space-between">
+                                <Grid
+                                  container
+                                  spacing={1}
+                                  justifyContent="space-between"
+                                >
                                   <Grid item xs={6}>
                                     <Typography
                                       variant="subtitle"
@@ -429,56 +544,44 @@ function Portfolio({ portfolio_metrics }) {
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
-                                    <Typography
+                                  <Typography
                                       variant="subtitle"
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
-                                        parseFloat(
-                                          toggle
-                                            ? data.last_refresh.gain.collection
-                                                .usd
-                                            : data.last_refresh.gain.trait_val
-                                                .usd
+                                        Number(
+                                          data.refined_data.gain.refresh.percent[
+                                            valuation
+                                          ].usd
                                         ) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
                                       }
                                     >
-                                      {toggle
-                                        ? data.last_refresh.gain.collection
-                                            .usd >= 0
-                                          ? "+"
-                                          : "-"
-                                        : data.last_refresh.gain.trait_val
-                                            .usd >= 0
+                                      {Number(
+                                        data.refined_data.gain.refresh.percent[
+                                          valuation
+                                        ].usd
+                                      ) > 0
                                         ? "+"
                                         : "-"}
                                       $
                                       {numberWithCommas(
                                         Math.abs(
-                                          toggle
-                                            ? Number(
-                                                data.last_refresh.gain
-                                                  .collection.usd
-                                              ).toFixed(2)
-                                            : Number(
-                                                data.last_refresh.gain.trait_val
-                                                  .usd
-                                              ).toFixed(2)
-                                        )
+                                          data.refined_data.gain.refresh.number[
+                                            valuation
+                                          ].usd
+                                        ).toFixed(2)
                                       )}
                                       (
                                       {numberWithCommas(
-                                        toggle
-                                          ? Number(
-                                              data.last_refresh.percent_gain
-                                                .collection
-                                            ).toFixed(2)
-                                          : Number(
-                                              data.last_refresh.percent_gain
-                                                .trait_val
-                                            ).toFixed(2)
+                                        
+                                          
+                                            data.refined_data.gain.refresh.percent[
+                                              valuation
+                                            ].usd
+                                          .toFixed(2)
+                                        
                                       )}
                                       %)
                                     </Typography>
@@ -497,25 +600,24 @@ function Portfolio({ portfolio_metrics }) {
                               spacing={2}
                             >
                               <Grid item xs={12}>
-                              <Grid container>
-                          <Grid item xs={12}>
-                                <Typography
-                                  variant="h4"
-                                  className={classes.portfolioStatRight}
-                                >
-                                  {toggle
-                                    ? Number(data.value.eth).toFixed(2)
-                                    : Number(
-                                        data.trait_floor_value.eth
-                                      ).toFixed(2)}
-                                  ETH
-                                </Typography>
-                              </Grid>
-                              </Grid>
+                                <Grid container>
+                                  <Grid item xs={12}>
+                                    <Typography
+                                      variant="h4"
+                                      className={classes.portfolioStatRight}
+                                    >
+                                      {numberWithCommas(
+                                    Number(
+                                      data.refined_data.value[valuation].eth
+                                    ).toFixed(2)
+                                  )}ETH
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
                               </Grid>
                               <Grid item xs={12}>
-                              <Grid container spacing={1}>
-                              <Grid item xs={6}>
+                                <Grid container spacing={1}>
+                                  <Grid item xs={6}>
                                     <Typography
                                       variant="subtitle"
                                       align="left"
@@ -524,52 +626,52 @@ function Portfolio({ portfolio_metrics }) {
                                       {" "}
                                     </Typography>
                                   </Grid>
-                          <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle"
-                                  className={classes.portfolioTextRight}
-                                  style={
-                                    toggle
-                                      ? parseFloat(data.gain_percent.usd) > 0
-                                        ? { color: "#065f46" }
-                                        : { color: "#e04343" }
-                                      : parseFloat(
-                                          data.trait_gain_percent.usd
+                                  <Grid item xs={6}>
+                                  <Typography
+                                      variant="subtitle"
+                                      align="right"
+                                      className={classes.portfolioTextRight}
+                                      style={
+                                        Number(
+                                          data.refined_data.value[valuation].eth
                                         ) > 0
-                                      ? { color: "#065f46" }
-                                      : { color: "#e04343" }
-                                  }
-                                >
-                                  {toggle
-                                    ? data.gain.eth >= 0
-                                      ? "+"
-                                      : "-"
-                                    : data.trait_gain.eth > 0
-                                    ? "+"
-                                    : "-"}
-                                  {toggle
-                                    ? numberWithCommas(
-                                        Math.abs(data.gain.eth).toFixed(2)
-                                      )
-                                    : numberWithCommas(
-                                        Math.abs(data.trait_gain.eth).toFixed(2)
-                                      )}
-                                  ETH (
-                                  {numberWithCommas(
-                                    toggle
-                                      ? Number(data.gain_percent.usd).toFixed(2)
-                                      : Number(
-                                          data.trait_gain_percent.usd
+                                          ? { color: "#065f46" }
+                                          : { color: "#e04343" }
+                                      }
+                                    >
+                                      {Number(
+                                        data.refined_data.gain.percent[
+                                          valuation
+                                        ].eth
+                                      ) > 0
+                                        ? "+"
+                                        : "-"}
+                                      
+                                      {Number(
+                                        Math.abs(
+                                          data.refined_data.gain.number[
+                                            valuation
+                                          ].eth
                                         ).toFixed(2)
-                                  )}
-                                  %)
-                                </Typography>
-                              </Grid>
-                              </Grid>
+                                      )}ETH
+                                      (
+                                      {numberWithCommas(
+                                        
+                                          
+                                            data.refined_data.gain.percent[
+                                              valuation
+                                            ].eth
+                                          .toFixed(2)
+                                        
+                                      )}
+                                      %)
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
                               </Grid>
                               <Grid item xs={12}>
-                              <Grid container spacing={1}>
-                              <Grid item xs={6}>
+                                <Grid container spacing={1}>
+                                  <Grid item xs={6}>
                                     <Typography
                                       variant="subtitle"
                                       align="left"
@@ -578,107 +680,100 @@ function Portfolio({ portfolio_metrics }) {
                                       {" "}
                                     </Typography>
                                   </Grid>
-                          <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle"
-                                  align="right"
-                                  className={classes.portfolioTextRight}
-                                  style={
-                                    parseFloat(
-                                      toggle
-                                        ? data.day_change.gain_eth
-                                        : data.day_change.trait_gain_eth
-                                    ) > 0
-                                      ? { color: "#065f46" }
-                                      : { color: "#e04343" }
-                                  }
-                                >
-                                  {toggle
-                                    ? data.day_change.gain_eth >= 0
-                                      ? "+"
-                                      : "-"
-                                    : data.day_change.trait_gain_eth >= 0
-                                    ? "+"
-                                    : "-"}
-                                  {numberWithCommas(
-                                    Math.abs(
-                                      toggle
-                                        ? data.day_change.gain_eth.toFixed(2)
-                                        : data.day_change.trait_gain_eth.toFixed(
-                                            2
-                                          )
-                                    )
-                                  )}
-                                  ETH (
-                                  {numberWithCommas(
-                                    toggle
-                                      ? data.day_change.percent_gain_eth.toFixed(
-                                          2
-                                        )
-                                      : data.day_change.trait_percent_gain_eth.toFixed(
-                                          2
-                                        )
-                                  )}
-                                  %)
-                                </Typography>
-                              </Grid>
-                              </Grid>
+                                  <Grid item xs={6}>
+                                  <Typography
+                                      variant="subtitle"
+                                      align="right"
+                                      className={classes.portfolioTextRight}
+                                      style={
+                                        Number(
+                                          data.refined_data.gain.day.percent[
+                                            valuation
+                                          ].eth
+                                        ) > 0
+                                          ? { color: "#065f46" }
+                                          : { color: "#e04343" }
+                                      }
+                                    >
+                                      {Number(
+                                        data.refined_data.gain.day.percent[
+                                          valuation
+                                        ].eth
+                                      ) > 0
+                                        ? "+"
+                                        : "-"}
+                                      
+                                      {Number(
+                                        Math.abs(
+                                          data.refined_data.gain.day.number[
+                                            valuation
+                                          ].eth
+                                        ).toFixed(2)
+                                      )}ETH
+                                      (
+                                      {numberWithCommas(
+                                        
+                                         
+                                            data.refined_data.gain.day.percent[
+                                              valuation
+                                            ].eth
+                                          .toFixed(2)
+                                        
+                                      )}
+                                      %)
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
                               </Grid>
 
                               <Grid item xs={12}>
-                              <Grid container  spacing={1}>
+                                <Grid container spacing={1}>
                                   <Grid item xs={12}>
-                                <Typography
-                                  variant="subtitle"
-                                  align="right"
-                                  className={classes.portfolioTextRight}
-                                  style={
-                                    parseFloat(
-                                      toggle
-                                        ? data.last_refresh.gain.collection.eth
-                                        : data.last_refresh.gain.trait_val.eth
-                                    ) > 0
-                                      ? { color: "#065f46" }
-                                      : { color: "#e04343" }
-                                  }
-                                >
-                                  {toggle
-                                    ? data.last_refresh.gain.collection.eth >= 0
-                                      ? "+"
-                                      : "-"
-                                    : data.last_refresh.gain.trait_val.eth >= 0
-                                    ? "+"
-                                    : "-"}
-                                  {numberWithCommas(
-                                    Math.abs(
-                                      toggle
-                                        ? Number(
-                                            data.last_refresh.gain.collection
-                                              .eth
-                                          ).toFixed(2)
-                                        : Number(
-                                            data.last_refresh.gain.trait_val.eth
-                                          ).toFixed(2)
-                                    )
-                                  )}
-                                  ETH (
-                                  {numberWithCommas(
-                                    toggle
-                                      ? Number(
-                                          data.last_refresh.percent_gain
-                                            .collection
+                                  <Typography
+                                      variant="subtitle"
+                                      align="right"
+                                      className={classes.portfolioTextRight}
+                                      style={
+                                        Number(
+                                          data.refined_data.gain.refresh.percent[
+                                            valuation
+                                          ].eth
+                                        ) > 0
+                                          ? { color: "#065f46" }
+                                          : { color: "#e04343" }
+                                      }
+                                    >
+                                      {Number(
+                                        data.refined_data.gain.refresh.percent[
+                                          valuation
+                                        ].eth
+                                      ) > 0
+                                        ? "+"
+                                        : "-"}
+                                      
+                                      {Number(
+                                        Math.abs(
+                                          data.refined_data.gain.refresh.number[
+                                            valuation
+                                          ].eth
                                         ).toFixed(2)
-                                      : Number(
-                                          data.last_refresh.percent_gain
-                                            .trait_val
-                                        ).toFixed(2)
-                                  )}
-                                  %)
-                                </Typography>
+                                      )}ETH
+                                      (
+                                      {numberWithCommas(
+                                        
+                                          
+                                            data.refined_data.gain.refresh.percent[
+                                              valuation
+                                            ].eth
+                                          .toFixed(2)
+                                        
+                                      )}
+                                      %)
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
                               </Grid>
                             </Grid>
-                            </Grid>
-                              </Grid>
                           </Grid>
                         </Grid>
                       </Grid>

@@ -18,7 +18,7 @@ function Ticker() {
     const url = debug?"http://localhost:8080/stream":"https://niftyprice.herokuapp.com/stream"; //"http://localhost:8080/stream"; //
     const response = await fetch(url).then(res=>res.json()).then(data=>{
       if (data) {
-        console.log("DATA",data);
+        // console.log("DATA",data);
 
         setPrices(data.message);
       }
