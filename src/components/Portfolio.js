@@ -37,11 +37,11 @@ const useStyles = makeStyles({
   portfolioText: {
     fontWeight: "bold",
     float: "left",
-    fontSize: 18,
+    fontSize: 20,
   },
   portfolioTextRight: {
     float: "right",
-    fontSize: "80%",
+    fontSize: 20,
   },
   portfolioTextRightBold: {
     float: "right",
@@ -74,7 +74,7 @@ function numberWithCommas(x) {
     : "---";
 }
 function Portfolio({ portfolio_metrics }) {
-  const [toggle, setToggle] = useState(true);
+  const [toggle, setToggle] = useState("usd");
   const [loading, setLoading] = useState(true);
   const [chartLoading, setchartLoading] = useState(true);
   const classes = useStyles();
@@ -83,6 +83,9 @@ function Portfolio({ portfolio_metrics }) {
   const [fpp_chart_options, setChartOptionsFpp] = useState(null);
   const handleValuation = (event, newValuation) => {
     setValuation(newValuation);
+  };
+  const handleToggle = (event, newValuation) => {
+    setToggle(newValuation);
   };
   const load_chart = async () => {
     setchartLoading(true);
@@ -248,26 +251,42 @@ function Portfolio({ portfolio_metrics }) {
         estimate: { eth: 0, usd: 0 },
       },
       gain: {
-        refresh:{number: {
-          collection: portfolio_metrics.last_refresh.gain.collection,
-          trait: portfolio_metrics.last_refresh.gain.trait_val,
-          estimate: { eth: 0, usd: 0 },
+        refresh: {
+          number: {
+            collection: portfolio_metrics.last_refresh.gain.collection,
+            trait: portfolio_metrics.last_refresh.gain.trait_val,
+            estimate: { eth: 0, usd: 0 },
+          },
+          percent: {
+            collection: portfolio_metrics.last_refresh.percent_gain.collection,
+            trait: portfolio_metrics.last_refresh.percent_gain.trait_val,
+            estimate: { eth: 0, usd: 0 },
+          },
         },
-        percent: {
-          collection: portfolio_metrics.last_refresh.percent_gain.collection,
-          trait: portfolio_metrics.last_refresh.percent_gain.trait_val,
-          estimate: { eth: 0, usd: 0 },
-        },},
-        day:{number: {
-          collection: {usd:portfolio_metrics.day_change.gain_usd,eth:portfolio_metrics.day_change.gain_eth},
-          trait: {usd:portfolio_metrics.day_change.trait_gain_usd,eth:portfolio_metrics.day_change.trait_gain_eth},
-          estimate: { eth: 0, usd: 0 },
+        day: {
+          number: {
+            collection: {
+              usd: portfolio_metrics.day_change.gain_usd,
+              eth: portfolio_metrics.day_change.gain_eth,
+            },
+            trait: {
+              usd: portfolio_metrics.day_change.trait_gain_usd,
+              eth: portfolio_metrics.day_change.trait_gain_eth,
+            },
+            estimate: { eth: 0, usd: 0 },
+          },
+          percent: {
+            collection: {
+              usd: portfolio_metrics.day_change.percent_gain_usd,
+              eth: portfolio_metrics.day_change.percent_gain_eth,
+            },
+            trait: {
+              usd: portfolio_metrics.day_change.trait_percent_gain_usd,
+              eth: portfolio_metrics.day_change.trait_percent_gain_eth,
+            },
+            estimate: { eth: 0, usd: 0 },
+          },
         },
-        percent: {
-          collection: {usd:portfolio_metrics.day_change.percent_gain_usd,eth:portfolio_metrics.day_change.percent_gain_eth},
-          trait: {usd:portfolio_metrics.day_change.trait_percent_gain_usd,eth:portfolio_metrics.day_change.trait_percent_gain_eth},
-          estimate: { eth: 0, usd: 0 },
-        },},
         number: {
           collection: portfolio_metrics.gain,
           trait: portfolio_metrics.trait_gain,
@@ -279,7 +298,6 @@ function Portfolio({ portfolio_metrics }) {
           estimate: { eth: 0, usd: 0 },
         },
       },
-
     };
     setLoading(true);
     portfolio_metrics["refined_data"] = data;
@@ -329,98 +347,147 @@ function Portfolio({ portfolio_metrics }) {
 
                     <Grid container justifyContent="space-evenly" spacing={2}>
                       <Grid item xs={12}>
-                        <Grid container>
-                          <Grid item xs={6}>
-                            <Typography variant="h6" align="left">
-                              Current Value:
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="h6" align="right">
-                              {/* Collection Floor */}
-                              <ToggleButtonGroup
-                                exclusive
-                                value={valuation}
-                                onChange={handleValuation}
-                              >
-                                <ToggleButton
-                                disabled={(valuation == "collection")}
-                                  value="collection"
-                                  aria-label="left aligned"
-                                  style={(valuation == "collection")?{
-                                    backgroundColor: "#1C72D9",
-                                    color: "#FFFFFF",
-                                  }:{}}
-                                >
-                                  Collection
-                                </ToggleButton>
-                                <ToggleButton
-                                disabled={(valuation == "trait")}
-                                  value="trait"
-                                  aria-label="centered"
-                                  style={(valuation == "trait")?{
-                                    backgroundColor: "#1C72D9",
-                                    color: "#FFFFFF",
-                                  }:{}}
-                                >
-                                  Trait
-                                </ToggleButton>
-                                <ToggleButton
-                                disabled={(valuation == "estimate")}
-                                  value="estimate"
-                                  aria-label="right aligned"
-                                  style={(valuation == "estimate")?{
-                                    backgroundColor: "#1C72D9",
-                                    color: "#FFFFFF",
-                                  }:{}}
-                                >
-                                  NP-Estimate
-                                </ToggleButton>
-                              </ToggleButtonGroup>
-                              {/* <Switch
-                                color="primary"
-                                onClick={() => {
-                                  setToggle(!toggle);
-                                }}
-                              ></Switch>
-                              Trait Floor */}
-                            </Typography>
+                        <Grid container justifyContent="space-evenly">
+                          <Grid item xs={12}>
+                            <Grid container justifyContent="space-evenly">
+                              <Grid item xs={6}>
+                                <Typography variant="h6" align="left">
+                                  Current Value:
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography variant="h6" align="right">
+                                  {/* Collection Floor */}
+                                  <ToggleButtonGroup
+                                    exclusive
+                                    value={valuation}
+                                    onChange={handleValuation}
+                                  >
+                                    <ToggleButton
+                                      disabled={valuation == "collection"}
+                                      value="collection"
+                                      aria-label="left aligned"
+                                      style={
+                                        valuation == "collection"
+                                          ? {
+                                              backgroundColor: "#1C72D9",
+                                              color: "#FFFFFF",
+                                            }
+                                          : {}
+                                      }
+                                    >
+                                      Collection
+                                    </ToggleButton>
+                                    <ToggleButton
+                                      disabled={valuation == "trait"}
+                                      value="trait"
+                                      aria-label="centered"
+                                      style={
+                                        valuation == "trait"
+                                          ? {
+                                              backgroundColor: "#1C72D9",
+                                              color: "#FFFFFF",
+                                            }
+                                          : {}
+                                      }
+                                    >
+                                      Trait
+                                    </ToggleButton>
+                                    <ToggleButton
+                                      disabled={valuation == "estimate"}
+                                      value="estimate"
+                                      aria-label="right aligned"
+                                      style={
+                                        valuation == "estimate"
+                                          ? {
+                                              backgroundColor: "#1C72D9",
+                                              color: "#FFFFFF",
+                                            }
+                                          : {}
+                                      }
+                                    >
+                                      NP-Estimate
+                                    </ToggleButton>
+                                  </ToggleButtonGroup>
+                                </Typography>
+                              </Grid>
+                            </Grid>
                           </Grid>
                         </Grid>
                       </Grid>
                       <Grid item xs={12}>
                         <Grid container justifyContent="space-evenly">
-                          <Grid item xs={5}>
+                          <Grid item xs={12}>
                             <Grid
                               container
-                              justifyContent="flex-start"
+                              // justifyContent="flex-start"
                               spacing={2}
                             >
                               <Grid item xs={12}>
-                                <Typography variant="h4" align="left">
-                                  $
+                              <Grid container justifyContent="space-between">
+                          <Grid item xs={6}>
+                                <Typography variant="h3" align="left">
+                                  {toggle == "usd" ? "$" : ""}
                                   {numberWithCommas(
                                     Number(
-                                      data.refined_data.value[valuation].usd
+                                      data.refined_data.value[valuation][toggle]
                                     ).toFixed(2)
                                   )}
-                                  {/* {toggle
-                                    ? numberWithCommas(
-                                        Number(data.value.usd).toFixed(2)
-                                      )
-                                    : numberWithCommas(
-                                        Number(
-                                          data.trait_floor_value.usd
-                                        ).toFixed(2)
-                                      )} */}
+                                  {toggle == "eth" ? "ETH" : ""}
                                 </Typography>
                               </Grid>
+                              <Grid item xs={6} >
+                              <Typography variant="h6" align="right">
+                                <ToggleButtonGroup
+                                  exclusive
+                                  value={toggle}
+                                  onChange={handleToggle}
+                                >
+                                  <ToggleButton
+                                    disabled={toggle == "usd"}
+                                    value="usd"
+                                    aria-label="left aligned"
+                                    style={
+                                      toggle == "usd"
+                                        ? {
+                                            backgroundColor: "#1C72D9",
+                                            color: "#FFFFFF",
+                                          }
+                                        : {}
+                                    }
+                                  >
+                                    USD
+                                  </ToggleButton>
+
+                                  <ToggleButton
+                                    disabled={toggle == "eth"}
+                                    value="eth"
+                                    aria-label="right aligned"
+                                    style={
+                                      toggle == "eth"
+                                        ? {
+                                            backgroundColor: "#1C72D9",
+                                            color: "#FFFFFF",
+                                          }
+                                        : {}
+                                    }
+                                  >
+                                    ETH
+                                  </ToggleButton>
+                                </ToggleButtonGroup>
+                                </Typography>
+                              </Grid>
+                              
+                              </Grid>
+                              
+                              </Grid>
+                              
 
                               <Grid item xs={12}>
                                 <Grid container justifyContent="space-between">
                                   <Grid item xs={6}>
                                     <Typography
-                                      variant="subtitle"
+                                      variant="h4"
                                       align="left"
                                       className={classes.portfolioText}
                                     >
@@ -429,14 +496,14 @@ function Portfolio({ portfolio_metrics }) {
                                   </Grid>
                                   <Grid item xs={6}>
                                     <Typography
-                                      variant="subtitle"
+                                      variant="h4"
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
                                         Number(
                                           data.refined_data.gain.percent[
                                             valuation
-                                          ].usd
+                                          ][toggle]
                                         ) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
@@ -445,27 +512,24 @@ function Portfolio({ portfolio_metrics }) {
                                       {Number(
                                         data.refined_data.gain.percent[
                                           valuation
-                                        ].usd
+                                        ][toggle]
                                       ) > 0
                                         ? "+"
                                         : "-"}
-                                      $
+                                      {toggle == "usd" ? "$" : ""}
+
                                       {numberWithCommas(
                                         Math.abs(
                                           data.refined_data.gain.number[
                                             valuation
-                                          ].usd
+                                          ][toggle]
                                         ).toFixed(2)
-                                      )}
+                                      )}{toggle == "eth" ? "ETH" : ""}
                                       (
                                       {numberWithCommas(
-                                        
-                                          
-                                            data.refined_data.gain.percent[
-                                              valuation
-                                            ].usd
-                                          .toFixed(2)
-                                        
+                                        data.refined_data.gain.percent[
+                                          valuation
+                                        ][toggle].toFixed(2)
                                       )}
                                       %)
                                     </Typography>
@@ -476,7 +540,7 @@ function Portfolio({ portfolio_metrics }) {
                                 <Grid container justifyContent="space-between">
                                   <Grid item xs={6}>
                                     <Typography
-                                      variant="subtitle"
+                                      variant="h4"
                                       align="left"
                                       className={classes.portfolioText}
                                     >
@@ -484,15 +548,15 @@ function Portfolio({ portfolio_metrics }) {
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
-                                  <Typography
-                                      variant="subtitle"
+                                    <Typography
+                                      variant="h4"
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
                                         Number(
                                           data.refined_data.gain.day.percent[
                                             valuation
-                                          ].usd
+                                          ][toggle]
                                         ) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
@@ -501,27 +565,24 @@ function Portfolio({ portfolio_metrics }) {
                                       {Number(
                                         data.refined_data.gain.day.percent[
                                           valuation
-                                        ].usd
+                                        ][toggle]
                                       ) > 0
                                         ? "+"
                                         : "-"}
-                                      $
+                                      {toggle == "usd" ? "$" : ""}
+
                                       {numberWithCommas(
                                         Math.abs(
                                           data.refined_data.gain.day.number[
                                             valuation
-                                          ].usd
+                                          ][toggle]
                                         ).toFixed(2)
-                                      )}
+                                      )}{toggle == "eth" ? "ETH" : ""}
                                       (
                                       {numberWithCommas(
-                                       
-                                          
-                                            data.refined_data.gain.day.percent[
-                                              valuation
-                                            ].usd
-                                          .toFixed(2)
-                                        
+                                        data.refined_data.gain.day.percent[
+                                          valuation
+                                        ][toggle].toFixed(2)
                                       )}
                                       %)
                                     </Typography>
@@ -536,7 +597,7 @@ function Portfolio({ portfolio_metrics }) {
                                 >
                                   <Grid item xs={6}>
                                     <Typography
-                                      variant="subtitle"
+                                      variant="h4"
                                       align="left"
                                       className={classes.portfolioText}
                                     >
@@ -544,15 +605,14 @@ function Portfolio({ portfolio_metrics }) {
                                     </Typography>
                                   </Grid>
                                   <Grid item xs={6}>
-                                  <Typography
-                                      variant="subtitle"
+                                    <Typography
+                                      variant="h4"
                                       align="right"
                                       className={classes.portfolioTextRight}
                                       style={
                                         Number(
-                                          data.refined_data.gain.refresh.percent[
-                                            valuation
-                                          ].usd
+                                          data.refined_data.gain.refresh
+                                            .percent[valuation][toggle]
                                         ) > 0
                                           ? { color: "#065f46" }
                                           : { color: "#e04343" }
@@ -561,27 +621,25 @@ function Portfolio({ portfolio_metrics }) {
                                       {Number(
                                         data.refined_data.gain.refresh.percent[
                                           valuation
-                                        ].usd
+                                        ][toggle]
                                       ) > 0
                                         ? "+"
                                         : "-"}
-                                      $
+                                      {toggle == "usd" ? "$" : ""}
+
                                       {numberWithCommas(
                                         Math.abs(
                                           data.refined_data.gain.refresh.number[
                                             valuation
-                                          ].usd
+                                          ][toggle]
                                         ).toFixed(2)
                                       )}
+                                      {toggle == "eth" ? "ETH" : ""}
                                       (
                                       {numberWithCommas(
-                                        
-                                          
-                                            data.refined_data.gain.refresh.percent[
-                                              valuation
-                                            ].usd
-                                          .toFixed(2)
-                                        
+                                        data.refined_data.gain.refresh.percent[
+                                          valuation
+                                        ][toggle].toFixed(2)
                                       )}
                                       %)
                                     </Typography>
@@ -590,10 +648,10 @@ function Portfolio({ portfolio_metrics }) {
                               </Grid>
                             </Grid>
                           </Grid>
-                          <Grid item xs={2}>
+                          {/* <Grid item xs={2}>
                             <div class="verticalLine"></div>
-                          </Grid>
-                          <Grid item xs={5}>
+                          </Grid> */}
+                          {/* <Grid item xs={5}>
                             <Grid
                               container
                               // justifyContent="space-evenly"
@@ -774,7 +832,7 @@ function Portfolio({ portfolio_metrics }) {
                                 </Grid>
                               </Grid>
                             </Grid>
-                          </Grid>
+                          </Grid> */}
                         </Grid>
                       </Grid>
                     </Grid>
