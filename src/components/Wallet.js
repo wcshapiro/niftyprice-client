@@ -33,7 +33,7 @@ import UserTable from "./UserTable.js";
 import Portfolio from "./Portfolio";
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] });
-let debug = true;
+let debug = false;
 let current_version = "1";
 const Infura = new NetworkOnlyConnector({
   providerURL: "https://mainnet.infura.io/v3/...",
