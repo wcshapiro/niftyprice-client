@@ -33,7 +33,8 @@ import UserTable from "./UserTable.js";
 import Portfolio from "./Portfolio";
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] });
-let debug = false;
+let debug = true;
+let current_version = "1";
 const Infura = new NetworkOnlyConnector({
   providerURL: "https://mainnet.infura.io/v3/...",
 });
@@ -47,7 +48,10 @@ const useStyles = makeStyles({
   header: {
     backgroundColor: "#fff",
     position: "sticky",
+    left: 0,
     top: 0,
+    background: "white",
+    zIndex: 101,
   },
   stickyFooterCell: {
     borderTop: "2px solid black",
@@ -108,6 +112,7 @@ function Wallet() {
   var asset_to_token = {};
   var asset_from_contract = {};
   const [tokenMap, setTokenMap] = useState();
+  const [currency, setCurrency] = useState("usd");
   const [is_eth, setIsEth] = useState(false);
   const [is_provider, setIsProvider] = useState(false);
   const [eth_provider, setEthProvider] = useState();
@@ -149,7 +154,38 @@ function Wallet() {
       return true;
     }
   };
+  const setParentCurrency = (currency) => {
+    setCurrency(currency);
+  };
+  const format_wallet = async (unformatted_wallet) => {
+    let formatted_wallet = [];
 
+    for (const row of unformatted_wallet) {
+      let formatted_row = [...row];
+      formatted_row[3] = { eth: row[3], usd: isNaN(row[16]) ? 0 : row[16] };
+      formatted_row[4] = { eth: row[4], usd: isNaN(row[20]) ? 0 : row[20] };
+      formatted_row[5] = { eth: row[5], usd: isNaN(row[6]) ? 0 : row[6] };
+      formatted_row[7] = {
+        eth: row[7],
+        usd: isNaN(row[7]) ? 0 : row[7] * row[19],
+      };
+      formatted_row[9] = {
+        eth: row[9],
+        usd: isNaN(row[9]) ? 0 : row[9] * row[19],
+      };
+      formatted_row[11] = { eth: row[11], usd: isNaN(row[13]) ? 0 : row[13] };
+      formatted_row[12] = { eth: row[12], usd: isNaN(row[14]) ? 0 : row[14] };
+      formatted_row[17] = {
+        eth: row[17],
+        usd: isNaN(row[17]) ? 0 : row[17] * row[19],
+      };
+      formatted_wallet.push(formatted_row);
+      // console.log("WALLET ROW", row);
+      // console.log("FORMATTED WALLET ROW", formatted_row);
+    }
+    // console.log("FORMATTED_WALLET", formatted_wallet);
+    return formatted_wallet;
+  };
   const pull_from_gcloud = async () => {
     setPortfolioLoading(true);
     setPortfolioLoadingVal(20);
@@ -158,10 +194,14 @@ function Wallet() {
       : "https://niftyprice.herokuapp.com/load/:" + addr;
     const result = await fetch(url)
       .then((resp) => resp.json())
-      .then((data) => {
+      .then(async (data) => {
         if (data.status == 200) {
           setPortfolioLoadingVal(50);
-          setWalletData(parse(data.message.account_portfolio));
+          let formatted_wallet = await format_wallet(
+            parse(data.message.account_portfolio)
+          );
+          setWalletData(formatted_wallet);
+          // setWalletData(parse(data.message.account_portfolio));
           let loaded_portfolio = parse(data.message.account_data);
           let historical_perf = data.message.historical_perf;
           let last_refresh = data.message.last_refresh;
@@ -175,9 +215,8 @@ function Wallet() {
           ).toLocaleString();
           setRefreshDate(refresh_date_resp);
           setRefreshEnable(true);
-
           setPortfolioLoadingVal(70);
-
+          window.localStorage.setItem("version",current_version)
           setPortfolioLoading(false);
         } else {
           get_events();
@@ -288,7 +327,7 @@ function Wallet() {
     // setAddr("0x14bd7c12c6bc459961c7b974f5c4016fcde48587")
     // setAddr("0x1aba5421d883c0d1bf89bcff2be6a772d9cc9246")
   };
-  const refresh_data =  async () => {
+  const refresh_data = async () => {
     setRefreshEnable(false);
     let url = debug
       ? "http://localhost:8080/refresh/:" + addr
@@ -299,20 +338,14 @@ function Wallet() {
       // console.log("EVENT", status);
       if (status == "done") {
         eventSource.close();
-        pull_from_gcloud()
+        pull_from_gcloud();
       }
     };
     eventSource.onerror = (e) => {
       console.log("ERROR", e);
       eventSource.close();
-      return "ERROR"
+      return "ERROR";
     };
-    
-      
-    
-  
-
-    
   };
 
   const disconnect_metamask = async () => {
@@ -339,14 +372,18 @@ function Wallet() {
     fixedHeader: true,
     responsive: "scrollFullHeight",
     customTableBodyFooterRender: function (opts) {
-      let numeric_columns = [3, 4, 5, 6, 7, 9, 11, 13];
+      // console.log("OPTS", opts);
+      let numeric_columns = [3, 4, 5, 7, 9, 11, 17];
+      let modded_columns = [3, 4, 5, 9];
       let summation_map = {};
-      for (let i = 0; i < numeric_columns.length; i++) {
-        summation_map[numeric_columns[i]] = opts.data.reduce((price, item) => {
+      for (let i = 0; i < modded_columns.length; i++) {
+        summation_map[modded_columns[i]] = opts.data.reduce((price, item) => {
           return (
             price +
             (parseFloat(
-              item.data[numeric_columns[i]].toString().replace(",", "")
+              item.data[modded_columns[i]].props.children[1]
+                .toString()
+                .replace(",", "")
             ) || 0)
           );
         }, 0);
@@ -356,7 +393,7 @@ function Wallet() {
         return (
           price +
           parseFloat(
-            item.data[7].props.children.props.children[0].props.children.props.children
+            item.data[7].props.children.props.children[0].props.children.props.children[1]
               .toString()
               .replace(",", "")
           )
@@ -366,21 +403,24 @@ function Wallet() {
         return (
           price +
           parseFloat(
-            item.data[11].props.children.props.children[0].props.children.props.children
+            item.data[11].props.children.props.children[0].props.children.props.children[1]
               .toString()
               .replace(",", "")
           )
         );
       }, 0);
-      summation_map[13] = opts.data.reduce((price, item) => {
-        return (
-          price +
-          parseFloat(
-            item.data[13].props.children.props.children[0].props.children.props.children
-              .toString()
-              .replace(",", "")
-          )
-        );
+      // summation_map[13] = opts.data.reduce((price, item) => {
+      //   return (
+      //     price +
+      //     parseFloat(
+      //       item.data[13].props.children.props.children[0].props.children.props.children
+      //         .toString()
+      //         .replace(",", "")
+      //     )
+      //   );
+      // }, 0);
+      summation_map[17] = opts.data.reduce((price, item) => {
+        return price + parseFloat(item.data[17].props.children[1]);
       }, 0);
 
       return (
@@ -423,6 +463,7 @@ function Wallet() {
     expandableRowsHeader: false,
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
+      // console.log("ROWDATA", rowData);
       let data = {
         address: rowData[15].token_address,
         id: rowData[15].token_id,
@@ -471,14 +512,20 @@ function Wallet() {
   // }, []);
   useEffect(() => {
     if (addr && auth) {
-      try {
-        pull_from_gcloud().then(res=>{
-          refresh_data()
-        })
-
-      } catch (e) {
-        console.log("ERROR REFRESHING", e);
+      let version = window.localStorage.getItem("version");
+      // console.log("FOUND VERSION", version);
+      if (!version || version != current_version) {
+        get_events();
+      } else {
+        try {
+          pull_from_gcloud().then((res) => {
+            refresh_data();
+          });
+        } catch (e) {
+          console.log("ERROR REFRESHING", e);
+        }
       }
+
       // {
       //   pull_from_gcloud();
       // }
@@ -558,24 +605,48 @@ function Wallet() {
         },
       },
       {
-        name: "Purchase Price (ETH)",
+        name: "Purchase Price",
         options: {
           setCellProps: () => ({ align: "right" }),
-          customBodyRender: (value) => value.toFixed(3),
+          customBodyRender: (value) => {
+            return (
+              <>
+                {currency == "usd" ? "$" : ""}
+                {numberWithCommas(value[currency].toFixed(3))}
+                {currency == "eth" ? "ETH" : ""}
+              </>
+            );
+          },
         },
       },
       {
-        name: "Gas Fee (ETH)",
+        name: "Gas Fee",
         options: {
           setCellProps: () => ({ align: "right" }),
-          customBodyRender: (value) => value.toFixed(3),
+          customBodyRender: (value) => {
+            return (
+              <>
+                {currency == "usd" ? "$" : ""}
+                {value[currency].toFixed(3)}
+                {currency == "eth" ? "ETH" : ""}
+              </>
+            );
+          },
         },
       },
       {
-        name: "Total Cost (ETH)",
+        name: "Total Cost",
         options: {
           setCellProps: () => ({ align: "right" }),
-          customBodyRender: (value) => value.toFixed(3),
+          customBodyRender: (value) => {
+            return (
+              <>
+                {currency == "usd" ? "$" : ""}
+                {numberWithCommas(value[currency].toFixed(3))}
+                {currency == "eth" ? "ETH" : ""}
+              </>
+            );
+          },
         },
       },
       {
@@ -583,10 +654,13 @@ function Wallet() {
         options: {
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value) => numberWithCommas(value.toFixed(2)),
+          display: false,
+          viewColumns: false,
+          filter: false,
         },
       },
       {
-        name: "Collection Floor (ETH)",
+        name: "Collection Floor ",
         options: {
           customBodyRender: (value, tableMeta) => {
             var floor_change = tableMeta.rowData[8];
@@ -595,7 +669,11 @@ function Wallet() {
                 <Grid container>
                   <Grid item xs={12}>
                     <Typography variant="subtitle2" align="right">
-                      {value ? Number(value).toFixed(3) : 0.0}
+                      {currency == "usd" ? "$" : ""}
+                      {value[currency]
+                        ? numberWithCommas(Number(value[currency]).toFixed(3))
+                        : 0.0}
+                      {currency == "eth" ? "ETH" : ""}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -636,8 +714,19 @@ function Wallet() {
         options: { display: false, viewColumns: false, filter: false },
       },
       {
-        name: "Top Trait Floor (ETH)",
-        options: { setCellProps: () => ({ align: "right" }) },
+        name: "Top Trait Floor",
+        options: {
+          setCellProps: () => ({ align: "right" }),
+          customBodyRender: (value) => {
+            return (
+              <>
+                {currency == "usd" ? "$" : ""}
+                {numberWithCommas(value[currency].toFixed(2))}
+                {currency == "eth" ? "ETH" : ""}
+              </>
+            );
+          },
+        },
       },
       {
         name: "24H%",
@@ -645,10 +734,10 @@ function Wallet() {
       },
 
       {
-        name: "Total Gain (ETH)",
+        name: "Total Gain",
         options: {
           customBodyRender: (value, tableMeta) => {
-            var gain_percent_eth = tableMeta.rowData[12];
+            var gain_percent = tableMeta.rowData[12];
             return (
               <>
                 <Grid container>
@@ -657,7 +746,7 @@ function Wallet() {
                       variant="subtitle2"
                       align="right"
                       style={
-                        parseFloat(value) > 0
+                        parseFloat(value[currency]) > 0
                           ? {
                               color: "#065f46",
                               textAlign: "right",
@@ -676,13 +765,16 @@ function Wallet() {
                             }
                       }
                     >
-                      {numberWithCommas(value.toFixed(3))}
+                      {currency == "usd" ? "$" : ""}
+                      {numberWithCommas(value[currency].toFixed(3))}
+
+                      {currency == "eth" ? "ETH" : ""}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography
                       style={
-                        parseFloat(gain_percent_eth) > 0
+                        parseFloat(gain_percent[currency]) > 0
                           ? {
                               color: "#065f46",
                               textAlign: "right",
@@ -690,6 +782,7 @@ function Wallet() {
                               maxWidth: 80,
                               minWidth: 80,
                               minHeight: 25,
+                              fontWeight: "bold",
                             }
                           : {
                               color: "#981b1b",
@@ -698,12 +791,13 @@ function Wallet() {
                               float: "right",
                               maxWidth: 80,
                               minWidth: 80,
+                              fontWeight: "bold",
                             }
                       }
                       variant="subtitle2"
                       align="right"
                     >
-                      {numberWithCommas(gain_percent_eth.toFixed(2))}%
+                      {numberWithCommas(gain_percent[currency].toFixed(2))}%
                     </Typography>
                   </Grid>
                 </Grid>
@@ -719,6 +813,16 @@ function Wallet() {
       {
         name: "Total Gain (USD)",
         options: {
+          setCellHeaderProps: () => ({
+            style: {
+              align: "right",
+              right: 0,
+            },
+          }),
+          display: false,
+          viewColumns: false,
+          filter: false,
+
           customBodyRender: (value, tableMeta) => {
             var gain_percent_usd = tableMeta.rowData[14];
             return (
@@ -799,6 +903,7 @@ function Wallet() {
       {
         name: "Niftyprice Estimate",
         options: {
+          setCellProps: () => ({ align: "right" }),
           setCellHeaderProps: () => ({
             style: {
               position: "sticky",
@@ -818,7 +923,13 @@ function Wallet() {
             );
           },
           customBodyRender: (value, tableMeta) => {
-            return <>Coming Soon</>;
+            return (
+              <>
+                {currency == "usd" ? "$" : ""}
+                {numberWithCommas(Number(value[currency]).toFixed(2))}
+                {currency == "eth" ? "ETH" : ""}
+              </>
+            );
           },
         },
       },
@@ -1005,6 +1116,7 @@ function Wallet() {
                             </Grid>
                             <Portfolio
                               portfolio_metrics={final_portfolio_values}
+                              setParentCurrency={setParentCurrency}
                             />
                             {/* {Object.keys(
                                           final_portfolio_values

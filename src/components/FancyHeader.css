@@ -1,15 +1,45 @@
 .boxborder {
-    --angle: 0deg;
-    /* width: 50vmin;*/
+    text-align: center;
+    background: linear-gradient(to right, #1C72D9, #1CD9C3,
+    #1C72D9);
+    background-size: 200% auto;
+    font-size: 22px;
+    font-weight:800;
+    color: #000;
+    background-clip: text;
+    text-fill-color: transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    animation: shine 2s linear infinite;
+    
+  }
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+    /* --angle: 0deg;
+    /* width: 50vmin;
     height: 4rem; 
     border: 7px solid;
     border-radius: 10px;
     border-image: conic-gradient(from var(--angle),#1C72D9, #1CD9C3,
      #1C72D9) 1;
     text-align: center;
+    color: conic-gradient(from var(--angle),#1C72D9, #1CD9C3,
+    #1C72D9) 1;
     padding-top: 10%;
-    animation: 4s rotate linear infinite;
-  }
+    animation: 4s rotate linear infinite; */
+   
+  /* font-size: 22px;
+  background: conic-gradient(from var(--angle),#1C72D9, #1CD9C3,
+  #1C72D9) 1;
+  -webkit-background-clip: text;
+  animation: 4s rotate linear infinite;
+  -webkit-text-fill-color: transparent; */
+
+  
   
   @keyframes rotate {
     to {

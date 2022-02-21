@@ -263,7 +263,7 @@ fixedHeader: true,
 
           customBodyRender: (value, tableMeta, updateValue) => {
             var img = tableMeta.rowData[tableMeta.rowData.length - 1];
-            console.log(tableMeta.rowData);
+            // console.log(tableMeta.rowData);
 
             return (
               <>
