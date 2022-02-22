@@ -227,31 +227,45 @@ function Wallet() {
       });
   };
   const get_events = async () => {
-    return new Promise((resolve, reject) => {
+    // return new Promise((resolve, reject) => {
       let url = debug
         ? "http://localhost:8080/wallet/:" + addr
         : "https://niftyprice.herokuapp.com/wallet/:" + addr; //"http://localhost:8080/wallet/:" + addr; //
-      const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
-        .then((resp) => {
-          return resp.json();
-        })
-        .then((data) => {
-          if (data.status == 200) {
+        const eventSource = new EventSource(url);
+        eventSource.onmessage = (e) => {
+          let status = e.data;
+          // console.log("EVENT", status);
+          if (status == "done") {
+            eventSource.close();
             pull_from_gcloud();
           }
-          // setEth(data.message.eth);
-          // setClientData(data.message.info);
-          // setWalletData(data.portfolio.data);
-          setTrigger(true);
-          resolve(true);
-          // resolve(data.message.info);
-        })
-        .catch((e) => {
-          console.log(e);
-          console.error(e.stack);
-          reject(e);
-        });
-    });
+        };
+        eventSource.onerror = (e) => {
+          console.log("ERROR", e);
+          eventSource.close();
+          return "ERROR";
+        };
+      // const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
+      //   .then((resp) => {
+      //     return resp.json();
+      //   })
+      //   .then((data) => {
+      //     if (data.status == 200) {
+      //       pull_from_gcloud();
+      //     }
+      //     // setEth(data.message.eth);
+      //     // setClientData(data.message.info);
+      //     // setWalletData(data.portfolio.data);
+      //     setTrigger(true);
+      //     resolve(true);
+      //     // resolve(data.message.info);
+      //   })
+      //   .catch((e) => {
+      //     console.log(e);
+      //     console.error(e.stack);
+      //     reject(e);
+      //   });
+    // });
   };
   const refresh_events = async () => {
     return new Promise((resolve, reject) => {
@@ -420,7 +434,8 @@ function Wallet() {
       //   );
       // }, 0);
       summation_map[17] = opts.data.reduce((price, item) => {
-        return price + parseFloat(item.data[17].props.children[1]);
+        return price + parseFloat(item.data[17].props.children[1].toString()
+        .replace(",", ""));
       }, 0);
 
       return (
