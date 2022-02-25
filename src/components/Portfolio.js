@@ -178,7 +178,7 @@ function Portfolio({ portfolio_metrics,setParentCurrency }) {
 
           name: "Portfolio Value (ETH)",
           data: portfolio_metrics.historical_perf
-            ? portfolio_metrics.historical_perf.trait.eth
+            ? portfolio_metrics.historical_perf.estimate.eth
             : [],
           color: "#1974D2",
 
