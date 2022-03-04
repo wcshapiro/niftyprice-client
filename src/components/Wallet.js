@@ -12,6 +12,7 @@ import MUIDataTable from "mui-datatables";
 import { compress, decompress } from "compress-json";
 import { stringify, parse } from "zipson";
 import FancyHeader from "./FancyHeader.js";
+import TableHeaders from "./TableHeaders.js"
 import "./Wallet.css";
 import TraitChart from "./TraitChart";
 import { Helmet } from "react-helmet";
@@ -33,8 +34,8 @@ import UserTable from "./UserTable.js";
 import Portfolio from "./Portfolio";
 const { InjectedConnector, NetworkOnlyConnector } = Connectors;
 const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] });
-let debug = false;
-let current_version = "1";
+let debug = true;
+let current_version = "2.1";
 const Infura = new NetworkOnlyConnector({
   providerURL: "https://mainnet.infura.io/v3/...",
 });
@@ -113,6 +114,7 @@ function Wallet() {
   var asset_from_contract = {};
   const [tokenMap, setTokenMap] = useState();
   const [currency, setCurrency] = useState("usd");
+  const [valuation, setValuation] = useState("collection");
   const [is_eth, setIsEth] = useState(false);
   const [is_provider, setIsProvider] = useState(false);
   const [eth_provider, setEthProvider] = useState();
@@ -157,14 +159,17 @@ function Wallet() {
   const setParentCurrency = (currency) => {
     setCurrency(currency);
   };
+  const setParentValuation = (valuation) => {
+    setValuation(valuation);
+  };
   const format_wallet = async (unformatted_wallet) => {
     let formatted_wallet = [];
 
     for (const row of unformatted_wallet) {
       let formatted_row = [...row];
-      formatted_row[3] = { eth: row[3], usd: isNaN(row[16]) ? 0 : row[16] };
-      formatted_row[4] = { eth: row[4], usd: isNaN(row[20]) ? 0 : row[20] };
-      formatted_row[5] = { eth: row[5], usd: isNaN(row[6]) ? 0 : row[6] };
+      formatted_row[3] = { eth: row[3], usd: (typeof row[16] == "number") ? row[16] : 0};
+      formatted_row[4] = { eth: row[4], usd: (typeof row[20] == "number") ? row[20] :0 };
+      formatted_row[5] = { eth: row[5], usd: (typeof row[6] == "number") ? row[6]  :0 };
       formatted_row[7] = {
         eth: row[7],
         usd: isNaN(row[7]) ? 0 : row[7] * row[19],
@@ -173,17 +178,15 @@ function Wallet() {
         eth: row[9],
         usd: isNaN(row[9]) ? 0 : row[9] * row[19],
       };
-      formatted_row[11] = { eth: row[11], usd: isNaN(row[13]) ? 0 : row[13] };
+      formatted_row[11] = row[10]
       formatted_row[12] = { eth: row[12], usd: isNaN(row[14]) ? 0 : row[14] };
       formatted_row[17] = {
         eth: row[17],
         usd: isNaN(row[17]) ? 0 : row[17] * row[19],
       };
       formatted_wallet.push(formatted_row);
-      // console.log("WALLET ROW", row);
-      // console.log("FORMATTED WALLET ROW", formatted_row);
+      
     }
-    // console.log("FORMATTED_WALLET", formatted_wallet);
     return formatted_wallet;
   };
   const pull_from_gcloud = async () => {
@@ -227,45 +230,26 @@ function Wallet() {
       });
   };
   const get_events = async () => {
-    // return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      
       let url = debug
         ? "http://localhost:8080/wallet/:" + addr
         : "https://niftyprice.herokuapp.com/wallet/:" + addr; //"http://localhost:8080/wallet/:" + addr; //
         const eventSource = new EventSource(url);
         eventSource.onmessage = (e) => {
           let status = e.data;
-          // console.log("EVENT", status);
           if (status == "done") {
             eventSource.close();
-            pull_from_gcloud();
+            
+            resolve(true)
           }
         };
         eventSource.onerror = (e) => {
           console.log("ERROR", e);
           eventSource.close();
-          return "ERROR";
+          reject(false)
         };
-      // const response = fetch(url) //https://niftyprice.herokuapp.com/wallet/:
-      //   .then((resp) => {
-      //     return resp.json();
-      //   })
-      //   .then((data) => {
-      //     if (data.status == 200) {
-      //       pull_from_gcloud();
-      //     }
-      //     // setEth(data.message.eth);
-      //     // setClientData(data.message.info);
-      //     // setWalletData(data.portfolio.data);
-      //     setTrigger(true);
-      //     resolve(true);
-      //     // resolve(data.message.info);
-      //   })
-      //   .catch((e) => {
-      //     console.log(e);
-      //     console.error(e.stack);
-      //     reject(e);
-      //   });
-    // });
+      });
   };
   const refresh_events = async () => {
     return new Promise((resolve, reject) => {
@@ -325,7 +309,7 @@ function Wallet() {
     const accounts = await ethereum.request({ method: "eth_requestAccounts" });
     // console.log("ACCOUNTS",accounts)
     // const accounts = await ethereum.send("eth_requestAccounts");
-    setAddr(accounts[0]);
+    setAddr(accounts[0]); 
     // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
     // setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601"); // me
     // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
@@ -349,10 +333,11 @@ function Wallet() {
     const eventSource = new EventSource(url);
     eventSource.onmessage = (e) => {
       let status = e.data;
-      // console.log("EVENT", status);
       if (status == "done") {
         eventSource.close();
-        pull_from_gcloud();
+        
+
+        pull_from_gcloud(); 
       }
     };
     eventSource.onerror = (e) => {
@@ -386,7 +371,6 @@ function Wallet() {
     fixedHeader: true,
     responsive: "scrollFullHeight",
     customTableBodyFooterRender: function (opts) {
-      // console.log("OPTS", opts);
       let numeric_columns = [3, 4, 5, 7, 9, 11, 17];
       let modded_columns = [3, 4, 5, 9];
       let summation_map = {};
@@ -413,7 +397,7 @@ function Wallet() {
           )
         );
       }, 0);
-      summation_map[11] = opts.data.reduce((price, item) => {
+      try{summation_map[11] = opts.data.reduce((price, item) => {
         return (
           price +
           parseFloat(
@@ -422,7 +406,8 @@ function Wallet() {
               .replace(",", "")
           )
         );
-      }, 0);
+      }, 0);}catch{summation_map[11]=0}
+      
       // summation_map[13] = opts.data.reduce((price, item) => {
       //   return (
       //     price +
@@ -478,7 +463,6 @@ function Wallet() {
     expandableRowsHeader: false,
     expandableRows: true,
     renderExpandableRow: (rowData, rowMeta) => {
-      // console.log("ROWDATA", rowData);
       let data = {
         address: rowData[15].token_address,
         id: rowData[15].token_id,
@@ -528,9 +512,11 @@ function Wallet() {
   useEffect(() => {
     if (addr && auth) {
       let version = window.localStorage.getItem("version");
-      // console.log("FOUND VERSION", version);
       if (!version || version != current_version) {
-        get_events();
+        setPortfolioLoading(true);
+        get_events().then((res) => {
+          pull_from_gcloud();
+        });
       } else {
         try {
           pull_from_gcloud().then((res) => {
@@ -609,6 +595,15 @@ function Wallet() {
         name: "Date Purchased",
 
         options: {
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Date Purchased"}/>
+                </TableCell>
+              </>
+            );
+            },
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value, tableMeta) => {
             let day = new Date(value).getUTCDate();
@@ -622,6 +617,22 @@ function Wallet() {
       {
         name: "Purchase Price",
         options: {
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = parseInt(obj1.data, 10);
+              let val2 = parseInt(obj2.data, 10);
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Purchase Price"}/>
+                </TableCell>
+              </>
+            );
+            },
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value) => {
             return (
@@ -637,6 +648,15 @@ function Wallet() {
       {
         name: "Gas Fee",
         options: {
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Gas Fee"}/>
+                </TableCell>
+              </>
+            );
+            },
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value) => {
             return (
@@ -652,6 +672,15 @@ function Wallet() {
       {
         name: "Total Cost",
         options: {
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Total Cost"}/>
+                </TableCell>
+              </>
+            );
+            },
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value) => {
             return (
@@ -675,8 +704,17 @@ function Wallet() {
         },
       },
       {
-        name: "Collection Floor ",
+        name: "Collection Floor",
         options: {
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Collection Floor"}/>
+                </TableCell>
+              </>
+            );
+            },
           customBodyRender: (value, tableMeta) => {
             var floor_change = tableMeta.rowData[8];
             return (
@@ -731,6 +769,15 @@ function Wallet() {
       {
         name: "Top Trait Floor",
         options: {
+          customHeadRender: (value, tableMeta) => {
+            return (
+              <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Top Trait Floor"}/>
+                </TableCell>
+              </>
+            );
+            },
           setCellProps: () => ({ align: "right" }),
           customBodyRender: (value) => {
             return (
@@ -751,17 +798,28 @@ function Wallet() {
       {
         name: "Total Gain",
         options: {
-          customBodyRender: (value, tableMeta) => {
-            var gain_percent = tableMeta.rowData[12];
+          customHeadRender: (value, tableMeta) => {
             return (
               <>
+                <TableCell className={classes.header}>
+                <TableHeaders value={"Total Gain"}/>
+                </TableCell>
+              </>
+            );
+            },
+          
+          customBodyRender: (value, tableMeta) => {
+            var gain_percent = tableMeta.rowData[12];
+            if (value){
+            return (
+              <> 
                 <Grid container>
                   <Grid item xs={12}>
                     <Typography
                       variant="subtitle2"
                       align="right"
                       style={
-                        parseFloat(value[currency]) > 0
+                        parseFloat(value.number[currency][valuation]) > 0
                           ? {
                               color: "#065f46",
                               textAlign: "right",
@@ -781,7 +839,7 @@ function Wallet() {
                       }
                     >
                       {currency == "usd" ? "$" : ""}
-                      {numberWithCommas(value[currency].toFixed(3))}
+                      {numberWithCommas(value.number[currency][valuation].toFixed(3))}
 
                       {currency == "eth" ? "ETH" : ""}
                     </Typography>
@@ -789,7 +847,7 @@ function Wallet() {
                   <Grid item xs={12}>
                     <Typography
                       style={
-                        parseFloat(gain_percent[currency]) > 0
+                        parseFloat(value.percent[currency][valuation]) > 0
                           ? {
                               color: "#065f46",
                               textAlign: "right",
@@ -812,12 +870,15 @@ function Wallet() {
                       variant="subtitle2"
                       align="right"
                     >
-                      {numberWithCommas(gain_percent[currency].toFixed(2))}%
+                      {numberWithCommas(value.percent[currency][valuation].toFixed(2))}%
                     </Typography>
                   </Grid>
                 </Grid>
               </>
             );
+          }
+          else{return <><Typography variant="subtitle2"
+          align="right">{"---"}</Typography></>}
           },
         },
       },
@@ -1071,19 +1132,22 @@ function Wallet() {
                           </Button>
                         </Grid>
                       </>
-                    ) : auth && !wallet_data ? (
-                      <>
-                        <Grid container justifyContent="space-between">
-                          <Grid item xs={12} className={classes.items}>
-                            <CircularProgress />
-                          </Grid>
-                        </Grid>
-                      </>
-                    ) : !auth ? (
+                    ) 
+                    // : auth && !wallet_data ? (
+                    //   <>
+                    //     <Grid container justifyContent="space-between">
+                    //       <Grid item xs={12} className={classes.items}>
+                    //         <CircularProgress />
+                    //       </Grid>
+                    //     </Grid>
+                    //   </>
+                    // ) 
+                    : !auth ? (
                       <></>
-                    ) : (
+                    ) : 
+                    (
                       <>
-                        {portfolio_loading ? (
+                        {portfolio_loading || loading || (auth && !wallet_data) ? (
                           <>
                             <Grid container justifyContent="space-between">
                               <Grid item xs={12} className={classes.items}>
@@ -1132,60 +1196,9 @@ function Wallet() {
                             <Portfolio
                               portfolio_metrics={final_portfolio_values}
                               setParentCurrency={setParentCurrency}
+                              setParentValuation={setParentValuation}
                             />
-                            {/* {Object.keys(
-                                          final_portfolio_values
-                                        ).map((object, index) => {
-                                          return (
-                                            <>
-                                              <Grid
-                                                container
-                                                justifyContent="space-between"
-                                              >
-                                                <Grid
-                                                  item
-                                                  xs={6}
-                                                  className={classes.items}
-                                                >
-                                                  <Typography
-                                                    inline
-                                                    variant="subtitle1"
-                                                    align="left"
-                                                  >
-                                                    {object}
-                                                  </Typography>
-                                                </Grid>
-                                                <Grid
-                                                  item
-                                                  xs={6}
-                                                  className={classes.items}
-                                                >
-                                                  <Typography
-                                                    inline
-                                                    variant="subtitle1"
-                                                    align="right"
-                                                  >
-                                                    {isInteger(
-                                                      final_portfolio_values[
-                                                        object
-                                                      ]
-                                                    )
-                                                      ? numberWithCommas(
-                                                          final_portfolio_values[
-                                                            object
-                                                          ]
-                                                        )
-                                                      : numberWithCommas(
-                                                          final_portfolio_values[
-                                                            object
-                                                          ].toFixed(3)
-                                                        )}
-                                                  </Typography>
-                                                </Grid>
-                                              </Grid>
-                                            </>
-                                          );
-                                        })} */}
+                            
                           </>
                         )}
                       </>

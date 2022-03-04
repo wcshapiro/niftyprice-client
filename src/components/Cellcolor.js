@@ -9,7 +9,7 @@ class QualityCell extends Component {
   };
 
   render() {
-    const { value, index, change } = this.props;
+    const { value, index,tableMeta, change } = this.props;
     const colors = {
       green: "#D1FAE5",
       red: "#FEE2E2",
@@ -24,21 +24,22 @@ class QualityCell extends Component {
 
     let color = colors.grey;
     let textColor = textColors.black;
-    if (parseFloat(value) > 0) {
+    // console.log("TABLEMETA",tableMeta?tableMeta.currentTableData[tableMeta.currentTableData[tableMeta.rowIndex].index].data[4]:null);
+    var new_value = value
+    new_value = tableMeta?tableMeta.currentTableData[tableMeta.currentTableData[tableMeta.rowIndex].index].data[4]:new_value
+    if (parseFloat(new_value) > 0) {
       color = colors.green;
       textColor = textColors.green;
-    } else if (parseFloat(value) < 0) {
+    } else if (parseFloat(new_value) < 0) {
       color = colors.red;
       textColor = textColors.red;
-    } else if (parseFloat(value) === 0) {
+    } else if (parseFloat(new_value) === 0) {
       color = colors.grey;
       textColor = textColors.black;
     }
-    if (isNaN(value)) {
-      var new_value = 0.0;
-    } else {
-      new_value = value;
-    }
+    if (isNaN(new_value)) {
+      new_value = 0.0;
+    } 
 
     return (
       <p

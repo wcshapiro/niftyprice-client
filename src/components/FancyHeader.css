@@ -1,9 +1,9 @@
 .boxborder {
-    text-align: center;
+    text-align: right;
     background: linear-gradient(to right, #1C72D9, #1CD9C3,
     #1C72D9);
     background-size: 200% auto;
-    font-size: 22px;
+    font-size: 18px;
     font-weight:800;
     color: #000;
     background-clip: text;

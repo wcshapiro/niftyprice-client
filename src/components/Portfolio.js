@@ -73,7 +73,7 @@ function numberWithCommas(x) {
     ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     : "---";
 }
-function Portfolio({ portfolio_metrics,setParentCurrency }) {
+function Portfolio({ portfolio_metrics,setParentCurrency,setParentValuation }) {
   const [toggle, setToggle] = useState("usd");
   const [loading, setLoading] = useState(true);
   const [chartLoading, setchartLoading] = useState(true);
@@ -83,6 +83,7 @@ function Portfolio({ portfolio_metrics,setParentCurrency }) {
   const [fpp_chart_options, setChartOptionsFpp] = useState(null);
   const handleValuation = (event, newValuation) => {
     setValuation(newValuation);
+    setParentValuation(newValuation)
   };
   const handleToggle = (event, newValuation) => {
     setToggle(newValuation);
@@ -321,6 +322,7 @@ function Portfolio({ portfolio_metrics,setParentCurrency }) {
   if (loading || !data || !data.last_refresh) {
     return (
       <>
+      folioo
         <CircularProgress />
       </>
     );
@@ -613,7 +615,7 @@ function Portfolio({ portfolio_metrics,setParentCurrency }) {
                                       className={classes.portfolioTextRight}
                                       style={
                                         Number(
-                                          data.refined_data.gain.percent[
+                                          data.refined_data.gain.number[
                                             valuation
                                           ][toggle]
                                         ) > 0
@@ -622,7 +624,7 @@ function Portfolio({ portfolio_metrics,setParentCurrency }) {
                                       }
                                     >
                                       {Number(
-                                        data.refined_data.gain.percent[
+                                        data.refined_data.gain.number[
                                           valuation
                                         ][toggle]
                                       ) > 0

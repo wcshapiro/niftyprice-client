@@ -19,6 +19,7 @@ import "./Search.css"
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 
 import Fuse from 'fuse.js'
+import { isNumber } from "highcharts";
 
 let debug = false
 const muiTheme = createTheme({
@@ -145,9 +146,10 @@ function Table() {
         let map = new Map(Object.entries(line));
         var data_temp = Array.from(map.values());
         let rank = [rankings[data_temp[0]]];
+        data_temp[4] = isNumber(data_temp[4])?data_temp[4]:0.00
         data_temp[1] = toFixedNumber(parseFloat(data_temp[1]), 2, 10);
         data_temp[2] = toFixedNumber(parseFloat(data_temp[2]), 2, 10);
-        data_temp[3] = toFixedNumber(parseFloat(data_temp[3]), 2, 10);
+        data_temp[3] = data_temp[3]?toFixedNumber(parseFloat(data_temp[3]), 2, 10):0.00;
         data_temp[5] = toFixedNumber(parseFloat(data_temp[5]), 2, 10);
         data_temp[7] = toFixedNumber(parseFloat(data_temp[7]), 2, 10);
         data_temp.unshift(rank);
@@ -318,15 +320,27 @@ fixedHeader: true,
       {
         name: "24h%",
         options: {
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = isNumber(obj1.data)?obj1.data:0
+              let val2 = isNumber(obj2.data)?obj2.data:0
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
           // hint: 'Percent change in floor price over the past 24 hours',
           customBodyRender: (value, tableMeta, updateValue) => {
-            return (
-              <QualityCell
-                value={value}
-                index={tableMeta.columnIndex}
-                change={(event) => updateValue(event)}
-              />
-            );
+            var newVal = isNumber(value)?value:0
+            return <p
+        style={{
+          color: ((newVal)>0)?"#065f46":((newVal)==0)?"#000000":"#981b1b",
+          backgroundColor: ((newVal)>0)?"#D1FAE5":((newVal)==0)?"":"#FEE2E2",
+          borderRadius: 12,
+          textAlign: "center",
+          maxWidth: 80,
+          minWidth: 80,
+        }}
+      >{newVal.toFixed(2)}%</p>
+            
           },
           setCellProps: () => ({ align: "right" }),
           setCellHeaderProps: (value) => ({ style: { align: "right" } }),
@@ -335,15 +349,27 @@ fixedHeader: true,
       {
         name: "7d%",
         options: {
-          // hint: 'Percent change in floor price over the past 7 days',
+          sortCompare: (order) => {
+            return (obj1, obj2) => {
+              let val1 = isNumber(obj1.data)?obj1.data:0
+              let val2 = isNumber(obj2.data)?obj2.data:0
+              return (val1 - val2) * (order === "asc" ? 1 : -1);
+            };
+          },
+          // hint: 'Percent change in floor price over the past 24 hours',
           customBodyRender: (value, tableMeta, updateValue) => {
-            return (
-              <QualityCell
-                value={value}
-                index={tableMeta.columnIndex}
-                change={(event) => updateValue(event)}
-              />
-            );
+            var newVal = isNumber(value)?value:0
+            return <p
+        style={{
+          color: ((newVal)>0)?"#065f46":((newVal)==0)?"#000000":"#981b1b",
+          backgroundColor: ((newVal)>0)?"#D1FAE5":((newVal)==0)?"":"#FEE2E2",
+          borderRadius: 12,
+          textAlign: "center",
+          maxWidth: 80,
+          minWidth: 80,
+        }}
+      >{newVal.toFixed(2)}%</p>
+            
           },
           setCellProps: () => ({ align: "right" }), // setCellHeaderProps: () => ({ style: { padding: '0px' } }),
         },
