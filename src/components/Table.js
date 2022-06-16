@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
 import "./Table.css";
 import "./App.css";
+import AdBar from "./AdBar.js"
 import Grid from "@material-ui/core/Grid";
 import QualityCell from "./Cellcolor.js";
 import Card from "@material-ui/core/Card";
@@ -14,12 +15,11 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { useHistory } from "react-router-dom";
 import { index_metadata } from "./index_config.js";
 import Chart from "../static/images/chart.png";
-import SelectSearch from "react-select-search";
 import "./Search.css"
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-
-import Fuse from 'fuse.js'
-import { isNumber } from "highcharts";
+function isNumber(val){
+  return ((typeof val==='number')&& !isNaN(val));
+}
 
 let debug = false
 const muiTheme = createTheme({
@@ -719,7 +719,10 @@ fixedHeader: true,
 
     return (
       <>
+      
+      
         <div class="content-wrap">
+        {/* <AdBar/> */}
           <div class="welcome-container">
             <Grid container justifyContent="space-evenly">
               <Grid item xs={12}>

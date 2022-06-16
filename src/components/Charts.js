@@ -12,6 +12,8 @@ import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Watermark from "../static/images/watermark.png";
+import  jwt from 'jsonwebtoken';
+
 
 import "./Charts.css";
 import { Button } from "@material-ui/core";
@@ -166,6 +168,7 @@ function combine_data(X, Y) {
   return Object.values(full_combo);
 }
 function Charts(props) {
+  let debug=false
   const location = useLocation();
   const [collection_info, setInfo] = useState({
     name: null,
@@ -259,7 +262,7 @@ function Charts(props) {
       let collection_name = collection_path.split("/")[1].replace(":", "");
       // console.log("NAME" + collection_name);
       // console.log("PATH" + collection_path);
-      const url = "https://niftyprice.herokuapp.com/" + collection_path; //"http://localhost:8080/" + collection_path; //"https://niftyprice.herokuapp.com/"+collection_path; //
+      const url = debug? "http://localhost:8080/" + collection_path:"https://niftyprice.herokuapp.com/" + collection_path; //"http://localhost:8080/" + collection_path; //"https://niftyprice.herokuapp.com/"+collection_path; //
       const response = await fetch(
         url
         // +
@@ -268,7 +271,7 @@ function Charts(props) {
         //   })
       );
       var data = await response.json();
-      // console.log("DATA");
+      console.log("DATA",data);
       // console.log("DATA",data.ab_alias);
       // console.log(collection_name,data.ab_alias[collection_name])
 

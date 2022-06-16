@@ -1,0 +1,22 @@
+.ad-title{
+   
+    /* padding: 0rem; */
+    font-weight: 900;
+    font-size: 1em;
+}
+
+.ad-description{
+    font-size: .8em;
+    /* text-align: left; */
+    /* padding: 0; */
+    
+}
+.container {
+    overflow-y: scroll;
+     /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.container::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+}

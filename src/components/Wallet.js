@@ -307,23 +307,9 @@ function Wallet() {
 
   const connect_metamask = async () => {
     const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-    // console.log("ACCOUNTS",accounts)
-    // const accounts = await ethereum.send("eth_requestAccounts");
+    
     setAddr(accounts[0]); 
-    // setAddr("0x01dde370fee9118d49b78b561c0606a0069a21db");
-    // setAddr("0x197B52E6c70CeBE4AAca53537Cc93f78B0E1C601"); // me
-    // setAddr("0x64b2C1C1686D9A78f11A5fD625FcBaBf9238f886") //np_auth
-    // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c"); //chris
-    // setAddr("0x01DDE370Fee9118D49b78b561C0606A0069A21Db"); //new member
-    // setAddr("0x13d33c9f2F3E7F8f14B1ee0988F4DC929Ee87a92"); // brojack
-    // setAddr("0x01a47d02a50f3e633232483c8af8ee0da6b260dd")//
-    // setAddr("0x98C2AAcc9fCACFCb69314fFDFF243f8396644520");
-    // setAddr('0x8bFCE5381189Daf80ED6141C758dAf8cd1aFE804')
-    // setAddr("0x42e8668aFfa4F50209C6841109D4357668268c7a")
-    // setAddr("0x7ffd980b72F21E7A63a3A55b36fFc724B77152a0")
-    // setAddr("0x17D369A86cdFa617C8d3B4Bf487335DaE4CfE9D4") //aseponde’s
-    // setAddr("0x14bd7c12c6bc459961c7b974f5c4016fcde48587")
-    // setAddr("0x1aba5421d883c0d1bf89bcff2be6a772d9cc9246")
+    
   };
   const refresh_data = async () => {
     setRefreshEnable(false);
@@ -349,7 +335,6 @@ function Wallet() {
 
   const disconnect_metamask = async () => {
     setAddr(null);
-    // setAddr("0x5e4c7b1f6ceb2a71efbe772296ab8ab9f4e8582c");
   };
 
   const purchase_premium = async () => {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
-import { Renderer } from "highcharts";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import eth_image from "../static/images/eth.png";
 import gas_image from "../static/images/gas.png";

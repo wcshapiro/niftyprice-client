@@ -154,7 +154,7 @@ th{
  background-size: contain;
 
 }
-.opensea-link:hover, .graph-link:hover {
+.opensea-link:hover, .graph-link:hover, .np-link:hover, .etherscan-link:hover {
     cursor: pointer;
 }
 .loading{

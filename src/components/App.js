@@ -11,6 +11,7 @@ import Ticker from "./Ticker.js";
 import Terms from "./Terms.js";
 import Form from "./Form.js";
 import FAQ from "./FAQ.js";
+import API from "./API.js";
 import Demo from "./Demo.js";
 import Newsletter from "./Newsletter.js";
 import Indexes from "./Indexes.js";
@@ -91,6 +92,14 @@ function App() {
               </Menu>
               <div class="nav-buttons">
                 <Grid container justify="flex-end" spacing={3}>
+                <Grid item>
+                    <Button
+                      variant="contained"
+                      style={{backgroundColor: '#1C72D9', color: '#FFFFFF'}}                      href="https://rapidapi.com/niftyprice-niftyprice-default/api/niftyprice"
+                    >
+                      API
+                    </Button>
+                  </Grid>
                   <Grid item>
                     <Button
                       variant="contained"
@@ -157,6 +166,7 @@ function App() {
               <Route exact path="/demo">
                 <Demo />
               </Route>
+              
               <Route exact path="/wallet">
                 <Web3Provider connectors={connectors} libraryName="ethers.js">
                   <Wallet />
